@@ -38,6 +38,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         let client = HTTPClient()
         let sut = RemoteFeedLoader(url: anyURL(), client: client)
         
+        
         XCTAssertNil(client.requestedURL)
     }
     
