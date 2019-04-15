@@ -12,10 +12,10 @@ public protocol HTTPClient {
     func get(from url: URL)
 }
 
-public class RemoteFeedLoader {
+public final class RemoteFeedLoader {
     
-    let url: URL
-    let client: HTTPClient
+    private let url: URL
+    private let client: HTTPClient
     
     public init(url: URL, client: HTTPClient) {
         self.client = client
