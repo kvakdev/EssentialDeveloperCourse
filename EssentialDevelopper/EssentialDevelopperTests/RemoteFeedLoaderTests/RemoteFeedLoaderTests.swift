@@ -20,10 +20,8 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     func test_init() {
-        let client = HTTPClientSpy()
-        _ = RemoteFeedLoader(url: anyURL(), client: client)
-        
-        XCTAssertTrue(client.requestedURLs.isEmpty)
+        let (_, client) = makeSUT()
+      XCTAssertTrue(client.requestedURLs.isEmpty)
     }
     
     func test_load_requestsDataFromUrl() {
