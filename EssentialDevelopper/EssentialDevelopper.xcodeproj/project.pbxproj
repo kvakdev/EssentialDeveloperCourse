@@ -11,8 +11,9 @@
 		F40FF160226475ED00359F40 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF15F226475ED00359F40 /* ViewController.swift */; };
 		F40FF162226475EF00359F40 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F40FF161226475EF00359F40 /* Assets.xcassets */; };
 		F40FF165226475EF00359F40 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F40FF163226475EF00359F40 /* Main.storyboard */; };
-		F40FF171226475EF00359F40 /* EssentialDevelopperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF170226475EF00359F40 /* EssentialDevelopperTests.swift */; };
 		F40FF17C226475EF00359F40 /* EssentialDevelopperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF17B226475EF00359F40 /* EssentialDevelopperUITests.swift */; };
+		F40FF18A226477A400359F40 /* RemoteFeedLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF189226477A400359F40 /* RemoteFeedLoaderTests.swift */; };
+		F40FF18C2264784B00359F40 /* RemoteFeedLoaderProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF18B2264784B00359F40 /* RemoteFeedLoaderProtocol.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,11 +42,12 @@
 		F40FF166226475EF00359F40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F40FF167226475EF00359F40 /* EssentialDevelopper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EssentialDevelopper.entitlements; sourceTree = "<group>"; };
 		F40FF16C226475EF00359F40 /* EssentialDevelopperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialDevelopperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F40FF170226475EF00359F40 /* EssentialDevelopperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialDevelopperTests.swift; sourceTree = "<group>"; };
 		F40FF172226475EF00359F40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F40FF177226475EF00359F40 /* EssentialDevelopperUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialDevelopperUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F40FF17B226475EF00359F40 /* EssentialDevelopperUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialDevelopperUITests.swift; sourceTree = "<group>"; };
 		F40FF17D226475EF00359F40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F40FF189226477A400359F40 /* RemoteFeedLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RemoteFeedLoaderTests.swift; path = RemoteFeedLoaderTests/RemoteFeedLoaderTests.swift; sourceTree = "<group>"; };
+		F40FF18B2264784B00359F40 /* RemoteFeedLoaderProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoaderProtocol.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,8 +111,9 @@
 		F40FF16F226475EF00359F40 /* EssentialDevelopperTests */ = {
 			isa = PBXGroup;
 			children = (
-				F40FF170226475EF00359F40 /* EssentialDevelopperTests.swift */,
 				F40FF172226475EF00359F40 /* Info.plist */,
+				F40FF18B2264784B00359F40 /* RemoteFeedLoaderProtocol.swift */,
+				F40FF189226477A400359F40 /* RemoteFeedLoaderTests.swift */,
 			);
 			path = EssentialDevelopperTests;
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 					};
 					F40FF16B226475EF00359F40 = {
 						CreatedOnToolsVersion = 10.2;
+						LastSwiftMigration = 1020;
 						TestTargetID = F40FF159226475ED00359F40;
 					};
 					F40FF176226475EF00359F40 = {
@@ -263,7 +267,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F40FF171226475EF00359F40 /* EssentialDevelopperTests.swift in Sources */,
+				F40FF18C2264784B00359F40 /* RemoteFeedLoaderProtocol.swift in Sources */,
+				F40FF18A226477A400359F40 /* RemoteFeedLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -458,6 +463,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = EssentialDevelopperTests/Info.plist;
@@ -468,6 +474,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = andre.kvashuk.EssentialDevelopperTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EssentialDevelopper.app/Contents/MacOS/EssentialDevelopper";
 			};
@@ -478,6 +485,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = EssentialDevelopperTests/Info.plist;
