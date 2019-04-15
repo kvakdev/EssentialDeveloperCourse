@@ -9,10 +9,10 @@
 import XCTest
 
 class HTTPClient {
-    var requestedURL: URL?
+    var requestedURLs = [URL]()
     
     func load(url: URL) {
-        requestedURL = url
+        requestedURLs.append(url)
     }
 }
 
@@ -36,10 +36,9 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     func test_init() {
         let client = HTTPClient()
-        let sut = RemoteFeedLoader(url: anyURL(), client: client)
+        _ = RemoteFeedLoader(url: anyURL(), client: client)
         
-        
-        XCTAssertNil(client.requestedURL)
+        XCTAssertNil(client.requestedURLs.first)
     }
     
     func test_requestsDataFromUrl() {
@@ -49,7 +48,18 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         sut.load()
         
-        XCTAssertEqual(client.requestedURL, url)
+        XCTAssertEqual(client.requestedURLs.first, url)
+    }
+    
+    func test_loadingTwiceRequestDataTwice() {
+        let client = HTTPClient()
+        let url = anyURL()
+        let sut = RemoteFeedLoader(url: url, client: client)
+        
+        sut.load()
+        sut.load()
+        
+        XCTAssertEqual(client.requestedURLs.count, 2)
     }
     
 }
