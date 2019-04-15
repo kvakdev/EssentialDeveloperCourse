@@ -7,35 +7,20 @@
 //
 
 import XCTest
-
-class HTTPClient {
-    var requestedURLs = [URL]()
-    
-    func load(url: URL) {
-        requestedURLs.append(url)
-    }
-}
-
-class RemoteFeedLoader {
-    
-    let url: URL
-    let client: HTTPClient
-    
-    init(url: URL, client: HTTPClient) {
-        self.client = client
-        self.url = url
-    }
-    
-    func load() {
-        client.load(url: url)
-    }
-    
-}
+import EssentialDevelopper
 
 class RemoteFeedLoaderTests: XCTestCase {
+    class HTTPClientSpy: HTTPClient {
+        var requestedURLs = [URL]()
+        
+        func get(from url: URL) {
+            requestedURLs.append(url)
+        }
+    }
+    
     
     func test_init() {
-        let client = HTTPClient()
+        let client = HTTPClientSpy()
         _ = RemoteFeedLoader(url: anyURL(), client: client)
         
         XCTAssertNil(client.requestedURLs.first)
@@ -60,16 +45,17 @@ class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(client.requestedURLs.count, 2)
     }
     
-    func makeSUT(url: URL = anyURL()) -> (sut: RemoteFeedLoader, client: HTTPClient) {
-        let client = HTTPClient()
+    func makeSUT(url: URL = anyURL()) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
+        let client = HTTPClientSpy()
         let sut = RemoteFeedLoader(url: url, client: client)
         
         return (sut, client)
     }
-    //MARK: Helpers
-    func anyURL() -> URL {
-        return URL(string: "http://any-url.com")!
-    }
+
 }
 
+//MARK: Helpers
+func anyURL() -> URL {
+    return URL(string: "http://any-url.com")!
+}
 
