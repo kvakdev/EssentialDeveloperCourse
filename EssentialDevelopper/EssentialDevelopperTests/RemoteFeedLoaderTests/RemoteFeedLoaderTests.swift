@@ -60,6 +60,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         sut.load()
         
         XCTAssertEqual(client.requestedURLs.count, 2)
+        
     }
     
 }
