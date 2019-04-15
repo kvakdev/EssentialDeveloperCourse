@@ -10,6 +10,7 @@ import XCTest
 import EssentialDevelopper
 
 class RemoteFeedLoaderTests: XCTestCase {
+    
     class HTTPClientSpy: HTTPClient {
         var requestedURLs = [URL]()
         
@@ -17,7 +18,6 @@ class RemoteFeedLoaderTests: XCTestCase {
             requestedURLs.append(url)
         }
     }
-    
     
     func test_init() {
         let client = HTTPClientSpy()
