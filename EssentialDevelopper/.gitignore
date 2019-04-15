@@ -32,6 +32,7 @@ xcuserdata/
 
 ## Other
 *.moved-aside
+*.xcuserstate
 *.xccheckout
 *.xcscmblueprint
 
