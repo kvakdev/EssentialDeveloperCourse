@@ -27,15 +27,15 @@ class RemoteFeedLoaderTests: XCTestCase {
     
     func test_load_deliversErrorOnClientError() {
         let (sut, client) = makeSUT()
-        var expectedErrors = [RemoteFeedLoader.Error]()
+        var capturedErrors = [RemoteFeedLoader.Error]()
     
         let error = NSError(domain: "Test", code: -1, userInfo: nil)
         
-        sut.load { expectedErrors.append($0) }
+        sut.load { capturedErrors.append($0) }
         
         client.complete(with: error)
         
-        XCTAssertEqual(expectedErrors, [.connectivity])
+        XCTAssertEqual(capturedErrors, [.connectivity])
     }
     
     func test_loadingTwice_RequestDataTwice() {
@@ -53,15 +53,15 @@ class RemoteFeedLoaderTests: XCTestCase {
         let samples = [199, 300, 400, 404, 500]
         
         samples.enumerated().forEach { index, code in
-            var expectedErrors = [RemoteFeedLoader.Error]()
+            var capturedErrors = [RemoteFeedLoader.Error]()
             
             sut.load { error in
-                expectedErrors.append(error)
+                capturedErrors.append(error)
             }
             
             client.completeWith(statusCode: code, at: index)
             
-            XCTAssertEqual(expectedErrors, [.invalidData])
+            XCTAssertEqual(capturedErrors, [.invalidData])
         }
     }
     
