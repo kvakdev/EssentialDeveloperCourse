@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class FeedItemMapper {
+internal final class FeedItemMapper {
     private struct Item: Decodable, Equatable {
         public let id: UUID
         public let description: String?
@@ -29,7 +29,7 @@ public class FeedItemMapper {
     
     private static let OK = Int(200)
     
-    public static func map(response: HTTPURLResponse, data: Data) throws -> [FeedItem] {
+    internal static func map(response: HTTPURLResponse, data: Data) throws -> [FeedItem] {
         
         class Root: Decodable {
             let items: [Item]
