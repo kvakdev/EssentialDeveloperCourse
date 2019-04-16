@@ -14,6 +14,7 @@
 		F40FF18A226477A400359F40 /* RemoteFeedLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF189226477A400359F40 /* RemoteFeedLoaderTests.swift */; };
 		F4632A7E226498DD00BAF4C8 /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4632A7D226498DD00BAF4C8 /* RemoteFeedLoader.swift */; };
 		F4632A832265A82000BAF4C8 /* FeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4632A822265A82000BAF4C8 /* FeedItem.swift */; };
+		F4BA2BCA226603320015EABC /* FeedItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BC9226603320015EABC /* FeedItemMapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +40,7 @@
 		F40FF189226477A400359F40 /* RemoteFeedLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RemoteFeedLoaderTests.swift; path = RemoteFeedLoaderTests/RemoteFeedLoaderTests.swift; sourceTree = "<group>"; };
 		F4632A7D226498DD00BAF4C8 /* RemoteFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoader.swift; sourceTree = "<group>"; };
 		F4632A822265A82000BAF4C8 /* FeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItem.swift; sourceTree = "<group>"; };
+		F4BA2BC9226603320015EABC /* FeedItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemMapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				F4632A7D226498DD00BAF4C8 /* RemoteFeedLoader.swift */,
+				F4BA2BC9226603320015EABC /* FeedItemMapper.swift */,
 				F4632A822265A82000BAF4C8 /* FeedItem.swift */,
 			);
 			path = FeedFeature;
@@ -211,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4632A832265A82000BAF4C8 /* FeedItem.swift in Sources */,
+				F4BA2BCA226603320015EABC /* FeedItemMapper.swift in Sources */,
 				F40FF160226475ED00359F40 /* ViewController.swift in Sources */,
 				F4632A7E226498DD00BAF4C8 /* RemoteFeedLoader.swift in Sources */,
 				F40FF15E226475ED00359F40 /* AppDelegate.swift in Sources */,
