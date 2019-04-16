@@ -55,7 +55,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         }
     }
     
-    func test_deliversErrorOnInvalidData() {
+    func test_load_deliversErrorOnInvalidData() {
         let (sut, client) = makeSUT()
         let data = Data("invalid data".utf8)
         
@@ -65,7 +65,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         })
     }
     
-    func test_deliversEmptyArrayOnEmptyJSONData() {
+    func test_load_deliversEmptyArrayOnEmptyJSONData() {
         let (sut, client) = makeSUT()
         let emptyListJSON = Data("{\"items\": []}".utf8)
         
