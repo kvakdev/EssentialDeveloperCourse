@@ -9,8 +9,15 @@
 import Foundation
 
 public struct FeedItem: Decodable, Equatable {
-    let id: UUID
-    let description: String?
-    let location: String?
-    let imageURL: URL
+    public let id: UUID
+    public let description: String?
+    public let location: String?
+    public let imageURL: URL
+    
+    public init(id: UUID, description: String? = nil, location: String? = nil, imageUrl: URL) {
+        self.id = id
+        self.description = description
+        self.imageURL = imageUrl
+        self.location = location
+    }
 }

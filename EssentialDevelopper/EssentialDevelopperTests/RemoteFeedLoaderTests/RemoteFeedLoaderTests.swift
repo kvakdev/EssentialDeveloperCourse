@@ -74,6 +74,22 @@ class RemoteFeedLoaderTests: XCTestCase {
         })
     }
     
+    func test_load_deliversFeedItemsOnValidJSONObject() {
+        let (sut, client) = makeSUT()
+        
+        let item1 = FeedItem(id: UUID(), description: "item1", location: nil, imageUrl: anyURL())
+        let item2 = FeedItem(id: UUID(), imageUrl: anyURL())
+        
+        let items = [item1, item2]
+        
+        let itemsJSON = ["items": items.map { dictFrom(item: $0) }]
+        
+        expect(sut: sut, toCompleteWith: [RemoteFeedLoader.Result.success(items)], when: {
+            let json = try! JSONSerialization.data(withJSONObject: itemsJSON)
+            client.completeWith(statusCode: 200, data: json)
+        })
+    }
+    
     func expect(sut: RemoteFeedLoader, toCompleteWith expectedResult: [RemoteFeedLoader.Result], when action: (() -> ()), file: StaticString = #file, line: UInt = #line) {
         
         var receivedResult = [RemoteFeedLoader.Result]()
@@ -89,6 +105,22 @@ class RemoteFeedLoaderTests: XCTestCase {
         let sut = RemoteFeedLoader(url: url, client: client)
         
         return (sut, client)
+    }
+    
+    func dictFrom(item: FeedItem) -> [String: String] {
+        var dict = [String: String]()
+        
+        dict["id"] = "\(item.id)"
+        dict["imageURL"] = item.imageURL.absoluteString
+        
+        if let desc = item.description {
+            dict["description"] = desc
+        }
+        if let location = item.location {
+            dict["location"] = location
+        }
+        
+        return dict
     }
     
     class HTTPClientSpy: HTTPClient {
