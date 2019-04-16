@@ -100,11 +100,20 @@ class RemoteFeedLoaderTests: XCTestCase {
         XCTAssertEqual(expectedResult, receivedResult, file: file, line: line)
     }
     
-    func makeSUT(url: URL = anyURL()) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
+    func makeSUT(url: URL = anyURL(), file: StaticString = #file, line: UInt = #line) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
         let client = HTTPClientSpy()
         let sut = RemoteFeedLoader(url: url, client: client)
         
+        trackMemoryLeaks(sut, file: file, line: line)
+        trackMemoryLeaks(client, file: file, line: line)
+        
         return (sut, client)
+    }
+    
+    func trackMemoryLeaks(_ sut: AnyObject, file: StaticString = #file, line: UInt = #line) {
+        addTeardownBlock { [weak sut] in
+            XCTAssertNil(sut, "expected to be nil", file: file, line: line)
+        }
     }
     
     func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedItem, json: [String: Any]) {
