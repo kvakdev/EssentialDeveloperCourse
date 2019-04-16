@@ -15,6 +15,7 @@
 		F4632A7E226498DD00BAF4C8 /* RemoteFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4632A7D226498DD00BAF4C8 /* RemoteFeedLoader.swift */; };
 		F4632A832265A82000BAF4C8 /* FeedItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4632A822265A82000BAF4C8 /* FeedItem.swift */; };
 		F4BA2BCA226603320015EABC /* FeedItemMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BC9226603320015EABC /* FeedItemMapper.swift */; };
+		F4BA2BCC226605090015EABC /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BCB226605090015EABC /* HTTPClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +42,7 @@
 		F4632A7D226498DD00BAF4C8 /* RemoteFeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFeedLoader.swift; sourceTree = "<group>"; };
 		F4632A822265A82000BAF4C8 /* FeedItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItem.swift; sourceTree = "<group>"; };
 		F4BA2BC9226603320015EABC /* FeedItemMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedItemMapper.swift; sourceTree = "<group>"; };
+		F4BA2BCB226605090015EABC /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 				F4632A7D226498DD00BAF4C8 /* RemoteFeedLoader.swift */,
 				F4BA2BC9226603320015EABC /* FeedItemMapper.swift */,
 				F4632A822265A82000BAF4C8 /* FeedItem.swift */,
+				F4BA2BCB226605090015EABC /* HTTPClient.swift */,
 			);
 			path = FeedFeature;
 			sourceTree = "<group>";
@@ -215,6 +218,7 @@
 			files = (
 				F4632A832265A82000BAF4C8 /* FeedItem.swift in Sources */,
 				F4BA2BCA226603320015EABC /* FeedItemMapper.swift in Sources */,
+				F4BA2BCC226605090015EABC /* HTTPClient.swift in Sources */,
 				F40FF160226475ED00359F40 /* ViewController.swift in Sources */,
 				F4632A7E226498DD00BAF4C8 /* RemoteFeedLoader.swift in Sources */,
 				F40FF15E226475ED00359F40 /* AppDelegate.swift in Sources */,
