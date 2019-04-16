@@ -45,7 +45,7 @@ public final class RemoteFeedLoader {
                     completion(.failure(.invalidData))
                     return
                 }
-                completion(.success(items))
+                completion(.success(items.map { $0.feedItem }))
             case .failure:
                 completion(.failure(.connectivity))
             }
@@ -54,9 +54,27 @@ public final class RemoteFeedLoader {
     
 }
 
-public func map(response: HTTPURLResponse, data: Data) throws -> [FeedItem] {
+private struct Item: Decodable, Equatable {
+    public let id: UUID
+    public let description: String?
+    public let location: String?
+    public let image: URL
+    
+    var feedItem: FeedItem {
+        return FeedItem(id: self.id, description: self.description, location: self.location, imageUrl: self.image)
+    }
+    
+    public init(id: UUID, description: String? = nil, location: String? = nil, imageUrl: URL) {
+        self.id = id
+        self.description = description
+        self.image = imageUrl
+        self.location = location
+    }
+}
+
+private func map(response: HTTPURLResponse, data: Data) throws -> [Item] {
     class Root: Decodable {
-        let items: [FeedItem]
+        let items: [Item]
     }
     
     guard response.statusCode == 200,
