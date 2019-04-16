@@ -77,12 +77,12 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_load_deliversFeedItemsOnValidJSONObject() {
         let (sut, client) = makeSUT()
         
-        let item1 = FeedItem(id: UUID(), description: "item1", location: nil, imageUrl: anyURL())
-        let item2 = FeedItem(id: UUID(), imageUrl: anyURL())
+        let item1 = makeItem()
+        let item2 = makeItem()
         
-        let items = [item1, item2]
+        let items = [item1.item, item2.item]
         
-        let itemsJSON = ["items": items.map { dictFrom(item: $0) }]
+        let itemsJSON = ["items": [item1.json, item2.json]]
         
         expect(sut: sut, toCompleteWith: [RemoteFeedLoader.Result.success(items)], when: {
             let json = try! JSONSerialization.data(withJSONObject: itemsJSON)
@@ -107,20 +107,27 @@ class RemoteFeedLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    func dictFrom(item: FeedItem) -> [String: String] {
-        var dict = [String: String]()
+    func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedItem, json: [String: Any]) {
+        let feedItem = FeedItem(id: id, description: description, location: location, imageUrl: image)
         
-        dict["id"] = "\(item.id)"
-        dict["imageURL"] = item.imageURL.absoluteString
+        let json = dictFrom(item: feedItem)
         
-        if let desc = item.description {
-            dict["description"] = desc
+        return (feedItem, json)
+    }
+    
+    private func dictFrom(item: FeedItem) -> [String: Any] {
+        
+        return [
+            "id"            : item.id.uuidString,
+            "image"         : item.imageURL.absoluteString,
+            "location"      : item.location,
+            "description"   : item.description
+            ]
+            .reduce(into: [String: Any]()) { result, dict in
+                if let value = dict.value {
+                    result[dict.key] = value
+                }
         }
-        if let location = item.location {
-            dict["location"] = location
-        }
-        
-        return dict
     }
     
     class HTTPClientSpy: HTTPClient {
