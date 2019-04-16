@@ -11,7 +11,7 @@ import Foundation
 internal final class FeedItemMapper {
     private static let OK = Int(200)
     
-    internal static func map(response: HTTPURLResponse, data: Data) -> RemoteFeedLoader.Result {
+    internal static func map(_ response: HTTPURLResponse, data: Data) -> RemoteFeedLoader.Result {
         
         guard response.statusCode == OK,
             let root = try? JSONDecoder().decode(Root.self, from: data) else {
