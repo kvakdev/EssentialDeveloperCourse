@@ -59,7 +59,7 @@ public func map(response: HTTPURLResponse, data: Data) throws -> [FeedItem] {
         let items: [FeedItem]
     }
     
-    guard response.statusCode != 200,
+    guard response.statusCode == 200,
         let root = try? JSONDecoder().decode(Root.self, from: data) else {
             throw RemoteFeedLoader.Error.invalidData
     }

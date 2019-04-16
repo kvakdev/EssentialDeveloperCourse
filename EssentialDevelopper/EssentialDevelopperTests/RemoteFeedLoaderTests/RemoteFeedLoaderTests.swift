@@ -65,14 +65,14 @@ class RemoteFeedLoaderTests: XCTestCase {
         })
     }
     
-//    func test_deliversEmptyArrayOnEmptyJSONData() {
-//        let (sut, client) = makeSUT()
-//        let emptyListJSON = Data("{\"items\":{[]}}".utf8)
-//        
-//        expect(sut: sut, toCompleteWith: [.success([])], when: {
-//            client.completeWith(statusCode: 200, data: emptyListJSON)
-//        })
-//    }
+    func test_deliversEmptyArrayOnEmptyJSONData() {
+        let (sut, client) = makeSUT()
+        let emptyListJSON = Data("{\"items\": []}".utf8)
+        
+        expect(sut: sut, toCompleteWith: [.success([])], when: {
+            client.completeWith(statusCode: 200, data: emptyListJSON)
+        })
+    }
     
     func expect(sut: RemoteFeedLoader, toCompleteWith expectedResult: [RemoteFeedLoader.Result], when action: (() -> ()), file: StaticString = #file, line: UInt = #line) {
         
