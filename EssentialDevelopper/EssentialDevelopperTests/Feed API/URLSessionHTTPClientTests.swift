@@ -21,18 +21,6 @@ class URLSessionHTTPClient {
 }
 
 class URLSessionHTTPClientTests: XCTestCase {
-
-    func test_load_withTheGivenUrl() {
-        let url = anyURL()
-        let urlSession = URLSessionSpy()
-        let sut = URLSessionHTTPClient(session: urlSession)
-        let task = URLSesisonDataTaskSpy()
-        
-        urlSession.stub(url: url, task: task)
-        sut.load(url: url)
-        
-        XCTAssertEqual(urlSession.requestedURL, url)
-    }
     
     func test_resumeCount_isInvoked() {
         let url = anyURL()
