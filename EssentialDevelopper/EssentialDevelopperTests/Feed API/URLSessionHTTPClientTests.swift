@@ -52,7 +52,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func test_load_deliversErrorOnStubbedError() {
+    func test_getFromUrl_deliversErrorOnRequestError() {
         let error = NSError(domain: "Test", code: -1, userInfo: nil)
         let exp = expectation(description: "waiting for load to end with error")
         
