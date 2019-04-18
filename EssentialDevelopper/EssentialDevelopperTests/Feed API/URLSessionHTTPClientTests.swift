@@ -28,6 +28,26 @@ class URLSessionHTTPClient {
 
 class URLSessionHTTPClientTests: XCTestCase {
     
+    func test_getURL_makesGETRequestWithGivenURL() {
+        URLProtocolStub.startInterceptingRequests()
+        
+        let url = anyURL()
+        let sut = URLSessionHTTPClient()
+        let exp = expectation(description: "waiting for load to end with error")
+        
+        URLProtocolStub.observeRequest { request in
+            XCTAssertEqual(url, request.url)
+            XCTAssertEqual(request.httpMethod, "GET")
+            
+            exp.fulfill()
+        }
+        
+        sut.load(url: url) { _ in }
+        
+        wait(for: [exp], timeout: 1.0)
+        URLProtocolStub.stopInterceptingRequests()
+    }
+    
     func test_load_deliversErrorOnStubbedError() {
         URLProtocolStub.startInterceptingRequests()
         let url = anyURL()
@@ -57,6 +77,9 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         public static var stub: Stub?
         
+        private typealias ObserverRequestBlock = (URLRequest) -> ()
+        private static var observeRequestBlock: ObserverRequestBlock?
+        
         struct Stub {
             var data: Data?
             var response: HTTPURLResponse?
@@ -73,10 +96,13 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         static func stopInterceptingRequests() {
             URLProtocolStub.stub = nil
+            URLProtocolStub.observeRequestBlock = nil
             URLProtocol.unregisterClass(URLProtocolStub.self)
         }
         
         override class func canInit(with request: URLRequest) -> Bool {
+            URLProtocolStub.observeRequestBlock?(request)
+            
             return true
         }
         
@@ -103,5 +129,9 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
         
         override func stopLoading() {}
+        
+        static func observeRequest(completion: @escaping (URLRequest) -> ()) {
+            URLProtocolStub.observeRequestBlock = completion
+        }
     }
 }
