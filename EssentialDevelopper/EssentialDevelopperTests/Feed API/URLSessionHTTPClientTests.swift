@@ -9,10 +9,18 @@
 import XCTest
 import EssentialDevelopper
 
+protocol HTTPSession {
+    func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPSessionTask
+}
+
+protocol HTTPSessionTask {
+    func resume()
+}
+
 class URLSessionHTTPClient {
-    let session: URLSession
+    let session: HTTPSession
     
-    init(session: URLSession) {
+    init(session: HTTPSession) {
         self.session = session
     }
     
@@ -63,21 +71,21 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         wait(for: [exp], timeout: 1.0)
     }
-    private class URLSessionSpy: URLSession {
+    private class URLSessionSpy: HTTPSession {
         var requestedURL: URL?
         
         private var stubs = [URL: Stub]()
         
         private struct Stub {
-            var task: URLSessionDataTask
+            var task: HTTPSessionTask
             var error: Error?
         }
         
-        func stub(url: URL, task: URLSessionDataTask = URLSesisonDataTaskSpy(), error: Error?) {
+        func stub(url: URL, task: HTTPSessionTask = URLSesisonDataTaskSpy(), error: Error?) {
             self.stubs[url] = Stub(task: task, error: error)
         }
         
-        override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+        func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> HTTPSessionTask {
             requestedURL = url
             
             guard let stub = stubs[url] else {
@@ -90,15 +98,15 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
     }
     
-    private class URLSesisonDataTaskSpy: URLSessionDataTask {
+    private class URLSesisonDataTaskSpy: HTTPSessionTask {
         var resumeCount = 0
         
-        override func resume() {
+        func resume() {
             resumeCount += 1
         }
     }
     
-    private class FakeURLDataTask: URLSessionDataTask {
-        override func resume() {}
+    private class FakeURLDataTask: HTTPSessionTask {
+        func resume() {}
     }
 }
