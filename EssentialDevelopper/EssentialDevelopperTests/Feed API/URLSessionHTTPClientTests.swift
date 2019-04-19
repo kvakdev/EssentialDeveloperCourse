@@ -27,7 +27,6 @@ class URLSessionHTTPClient {
                 completion(.success(response, data))
             } else {
                 completion(.failure(UnexpectedRepresentationError()))
-//                debugPrint("URL = \(url), response = \(response.debugDescription) data = \(data?.debugDescription)")
             }
         }).resume()
     }
