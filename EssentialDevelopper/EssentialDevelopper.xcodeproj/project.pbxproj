@@ -18,6 +18,7 @@
 		F4BA2BCC226605090015EABC /* HTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BCB226605090015EABC /* HTTPClient.swift */; };
 		F4BA2BCF2266112B0015EABC /* FeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BCE2266112B0015EABC /* FeedLoader.swift */; };
 		F4BA2BD1226702E80015EABC /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BD0226702E80015EABC /* URLSessionHTTPClientTests.swift */; };
+		F4BA2BD32269C6970015EABC /* URLSessionHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BD22269C6970015EABC /* URLSessionHTTPClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		F4BA2BCB226605090015EABC /* HTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPClient.swift; sourceTree = "<group>"; };
 		F4BA2BCE2266112B0015EABC /* FeedLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoader.swift; sourceTree = "<group>"; };
 		F4BA2BD0226702E80015EABC /* URLSessionHTTPClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClientTests.swift; sourceTree = "<group>"; };
+		F4BA2BD22269C6970015EABC /* URLSessionHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionHTTPClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 				F4BA2BC9226603320015EABC /* FeedItemMapper.swift */,
 				F4632A822265A82000BAF4C8 /* FeedItem.swift */,
 				F4BA2BCB226605090015EABC /* HTTPClient.swift */,
+				F4BA2BD22269C6970015EABC /* URLSessionHTTPClient.swift */,
 				F4BA2BCE2266112B0015EABC /* FeedLoader.swift */,
 			);
 			path = "Feed API";
@@ -233,6 +236,7 @@
 				F4BA2BCF2266112B0015EABC /* FeedLoader.swift in Sources */,
 				F4632A832265A82000BAF4C8 /* FeedItem.swift in Sources */,
 				F4BA2BCA226603320015EABC /* FeedItemMapper.swift in Sources */,
+				F4BA2BD32269C6970015EABC /* URLSessionHTTPClient.swift in Sources */,
 				F4BA2BCC226605090015EABC /* HTTPClient.swift in Sources */,
 				F40FF160226475ED00359F40 /* ViewController.swift in Sources */,
 				F4632A7E226498DD00BAF4C8 /* RemoteFeedLoader.swift in Sources */,

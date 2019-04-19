@@ -10,28 +10,6 @@ import XCTest
 import EssentialDevelopper
 
 
-class URLSessionHTTPClient {
-    let session: URLSession
-    
-    init(session: URLSession = .shared) {
-        self.session = session
-    }
-    
-    struct UnexpectedRepresentationError: Error {}
-    
-    func load(url: URL, completion: @escaping (HTTPClientResult) -> Void) {
-        self.session.dataTask(with: url, completionHandler: { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-            } else if let data = data, let response = response as? HTTPURLResponse {
-                completion(.success(response, data))
-            } else {
-                completion(.failure(UnexpectedRepresentationError()))
-            }
-        }).resume()
-    }
-}
-
 class URLSessionHTTPClientTests: XCTestCase {
     
     override func setUp() {
@@ -57,7 +35,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             exp.fulfill()
         }
         
-        makeSUT().load(url: url) { _ in }
+        makeSUT().get(from: url) { _ in }
         
         wait(for: [exp], timeout: 1.0)
     }
@@ -141,7 +119,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let exp = expectation(description: "waiting for load to end with error")
         var receivedResult: HTTPClientResult!
         
-        makeSUT().load(url: anyURL()) { result in
+        makeSUT().get(from: anyURL()) { result in
             receivedResult = result
             exp.fulfill()
         }
@@ -151,7 +129,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         return receivedResult
     }
     
-    func makeSUT() -> URLSessionHTTPClient {
+    func makeSUT() -> HTTPClient {
         let sut = URLSessionHTTPClient()
         
         trackMemoryLeaks(sut)
