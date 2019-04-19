@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import EssentialDevelopper
+import EssentialDeveloperFramework
 
 
 class URLSessionHTTPClientTests: XCTestCase {

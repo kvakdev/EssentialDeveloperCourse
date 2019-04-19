@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F40FF159226475ED00359F40"
-               BuildableName = "EssentialDevelopper.app"
-               BlueprintName = "EssentialDevelopper"
+               BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
+               BuildableName = "EssentialDeveloperFramework.framework"
+               BlueprintName = "EssentialDeveloperFramework"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,19 +34,9 @@
             testExecutionOrdering = "random">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F40FF16B226475EF00359F40"
-               BuildableName = "EssentialDevelopperTests.xctest"
-               BlueprintName = "EssentialDevelopperTests"
-               ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F40FF176226475EF00359F40"
-               BuildableName = "EssentialDevelopperUITests.xctest"
-               BlueprintName = "EssentialDevelopperUITests"
+               BlueprintIdentifier = "F4BA2BEE2269E66F0015EABC"
+               BuildableName = "EssentialDeveloperFrameworkTests.xctest"
+               BlueprintName = "EssentialDeveloperFrameworkTests"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -54,9 +44,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F40FF159226475ED00359F40"
-            BuildableName = "EssentialDevelopper.app"
-            BlueprintName = "EssentialDevelopper"
+            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
+            BuildableName = "EssentialDeveloperFramework.framework"
+            BlueprintName = "EssentialDeveloperFramework"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -73,16 +63,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F40FF159226475ED00359F40"
-            BuildableName = "EssentialDevelopper.app"
-            BlueprintName = "EssentialDevelopper"
+            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
+            BuildableName = "EssentialDeveloperFramework.framework"
+            BlueprintName = "EssentialDeveloperFramework"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -92,16 +81,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F40FF159226475ED00359F40"
-            BuildableName = "EssentialDevelopper.app"
-            BlueprintName = "EssentialDevelopper"
+            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
+            BuildableName = "EssentialDeveloperFramework.framework"
+            BlueprintName = "EssentialDeveloperFramework"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
