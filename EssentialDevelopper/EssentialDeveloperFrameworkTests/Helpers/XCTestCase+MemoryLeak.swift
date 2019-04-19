@@ -6,10 +6,10 @@
 //  Copyright © 2019 Andre Kvashuk. All rights reserved.
 //
 
-import Foundation
+import XCTest
 
 
-extension XCTTestCase {
+extension XCTestCase {
     func trackMemoryLeaks(_ sut: AnyObject, file: StaticString = #file, line: UInt = #line) {
         addTeardownBlock { [weak sut] in
             XCTAssertNil(sut, "expected to be nil", file: file, line: line)

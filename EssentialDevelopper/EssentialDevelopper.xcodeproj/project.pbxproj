@@ -19,6 +19,7 @@
 		F4BA2C0D2269EE690015EABC /* FeedApiEndToEndTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2C0C2269EE690015EABC /* FeedApiEndToEndTests.swift */; };
 		F4BA2C0F2269EE690015EABC /* EssentialDeveloperFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BA2BE72269E66F0015EABC /* EssentialDeveloperFramework.framework */; };
 		F4BA2C172269FB600015EABC /* XCTestCase+MemoryLeak.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2C162269FB600015EABC /* XCTestCase+MemoryLeak.swift */; };
+		F4BA2C18226A05560015EABC /* XCTestCase+MemoryLeak.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2C162269FB600015EABC /* XCTestCase+MemoryLeak.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -352,6 +353,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4BA2C18226A05560015EABC /* XCTestCase+MemoryLeak.swift in Sources */,
 				F4BA2C0D2269EE690015EABC /* FeedApiEndToEndTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
