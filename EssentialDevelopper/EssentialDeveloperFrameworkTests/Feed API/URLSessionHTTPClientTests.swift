@@ -137,12 +137,6 @@ class URLSessionHTTPClientTests: XCTestCase {
         return sut
     }
     
-    func trackMemoryLeaks(_ sut: AnyObject, file: StaticString = #file, line: UInt = #line) {
-        addTeardownBlock { [weak sut] in
-            XCTAssertNil(sut, "expected to be nil", file: file, line: line)
-        }
-    }
-    
     func anyData() -> Data {
         return Data("any data".utf8)
     }
