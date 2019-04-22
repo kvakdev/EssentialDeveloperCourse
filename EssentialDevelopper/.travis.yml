@@ -2,4 +2,4 @@ os: osx
 osx_image: xcode10.1
 language: swift
 before_install: gem install bundler
-script: xcodebuild clean build test -project EssentialDevelopper.xcodeproj -scheme "CI" CODE_SIGN_IDENTITY="" CODE_SIGN_REQUIRED=NO
+script: xcodebuild clean build test -project EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme "CI" CODE_SIGN_IDENTITY="" CODE_SIGN_REQUIRED=NO
