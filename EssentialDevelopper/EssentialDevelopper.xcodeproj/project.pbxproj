@@ -179,9 +179,9 @@
 		F4BA2BF32269E66F0015EABC /* EssentialDeveloperFrameworkTests */ = {
 			isa = PBXGroup;
 			children = (
-				F44600842271C3F300D4A9BF /* CacheFeedUseCaseTests */,
 				F4BA2C152269FB430015EABC /* Helpers */,
 				F4BA2BCD22660D580015EABC /* Feed API */,
+				F44600842271C3F300D4A9BF /* CacheFeedUseCaseTests */,
 				F4BA2BF62269E66F0015EABC /* Info.plist */,
 			);
 			path = EssentialDeveloperFrameworkTests;
