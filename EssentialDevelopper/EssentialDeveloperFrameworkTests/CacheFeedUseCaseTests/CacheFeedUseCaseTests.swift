@@ -9,18 +9,6 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class FeedStore {
-    var items = [FeedItem]()
-    
-    func save(_ items: [FeedItem]) {
-        self.items = items
-    }
-    
-    func deleteCache() {
-        self.items = []
-    }
-}
-
 class LocalFeedLoader {
     private let store: FeedStore
     
@@ -29,12 +17,44 @@ class LocalFeedLoader {
     }
     
     func save(_ items: [FeedItem]) {
-        self.store.deleteCache()
         self.store.save(items)
     }
     
     func deleteCache() {
-        store.deleteCache()
+        store.deleteCache { error in }
+    }
+}
+
+class FeedStore {
+    typealias DeletionCallback = (Error?) -> Void
+    
+    var items = [FeedItem]()
+    
+    var deleteCallCount = 0
+    var insertCallCount = 0
+    
+    var deletionCompletions = [DeletionCallback]()
+
+    func save(_ items: [FeedItem]) {
+        self.deleteCache { [unowned self] error in
+            if error == nil {
+                self.insertCallCount += 1
+                self.items = items
+            }
+        }
+    }
+    
+    func deleteCache(completion: @escaping DeletionCallback) {
+        deleteCallCount += 1
+        deletionCompletions.append(completion)
+    }
+    
+    func completeDeletionWith(error: Error?, at index: Int = 0) {
+        self.deletionCompletions[index](error)
+    }
+    
+    func completeSuccesfully(at index: Int = 0) {
+        self.deletionCompletions[index](nil)
     }
 }
 
@@ -51,7 +71,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         sut.deleteCache()
         
-        XCTAssertTrue(store.items.isEmpty)
+        XCTAssertTrue(store.deleteCallCount == 1)
     }
     
     func test_save_savesTheCorrectItems() {
@@ -59,8 +79,11 @@ class CacheFeedUseCaseTests: XCTestCase {
         let items = [uniqueFeedItem(), uniqueFeedItem()]
         
         sut.save(items)
+        store.completeSuccesfully()
         
-        XCTAssertEqual(store.items, items)
+//        XCTAssertEqual(store.items, items)
+        XCTAssertEqual(store.deleteCallCount, 1)
+        XCTAssertEqual(store.insertCallCount, 1)
     }
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
