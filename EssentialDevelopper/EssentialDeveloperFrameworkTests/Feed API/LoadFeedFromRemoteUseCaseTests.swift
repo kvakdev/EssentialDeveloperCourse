@@ -9,7 +9,7 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class RemoteFeedLoaderTests: XCTestCase {
+class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     func test_init() {
         let (_, client) = makeSUT()
