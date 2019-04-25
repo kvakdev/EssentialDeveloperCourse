@@ -29,7 +29,7 @@ class LocalFeedLoader {
 
 class FeedStore {
     typealias DeletionCallback = (Error?) -> Void
-        
+    
     enum FeedStoreMessages: Equatable {
         case delete
         case insert([FeedItem], Date)
@@ -81,6 +81,16 @@ class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp)])
     }
     
+    func test_save_shouldFailOnDeletionError() {
+        let (store, sut) = makeSUT()
+        let items = [uniqueFeedItem(), uniqueFeedItem()]
+        
+        sut.save(items)
+        store.completeDeletionWith(error: anyNSError())
+        
+        XCTAssertEqual(store.receivedMessages, [.delete])
+    }
+    
     func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
         let store = FeedStore()
         let sut = LocalFeedLoader(store: store, timestamp: timestamp)
@@ -93,5 +103,9 @@ class CacheFeedUseCaseTests: XCTestCase {
     
     func uniqueFeedItem() -> FeedItem {
         return FeedItem(id: UUID(), imageUrl: URL(string: "http://any-url.com")!)
+    }
+    
+    func anyNSError() -> NSError {
+        return NSError(domain: "CacheFeedError", code: 1, userInfo: nil)
     }
 }
