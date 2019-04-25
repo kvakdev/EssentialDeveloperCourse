@@ -29,35 +29,28 @@ class LocalFeedLoader {
 
 class FeedStore {
     typealias DeletionCallback = (Error?) -> Void
-    
-    private var feedCache: FeedItemCache?
-    
-    var items: [FeedItem] {
-        return feedCache?.items ?? []
+        
+    enum FeedStoreMessages: Equatable {
+        case delete
+        case insert([FeedItem], Date)
     }
     
-    var timestamp: Date? {
-        return feedCache?.timestamp
-    }
+    var receivedMessages = [FeedStoreMessages]()
     
     private struct FeedItemCache {
         let items: [FeedItem]
         let timestamp: Date
     }
     
-    var deleteCallCount = 0
-    var insertCallCount = 0
-    
     var deletionCompletions = [DeletionCallback]()
 
     func save(_ items: [FeedItem], timestamp: Date) {
-        self.insertCallCount += 1
-        self.feedCache = FeedItemCache(items: items, timestamp: timestamp)
+        self.receivedMessages.append(.insert(items, timestamp))
     }
     
     func deleteCache(completion: @escaping DeletionCallback) {
-        deleteCallCount += 1
         deletionCompletions.append(completion)
+        receivedMessages.append(.delete)
     }
     
     func completeDeletionWith(error: Error?, at index: Int = 0) {
@@ -74,21 +67,10 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_init_doesNotDeleteCacheUponCacheCreation() {
         let (store, _) = makeSUT()
         
-        XCTAssertTrue(store.items.isEmpty)
+        XCTAssertEqual(store.receivedMessages, [])
     }
     
-    func test_save_callDeleteAndInsertOnSuccesfulDeletion() {
-        let (store, sut) = makeSUT()
-        let items = [uniqueFeedItem(), uniqueFeedItem()]
-        
-        sut.save(items)
-        store.completeSuccesfully()
-        
-        XCTAssertEqual(store.deleteCallCount, 1)
-        XCTAssertEqual(store.insertCallCount, 1)
-    }
-    
-    func test_save_savesTheCorrectItemsWithCorrectTimestamp() {
+    func test_save_callDeleteAndInsertOnSuccesfulDeletionWithCorrectTimeStamp() {
         let timestamp = Date()
         let (store, sut) = makeSUT(timestamp: { timestamp })
         let items = [uniqueFeedItem(), uniqueFeedItem()]
@@ -96,8 +78,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         sut.save(items)
         store.completeSuccesfully()
         
-        XCTAssertEqual(store.timestamp, timestamp)
-        XCTAssertEqual(store.items, items)
+        XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp)])
     }
     
     func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
