@@ -11,15 +11,15 @@ import EssentialDeveloperFramework
 
 class LocalFeedLoader {
     private let store: FeedStore
-    private let timestamp: Date
+    private let timestamp: () -> Date
     
-    init(store: FeedStore, timestamp: Date) {
+    init(store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
         self.timestamp = timestamp
     }
     
     func save(_ items: [FeedItem]) {
-        self.store.save(items, timestamp: timestamp)
+        self.store.save(items, timestamp: self.timestamp())
     }
     
     func deleteCache() {
@@ -102,7 +102,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     
     func test_save_savesTheCorrectItemsWithCorrectTimestamp() {
         let timestamp = Date()
-        let (store, sut) = makeSUT(timestamp: timestamp)
+        let (store, sut) = makeSUT(timestamp: { timestamp })
         let items = [uniqueFeedItem(), uniqueFeedItem()]
         
         sut.save(items)
@@ -112,7 +112,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(store.items, items)
     }
     
-    func makeSUT(timestamp: Date = Date(), file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
+    func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
         let store = FeedStore()
         let sut = LocalFeedLoader(store: store, timestamp: timestamp)
         
