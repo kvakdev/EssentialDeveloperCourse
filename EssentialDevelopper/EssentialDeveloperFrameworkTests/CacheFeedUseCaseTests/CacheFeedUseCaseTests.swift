@@ -10,7 +10,6 @@ import XCTest
 import EssentialDeveloperFramework
 
 class FeedStore {
-    var deletionCallCount = 0
     var items = [FeedItem]()
     
     func save(_ items: [FeedItem]) {
@@ -18,7 +17,7 @@ class FeedStore {
     }
     
     func deleteCache() {
-        deletionCallCount += 1
+        self.items = []
     }
 }
 
@@ -41,24 +40,22 @@ class LocalFeedLoader {
 class CacheFeedUseCaseTests: XCTestCase {
     
     func test_init_doesNotDeleteCacheUponCacheCreation() {
-        let store = FeedStore()
-        _ = LocalFeedLoader(store: store)
+        let (store, _) = makeSUT()
         
-        XCTAssertTrue(store.deletionCallCount == 0)
+        XCTAssertTrue(store.items.isEmpty)
     }
     
     func test_delete_incrementsDeletionCallCount() {
-        let store = FeedStore()
-        let sut = LocalFeedLoader(store: store)
+        let (store, sut) = makeSUT()
         
         sut.deleteCache()
         
-        XCTAssertTrue(store.deletionCallCount == 1)
+        XCTAssertTrue(store.items.isEmpty)
     }
     
     func test_save_savesTheCorrectItems() {
-        let store = FeedStore()
-        let sut = LocalFeedLoader(store: store)
+        let (store, sut) = makeSUT()
+        
         let item1 = uniqueFeedItem()
         let item2 = uniqueFeedItem()
         let items = [item1, item2]
@@ -66,6 +63,13 @@ class CacheFeedUseCaseTests: XCTestCase {
         sut.save(items)
         
         XCTAssertEqual(store.items, items)
+    }
+    
+    func makeSUT() -> (store: FeedStore, sut: LocalFeedLoader) {
+        let store = FeedStore()
+        let sut = LocalFeedLoader(store: store)
+        
+        return (store, sut)
     }
     
     func uniqueFeedItem() -> FeedItem {
