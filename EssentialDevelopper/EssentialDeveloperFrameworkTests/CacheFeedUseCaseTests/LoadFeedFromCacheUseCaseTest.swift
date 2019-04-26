@@ -52,8 +52,8 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
-        let store = FeedStore()
+    func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStoreSpy, sut: LocalFeedLoader) {
+        let store = FeedStoreSpy()
         let sut = LocalFeedLoader(store: store, timestamp: timestamp)
         
         trackMemoryLeaks(sut, file: file, line: line)

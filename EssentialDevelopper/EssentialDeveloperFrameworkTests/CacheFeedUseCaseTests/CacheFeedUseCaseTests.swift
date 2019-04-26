@@ -52,11 +52,17 @@ class LocalFeedLoader {
     
 }
 
-class FeedStore {
+protocol FeedStore {
     typealias DeletionCallback = (Error?) -> Void
     typealias InsertionCallback = (Error?) -> Void
     typealias RetrieveCallback = (LocalFeedLoader.Result) -> Void
     
+    func insert(_ items: [FeedItem], timestamp: Date, completion: @escaping InsertionCallback)
+    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void)
+    func deleteCache(completion: @escaping DeletionCallback)
+}
+
+class FeedStoreSpy: FeedStore {
     enum FeedStoreMessages: Equatable {
         case delete
         case insert([FeedItem], Date)
@@ -107,7 +113,6 @@ class FeedStore {
     func completeInsertionSuccessfully(at index: Int = 0) {
         self.insertionCompletions[index](nil)
     }
-
 }
 
 class CacheFeedUseCaseTests: XCTestCase {
@@ -210,8 +215,8 @@ class CacheFeedUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
-        let store = FeedStore()
+    func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStoreSpy, sut: LocalFeedLoader) {
+        let store = FeedStoreSpy()
         let sut = LocalFeedLoader(store: store, timestamp: timestamp)
         
         trackMemoryLeaks(sut, file: file, line: line)
