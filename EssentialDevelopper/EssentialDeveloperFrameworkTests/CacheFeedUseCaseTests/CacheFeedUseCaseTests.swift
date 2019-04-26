@@ -23,7 +23,7 @@ class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    func save(_ items: [FeedItem], completion: @escaping (Error?) -> Swift.Void = { _ in }) {
+    func save(_ items: [FeedItem], completion: @escaping (Error?) -> Swift.Void) {
         self.store.deleteCache { [unowned self] error in
             if error == nil {
                 self.store.save(items, timestamp: self.timestamp())
@@ -118,7 +118,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT(timestamp: { timestamp })
         let items = [uniqueFeedItem(), uniqueFeedItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         store.completeDeletionSuccessfully()
         
         XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp)])
@@ -127,11 +127,16 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_save_shouldFailOnDeletionError() {
         let (store, sut) = makeSUT()
         let items = [uniqueFeedItem(), uniqueFeedItem()]
+        var receivedError: NSError?
         
-        sut.save(items)
-        store.completeDeletionWith(error: anyNSError())
+        let error = anyNSError()
         
-        XCTAssertEqual(store.receivedMessages, [.delete])
+        sut.save(items) { error in
+            receivedError = error as NSError?
+        }
+        store.completeDeletionWith(error: error)
+        
+        XCTAssertEqual(receivedError, error)
     }
     
     func test_save_shouldReturnErrorOnDeletionError() {
@@ -171,6 +176,25 @@ class CacheFeedUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func exp(sut: LocalFeedLoader, toCompleteWith: LocalFeedLoader.Result, when action: () -> Void) {
+        let timestamp = Date()
+        let exp = expectation(description: "waiting for command to complete")
+        
+        sut.retrieveFeed() { result in
+            switch result {
+            case .success(let receivedItems, let receivedTimestamp):
+                XCTAssertEqual(receivedItems, [])
+                XCTAssertEqual(receivedTimestamp, timestamp)
+            case .failure:
+                XCTFail("expected success, got \(result) instead")
+            }
+            exp.fulfill()
+        }
+        action()
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     func test_retrieve_shouldReturnMostRecentItemsThatWereSaved() {
         let timestamp = Date()
         let (store, sut) = makeSUT(timestamp: { timestamp })
@@ -178,10 +202,10 @@ class CacheFeedUseCaseTests: XCTestCase {
         let items = [uniqueFeedItem(), uniqueFeedItem()]
         let items2 = [uniqueFeedItem(), uniqueFeedItem()]
         
-        sut.save(items)
+        sut.save(items) { _ in }
         store.completeDeletionSuccessfully()
         
-        sut.save(items2)
+        sut.save(items2) { _ in }
         store.completeDeletionSuccessfully(at: 1)
         
         sut.retrieveFeed() { [unowned store] result in
