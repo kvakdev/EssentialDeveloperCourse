@@ -24,9 +24,11 @@ class LocalFeedLoader {
     }
     
     func save(_ items: [FeedItem], completion: @escaping (Error?) -> Swift.Void) {
-        self.store.deleteCache { [unowned self] error in
+        self.store.deleteCache { [weak self] error in
+            guard self != nil else { return }
+            
             if error == nil {
-                self.store.insert(items, timestamp: self.timestamp(), completion: completion)
+                self!.store.insert(items, timestamp: self!.timestamp(), completion: completion)
             } else {
                 completion(error)
             }
@@ -139,55 +141,35 @@ class CacheFeedUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT()
         let insertionError = anyNSError()
         
-        expect(sut: sut, toCompleteWithError: insertionError) {
+        expect(sut: sut, toCompleteWithError: insertionError, when: {
             store.completeDeletionSuccessfully()
             store.completeInsertion(with: insertionError)
-        }
+        })
     }
     
     func test_save_shouldReturnErrorOnDeletionError() {
         let (store, sut) = makeSUT()
         let deletionError = anyNSError()
         
-        expect(sut: sut, toCompleteWithError: deletionError) {
+        expect(sut: sut, toCompleteWithError: deletionError, when: {
             store.completeDeletionWith(error: deletionError)
-        }
+        })
     }
     
     func test_save_shouldCompleteWithNoError() {
         let (store, sut) = makeSUT()
         
-        expect(sut: sut, toCompleteWithError: nil) {
+        expect(sut: sut, toCompleteWithError: nil, when: {
             store.completeDeletionSuccessfully()
             store.completeInsertionSuccessfully()
-        }
-    }
-
-    func test_retrieve_shouldReturnEmptyFeedIfNoFeedIsCached() {
-        let timestamp = Date()
-        let (store, sut) = makeSUT()
-        let exp = expectation(description: "waiting for retrieve")
-        
-        sut.retrieveFeed() { result in
-            switch result {
-            case .success(let receivedItems, let receivedTimestamp):
-                XCTAssertEqual(receivedItems, [])
-                XCTAssertEqual(receivedTimestamp, timestamp)
-            case .failure:
-                XCTFail("expected success, got \(result) instead")
-            }
-            exp.fulfill()
-        }
-        store.completeRetrieveSuccessfully(result: ([], date: timestamp))
-        
-        wait(for: [exp], timeout: 1.0)
+        })
     }
     
-    func expect(sut: LocalFeedLoader, toCompleteWithError expectedError: NSError?, when action: () -> Void) {
+    func expect(sut: LocalFeedLoader, toCompleteWithError expectedError: NSError?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "waiting for command to complete")
         
         sut.save([uniqueFeedItem()]) { error in
-            XCTAssertEqual(error as NSError?, expectedError)
+            XCTAssertEqual(error as NSError?, expectedError, file: file, line: line)
             
             exp.fulfill()
         }
@@ -196,23 +178,17 @@ class CacheFeedUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func test_retrieve_returnsAnErrorOnRetrievalError() {
-        let (store, sut) = makeSUT()
-        let exp = expectation(description: "waiting for retrieve")
-        let error = anyNSError()
+    func test_save_deliversNoErrorAfterSUT_isDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: { Date() })
+        var receivedErrors = [Error?]()
         
-        sut.retrieveFeed() { result in
-            switch result {
-            case .success:
-                XCTFail("expected failure, got \(result) instead")
-            default:
-                break
-            }
-            exp.fulfill()
-        }
-        store.completeRetrieval(with: error)
+        sut!.save([uniqueFeedItem()]) { receivedErrors.append($0) }
         
-        wait(for: [exp], timeout: 1.0)
+        sut = nil
+        store.completeDeletionWith(error: anyNSError())
+        
+        XCTAssertTrue(receivedErrors.isEmpty)
     }
     
     func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStoreSpy, sut: LocalFeedLoader) {
