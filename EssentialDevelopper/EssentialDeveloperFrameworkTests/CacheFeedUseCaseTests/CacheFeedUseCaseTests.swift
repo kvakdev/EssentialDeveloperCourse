@@ -184,11 +184,12 @@ class CacheFeedUseCaseTests: XCTestCase {
         sut.save(items2)
         store.completeDeletionSuccessfully(at: 1)
         
-        sut.retrieveFeed() { result in
+        sut.retrieveFeed() { [unowned store] result in
             switch result {
             case .success(let receivedItems, let receivedTimestamp):
                 XCTAssertEqual(receivedItems, items2)
                 XCTAssertEqual(receivedTimestamp, timestamp)
+                XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp), .delete, .insert(items2, timestamp), .retrieve])
             case .failure:
                 XCTFail("expected success, got \(result) instead")
             }
