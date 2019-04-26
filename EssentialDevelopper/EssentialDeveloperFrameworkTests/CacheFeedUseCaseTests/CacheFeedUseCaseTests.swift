@@ -9,84 +9,6 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class LocalFeedLoader {
-    private let store: FeedStore
-    private let timestamp: () -> Date
-    
-    typealias SaveResult = Error?
-    
-    enum Result {
-        case success([FeedItem], Date)
-        case failure(Error)
-    }
-    
-    init(store: FeedStore, timestamp: @escaping () -> Date) {
-        self.store = store
-        self.timestamp = timestamp
-    }
-    
-    func save(_ items: [FeedItem], completion: @escaping (SaveResult) -> Swift.Void) {
-        self.store.deleteCache { [weak self] error in
-            guard let self = self else { return }
-            
-            if let error = error {
-                completion(error)
-            } else {
-                self.cache(items: items.toLocal(), completion: completion)
-            }
-        }
-    }
-    
-    private func cache(items: [LocalFeedItem], completion: @escaping (SaveResult) -> Void) {
-        store.insert(items, timestamp: timestamp()) { [weak self] err in
-            guard self != nil else { return }
-            
-            completion(err)
-        }
-    }
-    
-    func retrieveFeed(completion: @escaping (Result) -> Swift.Void) {
-        self.store.retrieve() { [unowned self] result in
-            switch result {
-            case .failure:
-                completion(result)
-            case .success(let feedItems, let timestamp):
-                if self.isValidTimestamp(timestamp) {
-                    completion(.success(feedItems, timestamp))
-                }
-            }
-        }
-    }
-    
-    func isValidTimestamp(_ timestamp: Date) -> Bool {
-        return timestamp.addingTimeInterval(7*24*60*60) > Date()
-    }
-    
-}
-
-protocol FeedStore {
-    typealias DeletionCallback = (Error?) -> Void
-    typealias InsertionCallback = (Error?) -> Void
-    typealias RetrieveCallback = (LocalFeedLoader.Result) -> Void
-    
-    func insert(_ items: [LocalFeedItem], timestamp: Date, completion: @escaping InsertionCallback)
-    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void)
-    func deleteCache(completion: @escaping DeletionCallback)
-}
-
-struct LocalFeedItem: Equatable {
-    public let id: UUID
-    public let description: String?
-    public let location: String?
-    public let imageURL: URL
-    
-    public init(id: UUID, description: String? = nil, location: String? = nil, imageUrl: URL) {
-        self.id = id
-        self.description = description
-        self.imageURL = imageUrl
-        self.location = location
-    }
-}
 
 class FeedStoreSpy: FeedStore {
     enum FeedStoreMessages: Equatable {
@@ -239,10 +161,4 @@ class CacheFeedUseCaseTests: XCTestCase {
         return (store, sut)
     }
     
-}
-
-extension Array where Element == FeedItem {
-    func toLocal() -> [LocalFeedItem] {
-        return map { LocalFeedItem(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.imageURL) }
-    }
 }

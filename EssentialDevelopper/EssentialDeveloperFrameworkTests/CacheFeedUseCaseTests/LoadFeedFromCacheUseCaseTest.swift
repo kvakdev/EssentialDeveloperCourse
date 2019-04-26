@@ -7,6 +7,7 @@
 //
 
 import XCTest
+import EssentialDeveloperFramework
 
 class LoadFeedFromCacheUseCaseTest: XCTestCase {
 
