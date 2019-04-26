@@ -13,6 +13,11 @@ class LocalFeedLoader {
     private let store: FeedStore
     private let timestamp: () -> Date
     
+    enum Result {
+        case success([FeedItem], Date)
+        case failure(Error)
+    }
+    
     init(store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
         self.timestamp = timestamp
@@ -26,14 +31,34 @@ class LocalFeedLoader {
             completion(error)
         }
     }
+    
+    func retrieveFeed(completion: @escaping (Result) -> Swift.Void) {
+        self.store.retrieve() { [unowned self] result in
+            switch result {
+            case .failure:
+                completion(result)
+            case .success(let feedItems, let timestamp):
+                if self.isValidTimestamp(timestamp) {
+                    completion(.success(feedItems, timestamp))
+                }
+            }
+        }
+    }
+    
+    func isValidTimestamp(_ timestamp: Date) -> Bool {
+        return timestamp.addingTimeInterval(7*24*60*60) > Date()
+    }
+    
 }
 
 class FeedStore {
     typealias DeletionCallback = (Error?) -> Void
+    typealias RetrieveCallback = (LocalFeedLoader.Result) -> Void
     
     enum FeedStoreMessages: Equatable {
         case delete
         case insert([FeedItem], Date)
+        case retrieve
     }
     
     var receivedMessages = [FeedStoreMessages]()
@@ -44,7 +69,9 @@ class FeedStore {
     }
     
     var deletionCompletions = [DeletionCallback]()
-
+    var retrieveCompletions = [RetrieveCallback]()
+    
+    
     func save(_ items: [FeedItem], timestamp: Date) {
         self.receivedMessages.append(.insert(items, timestamp))
     }
@@ -60,6 +87,15 @@ class FeedStore {
     
     func completeSuccesfully(at index: Int = 0) {
         self.deletionCompletions[index](nil)
+    }
+    
+    func completeRetrieveSuccessfully(at index: Int = 0, date: Date = Date()) {
+        self.retrieveCompletions[index](.success([], date))
+    }
+    
+    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void) {
+        self.receivedMessages.append(.retrieve)
+        self.retrieveCompletions.append(completion)
     }
 }
 
@@ -109,6 +145,25 @@ class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedError as NSError?, deletionError)
     }
 
+    func test_retrieve_shouldReturnEmptyFeedIfNoFeedIsCached() {
+        let timestamp = Date()
+        let (store, sut) = makeSUT()
+        let exp = expectation(description: "waiting for retrieve")
+        
+        sut.retrieveFeed() { result in
+            switch result {
+            case .success(let receivedItems, let receivedTimestamp):
+                XCTAssertEqual(receivedItems, [])
+                XCTAssertEqual(receivedTimestamp, timestamp)
+            case .failure:
+                XCTFail("expected success, got \(result) instead")
+            }
+            exp.fulfill()
+        }
+        store.completeRetrieveSuccessfully(date: timestamp)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
     
     func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
         let store = FeedStore()
