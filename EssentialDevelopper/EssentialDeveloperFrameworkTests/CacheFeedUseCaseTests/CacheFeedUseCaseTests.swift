@@ -32,12 +32,12 @@ class LocalFeedLoader {
             if let error = error {
                 completion(error)
             } else {
-                self.cache(items: items, completion: completion)
+                self.cache(items: items.toLocal(), completion: completion)
             }
         }
     }
     
-    private func cache(items: [FeedItem], completion: @escaping (SaveResult) -> Void) {
+    private func cache(items: [LocalFeedItem], completion: @escaping (SaveResult) -> Void) {
         store.insert(items, timestamp: timestamp()) { [weak self] err in
             guard self != nil else { return }
             
@@ -69,25 +69,39 @@ protocol FeedStore {
     typealias InsertionCallback = (Error?) -> Void
     typealias RetrieveCallback = (LocalFeedLoader.Result) -> Void
     
-    func insert(_ items: [FeedItem], timestamp: Date, completion: @escaping InsertionCallback)
+    func insert(_ items: [LocalFeedItem], timestamp: Date, completion: @escaping InsertionCallback)
     func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void)
     func deleteCache(completion: @escaping DeletionCallback)
+}
+
+struct LocalFeedItem: Equatable {
+    public let id: UUID
+    public let description: String?
+    public let location: String?
+    public let imageURL: URL
+    
+    public init(id: UUID, description: String? = nil, location: String? = nil, imageUrl: URL) {
+        self.id = id
+        self.description = description
+        self.imageURL = imageUrl
+        self.location = location
+    }
 }
 
 class FeedStoreSpy: FeedStore {
     enum FeedStoreMessages: Equatable {
         case delete
-        case insert([FeedItem], Date)
+        case insert([LocalFeedItem], Date)
         case retrieve
     }
-    
+
     var receivedMessages = [FeedStoreMessages]()
     
     var deletionCompletions = [DeletionCallback]()
     var retrieveCompletions = [RetrieveCallback]()
     var insertionCompletions = [InsertionCallback]()
     
-    func insert(_ items: [FeedItem], timestamp: Date, completion: @escaping InsertionCallback) {
+    func insert(_ items: [LocalFeedItem], timestamp: Date, completion: @escaping InsertionCallback) {
         self.receivedMessages.append(.insert(items, timestamp))
         self.insertionCompletions.append(completion)
     }
@@ -138,13 +152,13 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_save_callDeleteAndInsertOnSuccesfulDeletionWithCorrectTimeStamp() {
         let timestamp = Date()
         let (store, sut) = makeSUT(timestamp: { timestamp })
-        let items = [uniqueFeedItem(), uniqueFeedItem()]
+        let items = uniqueFeedItems()
         
-        sut.save(items) { _ in }
+        sut.save(items.models) { _ in }
         store.completeDeletionSuccessfully()
         store.completeInsertionSuccessfully()
         
-        XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp)])
+        XCTAssertEqual(store.receivedMessages, [.delete, .insert(items.local, timestamp)])
     }
     
     func test_save_shouldFailOnInsertionError() {
@@ -178,7 +192,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     func expect(sut: LocalFeedLoader, toCompleteWithError expectedError: NSError?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "waiting for command to complete")
         
-        sut.save([uniqueFeedItem()]) { error in
+        sut.save(uniqueFeedItems().models) { error in
             XCTAssertEqual(error as NSError?, expectedError, file: file, line: line)
             
             exp.fulfill()
@@ -193,7 +207,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: { Date() })
         var receivedErrors = [LocalFeedLoader.SaveResult]()
         
-        sut!.save([uniqueFeedItem()]) { receivedErrors.append($0) }
+        sut!.save(uniqueFeedItems().models) { receivedErrors.append($0) }
         
         sut = nil
         store.completeDeletionWith(error: anyNSError())
@@ -206,7 +220,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: { Date() })
         var receivedErrors = [Error?]()
         
-        sut!.save([uniqueFeedItem()]) { receivedErrors.append($0) }
+        sut!.save(uniqueFeedItems().models) { receivedErrors.append($0) }
         
         store.completeDeletionSuccessfully()
         sut = nil
@@ -225,4 +239,10 @@ class CacheFeedUseCaseTests: XCTestCase {
         return (store, sut)
     }
     
+}
+
+extension Array where Element == FeedItem {
+    func toLocal() -> [LocalFeedItem] {
+        return map { LocalFeedItem(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.imageURL) }
+    }
 }
