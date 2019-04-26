@@ -13,6 +13,8 @@ class LocalFeedLoader {
     private let store: FeedStore
     private let timestamp: () -> Date
     
+    typealias SaveResult = Error?
+    
     enum Result {
         case success([FeedItem], Date)
         case failure(Error)
@@ -23,7 +25,7 @@ class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    func save(_ items: [FeedItem], completion: @escaping (Error?) -> Swift.Void) {
+    func save(_ items: [FeedItem], completion: @escaping (SaveResult) -> Swift.Void) {
         self.store.deleteCache { [weak self] error in
             guard let self = self else { return }
             
@@ -35,7 +37,7 @@ class LocalFeedLoader {
         }
     }
     
-    private func cache(items: [FeedItem], completion: @escaping (Error?) -> Void) {
+    private func cache(items: [FeedItem], completion: @escaping (SaveResult) -> Void) {
         store.insert(items, timestamp: timestamp()) { [weak self] err in
             guard self != nil else { return }
             
@@ -189,7 +191,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_save_deliversNoDeletionErrorAfterSUT_isDeallocated() {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: { Date() })
-        var receivedErrors = [Error?]()
+        var receivedErrors = [LocalFeedLoader.SaveResult]()
         
         sut!.save([uniqueFeedItem()]) { receivedErrors.append($0) }
         
