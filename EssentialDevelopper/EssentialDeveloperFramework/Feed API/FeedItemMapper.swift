@@ -25,17 +25,3 @@ internal final class FeedItemMapper {
 private class Root: Decodable {
     let items: [RemoteFeedItem]
 }
-
-internal struct RemoteFeedItem: Decodable, Equatable {
-    internal let id: UUID
-    internal let description: String?
-    internal let location: String?
-    internal let image: URL
-    
-    public init(id: UUID, description: String? = nil, location: String? = nil, imageUrl: URL) {
-        self.id = id
-        self.description = description
-        self.image = imageUrl
-        self.location = location
-    }
-}
