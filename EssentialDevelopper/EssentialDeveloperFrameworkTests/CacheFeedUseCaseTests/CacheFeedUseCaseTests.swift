@@ -220,11 +220,4 @@ class CacheFeedUseCaseTests: XCTestCase {
         return (store, sut)
     }
     
-    func uniqueFeedItem() -> FeedItem {
-        return FeedItem(id: UUID(), imageUrl: URL(string: "http://any-url.com")!)
-    }
-    
-    func anyNSError() -> NSError {
-        return NSError(domain: "CacheFeedError", code: 1, userInfo: nil)
-    }
 }
