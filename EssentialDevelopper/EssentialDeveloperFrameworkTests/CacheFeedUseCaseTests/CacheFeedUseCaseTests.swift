@@ -95,6 +95,10 @@ class FeedStore {
         self.retrieveCompletions[index](.success(cachedFeed?.items ?? [], cachedFeed?.timestamp ?? date))
     }
     
+    func completeRetrieval(at index: Int = 0, with error: Error) {
+        self.retrieveCompletions[index](.failure(error))
+    }
+    
     func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void) {
         self.receivedMessages.append(.retrieve)
         self.retrieveCompletions.append(completion)
@@ -191,6 +195,25 @@ class CacheFeedUseCaseTests: XCTestCase {
             exp.fulfill()
         }
         store.completeRetrieveSuccessfully(date: timestamp)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_retrieve_returnsAnErrorOnRetrievalError() {
+        let (store, sut) = makeSUT()
+        let exp = expectation(description: "waiting for retrieve")
+        let error = anyNSError()
+        
+        sut.retrieveFeed() { result in
+            switch result {
+            case .success:
+                XCTFail("expected failure, got \(result) instead")
+            default:
+                break
+            }
+            exp.fulfill()
+        }
+        store.completeRetrieval(with: error)
         
         wait(for: [exp], timeout: 1.0)
     }
