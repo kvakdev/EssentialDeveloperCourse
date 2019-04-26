@@ -71,8 +71,10 @@ class FeedStore {
     var deletionCompletions = [DeletionCallback]()
     var retrieveCompletions = [RetrieveCallback]()
     
+    private var cachedFeed: FeedItemCache?
     
     func save(_ items: [FeedItem], timestamp: Date) {
+        self.cachedFeed = FeedItemCache(items: items, timestamp: timestamp)
         self.receivedMessages.append(.insert(items, timestamp))
     }
     
@@ -85,12 +87,12 @@ class FeedStore {
         self.deletionCompletions[index](error)
     }
     
-    func completeSuccesfully(at index: Int = 0) {
+    func completeDeletionSuccessfully(at index: Int = 0) {
         self.deletionCompletions[index](nil)
     }
     
     func completeRetrieveSuccessfully(at index: Int = 0, date: Date = Date()) {
-        self.retrieveCompletions[index](.success([], date))
+        self.retrieveCompletions[index](.success(cachedFeed?.items ?? [], cachedFeed?.timestamp ?? date))
     }
     
     func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void) {
@@ -113,7 +115,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let items = [uniqueFeedItem(), uniqueFeedItem()]
         
         sut.save(items)
-        store.completeSuccesfully()
+        store.completeDeletionSuccessfully()
         
         XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp)])
     }
@@ -154,6 +156,34 @@ class CacheFeedUseCaseTests: XCTestCase {
             switch result {
             case .success(let receivedItems, let receivedTimestamp):
                 XCTAssertEqual(receivedItems, [])
+                XCTAssertEqual(receivedTimestamp, timestamp)
+            case .failure:
+                XCTFail("expected success, got \(result) instead")
+            }
+            exp.fulfill()
+        }
+        store.completeRetrieveSuccessfully(date: timestamp)
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_retrieve_shouldReturnMostRecentItemsThatWereSaved() {
+        let timestamp = Date()
+        let (store, sut) = makeSUT(timestamp: { timestamp })
+        let exp = expectation(description: "waiting for retrieve")
+        let items = [uniqueFeedItem(), uniqueFeedItem()]
+        let items2 = [uniqueFeedItem(), uniqueFeedItem()]
+        
+        sut.save(items)
+        store.completeDeletionSuccessfully()
+        
+        sut.save(items2)
+        store.completeDeletionSuccessfully(at: 1)
+        
+        sut.retrieveFeed() { result in
+            switch result {
+            case .success(let receivedItems, let receivedTimestamp):
+                XCTAssertEqual(receivedItems, items2)
                 XCTAssertEqual(receivedTimestamp, timestamp)
             case .failure:
                 XCTFail("expected success, got \(result) instead")
