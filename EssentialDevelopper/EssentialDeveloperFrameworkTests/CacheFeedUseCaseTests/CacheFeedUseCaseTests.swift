@@ -18,11 +18,12 @@ class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    func save(_ items: [FeedItem]) {
+    func save(_ items: [FeedItem], completion: @escaping (Error?) -> Swift.Void = { _ in }) {
         self.store.deleteCache { [unowned self] error in
             if error == nil {
                 self.store.save(items, timestamp: self.timestamp())
             }
+            completion(error)
         }
     }
 }
@@ -90,6 +91,24 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         XCTAssertEqual(store.receivedMessages, [.delete])
     }
+    
+    func test_save_shouldReturnErrorOnDeletionError() {
+        let (store, sut) = makeSUT()
+        let items = [uniqueFeedItem(), uniqueFeedItem()]
+        let deletionError = anyNSError()
+        var receivedError: Error?
+        let exp = expectation(description: "Wait for the save command to complete")
+        
+        sut.save(items) { err in
+            receivedError = err
+            exp.fulfill()
+        }
+        store.completeDeletionWith(error: deletionError)
+        
+        wait(for: [exp], timeout: 1.0)
+        XCTAssertEqual(receivedError as NSError?, deletionError)
+    }
+
     
     func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStore, sut: LocalFeedLoader) {
         let store = FeedStore()
