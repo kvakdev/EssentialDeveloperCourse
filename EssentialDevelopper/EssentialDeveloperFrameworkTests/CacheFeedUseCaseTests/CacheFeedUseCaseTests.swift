@@ -65,21 +65,18 @@ class FeedStore {
     
     var receivedMessages = [FeedStoreMessages]()
     
-    private struct FeedItemCache {
-        let items: [FeedItem]
-        let timestamp: Date
-    }
-    
     var deletionCompletions = [DeletionCallback]()
     var retrieveCompletions = [RetrieveCallback]()
     var insertionCompletions = [InsertionCallback]()
     
-    private var cachedFeed: FeedItemCache?
-    
     func insert(_ items: [FeedItem], timestamp: Date, completion: @escaping InsertionCallback) {
-        self.cachedFeed = FeedItemCache(items: items, timestamp: timestamp)
         self.receivedMessages.append(.insert(items, timestamp))
         self.insertionCompletions.append(completion)
+    }
+    
+    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void) {
+        self.receivedMessages.append(.retrieve)
+        self.retrieveCompletions.append(completion)
     }
     
     func deleteCache(completion: @escaping DeletionCallback) {
@@ -95,8 +92,8 @@ class FeedStore {
         self.deletionCompletions[index](nil)
     }
     
-    func completeRetrieveSuccessfully(at index: Int = 0, date: Date = Date()) {
-        self.retrieveCompletions[index](.success(cachedFeed?.items ?? [], cachedFeed?.timestamp ?? date))
+    func completeRetrieveSuccessfully(at index: Int = 0, result: (items: [FeedItem], date: Date)) {
+        self.retrieveCompletions[index](.success(result.items, result.date))
     }
     
     func completeRetrieval(at index: Int = 0, with error: Error) {
@@ -110,11 +107,7 @@ class FeedStore {
     func completeInsertionSuccessfully(at index: Int = 0) {
         self.insertionCompletions[index](nil)
     }
-    
-    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void) {
-        self.receivedMessages.append(.retrieve)
-        self.retrieveCompletions.append(completion)
-    }
+
 }
 
 class CacheFeedUseCaseTests: XCTestCase {
@@ -180,7 +173,7 @@ class CacheFeedUseCaseTests: XCTestCase {
             }
             exp.fulfill()
         }
-        store.completeRetrieveSuccessfully(date: timestamp)
+        store.completeRetrieveSuccessfully(result: ([], date: timestamp))
         
         wait(for: [exp], timeout: 1.0)
     }
@@ -194,35 +187,6 @@ class CacheFeedUseCaseTests: XCTestCase {
             exp.fulfill()
         }
         action()
-        
-        wait(for: [exp], timeout: 1.0)
-    }
-    
-    func test_retrieve_shouldReturnMostRecentItemsThatWereSaved() {
-        let timestamp = Date()
-        let (store, sut) = makeSUT(timestamp: { timestamp })
-        let exp = expectation(description: "waiting for retrieve")
-        let items = [uniqueFeedItem(), uniqueFeedItem()]
-        let items2 = [uniqueFeedItem(), uniqueFeedItem()]
-        
-        sut.save(items) { _ in }
-        store.completeDeletionSuccessfully()
-        
-        sut.save(items2) { _ in }
-        store.completeDeletionSuccessfully(at: 1)
-        
-        sut.retrieveFeed() { [unowned store] result in
-            switch result {
-            case .success(let receivedItems, let receivedTimestamp):
-                XCTAssertEqual(receivedItems, items2)
-                XCTAssertEqual(receivedTimestamp, timestamp)
-                XCTAssertEqual(store.receivedMessages, [.delete, .insert(items, timestamp), .delete, .insert(items2, timestamp), .retrieve])
-            case .failure:
-                XCTFail("expected success, got \(result) instead")
-            }
-            exp.fulfill()
-        }
-        store.completeRetrieveSuccessfully(date: timestamp)
         
         wait(for: [exp], timeout: 1.0)
     }
