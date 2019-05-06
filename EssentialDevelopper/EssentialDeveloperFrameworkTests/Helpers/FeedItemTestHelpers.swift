@@ -9,11 +9,11 @@
 import Foundation
 import  EssentialDeveloperFramework
 
-func uniqueFeedItem() -> FeedItem {
-    return FeedItem(id: UUID(), imageUrl: URL(string: "http://any-url.com")!)
+func uniqueFeedItem() -> FeedImage {
+    return FeedImage(id: UUID(), imageUrl: URL(string: "http://any-url.com")!)
 }
 
-func uniqueFeedItems() -> (models: [FeedItem], local: [LocalFeedItem]) {
+func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
     let array = [uniqueFeedItem()]
     
     return (array, array.toLocal())

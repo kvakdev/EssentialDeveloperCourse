@@ -13,7 +13,7 @@ import EssentialDeveloperFramework
 class FeedStoreSpy: FeedStore {
     enum FeedStoreMessages: Equatable {
         case delete
-        case insert([LocalFeedItem], Date)
+        case insert([LocalFeedImage], Date)
         case retrieve
     }
 
@@ -23,7 +23,7 @@ class FeedStoreSpy: FeedStore {
     var retrieveCompletions = [RetrieveCallback]()
     var insertionCompletions = [InsertionCallback]()
     
-    func insert(_ items: [LocalFeedItem], timestamp: Date, completion: @escaping InsertionCallback) {
+    func insert(_ items: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCallback) {
         self.receivedMessages.append(.insert(items, timestamp))
         self.insertionCompletions.append(completion)
     }
@@ -46,7 +46,7 @@ class FeedStoreSpy: FeedStore {
         self.deletionCompletions[index](nil)
     }
     
-    func completeRetrieveSuccessfully(at index: Int = 0, result: (items: [FeedItem], date: Date)) {
+    func completeRetrieveSuccessfully(at index: Int = 0, result: (items: [FeedImage], date: Date)) {
         self.retrieveCompletions[index](.success(result.items, result.date))
     }
     
@@ -74,7 +74,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_save_callDeleteAndInsertOnSuccesfulDeletionWithCorrectTimeStamp() {
         let timestamp = Date()
         let (store, sut) = makeSUT(timestamp: { timestamp })
-        let items = uniqueFeedItems()
+        let items = uniqueImageFeed()
         
         sut.save(items.models) { _ in }
         store.completeDeletionSuccessfully()
@@ -114,7 +114,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     func expect(sut: LocalFeedLoader, toCompleteWithError expectedError: NSError?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "waiting for command to complete")
         
-        sut.save(uniqueFeedItems().models) { error in
+        sut.save(uniqueImageFeed().models) { error in
             XCTAssertEqual(error as NSError?, expectedError, file: file, line: line)
             
             exp.fulfill()
@@ -129,7 +129,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: { Date() })
         var receivedErrors = [LocalFeedLoader.SaveResult]()
         
-        sut!.save(uniqueFeedItems().models) { receivedErrors.append($0) }
+        sut!.save(uniqueImageFeed().models) { receivedErrors.append($0) }
         
         sut = nil
         store.completeDeletionWith(error: anyNSError())
@@ -142,7 +142,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         var sut: LocalFeedLoader? = LocalFeedLoader(store: store, timestamp: { Date() })
         var receivedErrors = [Error?]()
         
-        sut!.save(uniqueFeedItems().models) { receivedErrors.append($0) }
+        sut!.save(uniqueImageFeed().models) { receivedErrors.append($0) }
         
         store.completeDeletionSuccessfully()
         sut = nil

@@ -14,7 +14,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
     func test_retrieve_shouldReturnSuccessfulResultWithRetrievedItems() {
         let timestamp = Date()
         let (store, sut) = makeSUT(timestamp: { timestamp })
-        let items = uniqueFeedItems()
+        let items = uniqueImageFeed()
        
         expect(sut: sut, toCompleteWith: .success(items.models, timestamp)) {
             store.completeRetrieveSuccessfully(result: (items.models, timestamp))
@@ -35,8 +35,8 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         
         sut.retrieveFeed { result in
             switch (result, expectedResult) {
-                case let (.success(items, timestamp), .success(expectedItems, expectedTimestamp)):
-                    XCTAssertEqual(items, expectedItems)
+                case let (.success(imageFeed, timestamp), .success(expectedImageFeed, expectedTimestamp)):
+                    XCTAssertEqual(imageFeed, expectedImageFeed)
                     XCTAssertEqual(timestamp, expectedTimestamp)
                 
                 case let (.failure(error as NSError), .failure(expectedError as NSError)):

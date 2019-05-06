@@ -15,7 +15,7 @@ public final class LocalFeedLoader {
     public typealias SaveResult = Error?
     
     public enum Result {
-        case success([FeedItem], Date)
+        case success([FeedImage], Date)
         case failure(Error)
     }
     
@@ -24,20 +24,20 @@ public final class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    public func save(_ items: [FeedItem], completion: @escaping (SaveResult) -> Swift.Void) {
+    public func save(_ feed: [FeedImage], completion: @escaping (SaveResult) -> Swift.Void) {
         self.store.deleteCache { [weak self] error in
             guard let self = self else { return }
             
             if let error = error {
                 completion(error)
             } else {
-                self.cache(items: items.toLocal(), completion: completion)
+                self.cache(feed: feed.toLocal(), completion: completion)
             }
         }
     }
     
-    private func cache(items: [LocalFeedItem], completion: @escaping (SaveResult) -> Void) {
-        store.insert(items, timestamp: timestamp()) { [weak self] err in
+    private func cache(feed: [LocalFeedImage], completion: @escaping (SaveResult) -> Void) {
+        store.insert(feed, timestamp: timestamp()) { [weak self] err in
             guard self != nil else { return }
             
             completion(err)
@@ -49,9 +49,9 @@ public final class LocalFeedLoader {
             switch result {
             case .failure:
                 completion(result)
-            case .success(let feedItems, let timestamp):
+            case .success(let feed, let timestamp):
                 if self.isValidTimestamp(timestamp) {
-                    completion(.success(feedItems, timestamp))
+                    completion(.success(feed, timestamp))
                 }
             }
         }
@@ -63,8 +63,8 @@ public final class LocalFeedLoader {
     
 }
 
-public extension Array where Element == FeedItem {
-    func toLocal() -> [LocalFeedItem] {
-        return map { LocalFeedItem(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.imageURL) }
+public extension Array where Element == FeedImage {
+    func toLocal() -> [LocalFeedImage] {
+        return map { LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.imageURL) }
     }
 }

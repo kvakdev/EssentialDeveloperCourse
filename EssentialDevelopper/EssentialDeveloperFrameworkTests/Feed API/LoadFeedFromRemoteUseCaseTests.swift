@@ -126,7 +126,7 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func success(_ items: [FeedItem]) -> RemoteFeedLoader.Result {
+    func success(_ items: [FeedImage]) -> RemoteFeedLoader.Result {
         return RemoteFeedLoader.Result.success(items)
     }
     
@@ -144,15 +144,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         return (sut, client)
     }
     
-    func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedItem, json: [String: Any]) {
-        let feedItem = FeedItem(id: id, description: description, location: location, imageUrl: image)
+    func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedImage, json: [String: Any]) {
+        let feedItem = FeedImage(id: id, description: description, location: location, imageUrl: image)
         
         let json = dictFrom(item: feedItem)
         
         return (feedItem, json)
     }
     
-    private func dictFrom(item: FeedItem) -> [String: Any] {
+    private func dictFrom(item: FeedImage) -> [String: Any] {
         
         return [
             "id"            : item.id.uuidString,
