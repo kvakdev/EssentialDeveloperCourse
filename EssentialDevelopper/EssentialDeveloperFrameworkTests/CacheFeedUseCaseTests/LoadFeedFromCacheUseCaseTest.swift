@@ -30,6 +30,36 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
+    func test_retrieve_returnsNoResultsOnEmptyCache() {
+        let (store, sut) = makeSUT()
+        let date = Date()
+        
+        expect(sut: sut, toCompleteWith: .success([], date)) {
+            store.completeRetrieveSuccessfully(result: ([], date))
+        }
+    }
+    
+    func test_retrieve_returnsEmptyFeedOnExpiredCacheAndSuccessfullDeletion() {
+        let timestamp = Date().addingDays(-7).addingSeconds(-1)
+        let (store, sut) = makeSUT(timestamp: { timestamp })
+        let feed = uniqueImageFeed().models
+        
+        expect(sut: sut, toCompleteWith: .success([], timestamp)) {
+            store.completeRetrieveSuccessfully(result: (feed, timestamp))
+            store.completeDeletionSuccessfully()
+        }
+    }
+    
+    func test_retrieve_returnsFeedOnValidCacheTimestamp() {
+        let timestamp = Date().addingDays(-7).addingSeconds(1)
+        let (store, sut) = makeSUT()
+        let feed = uniqueImageFeed().models
+        
+        expect(sut: sut, toCompleteWith: .success(feed, timestamp)) {
+            store.completeRetrieveSuccessfully(result: (feed, timestamp))
+        }
+    }
+    
     func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, when action: () -> Void) {
         let exp = expectation(description: "waiting for retrieve to complete")
         
@@ -61,5 +91,15 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         trackMemoryLeaks(store, file: file, line: line)
         
         return (store, sut)
+    }
+}
+
+fileprivate extension Date {
+    func addingDays(_ amount: Int) -> Date {
+        return Calendar.current.date(byAdding: DateComponents(day: amount), to: self)!
+    }
+    
+    func addingSeconds(_ amount: Int) -> Date {
+        return Calendar.current.date(byAdding: DateComponents(second: amount), to: self)!
     }
 }

@@ -45,20 +45,34 @@ public final class LocalFeedLoader {
     }
     
     public func retrieveFeed(completion: @escaping (Result) -> Swift.Void) {
-        self.store.retrieve() { [unowned self] result in
+        self.store.retrieve() { [weak self] result in
+            guard let self = self else { return }
+            
             switch result {
             case .failure:
                 completion(result)
             case .success(let feed, let timestamp):
                 if self.isValidTimestamp(timestamp) {
                     completion(.success(feed, timestamp))
+                } else {
+                    self.store.deleteCache(completion: { error in
+                        if let error = error {
+                            completion(.failure(error))
+                        } else {
+                            completion(.success([], timestamp))
+                        }
+                    })
                 }
             }
         }
     }
     
     private func isValidTimestamp(_ timestamp: Date) -> Bool {
-        return timestamp.addingTimeInterval(7*24*60*60) > Date()
+        let calendar = Calendar.current
+        
+        let expirationDate = calendar.date(byAdding: DateComponents(day: 7), to: timestamp)!
+        
+        return expirationDate >= Date()
     }
     
 }
