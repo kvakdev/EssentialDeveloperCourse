@@ -51,13 +51,22 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func test_load_SUT_receivesDeleteMessageOnRetrievalError() {
+    func test_load_deletesCacheOnRetrievalError() {
         let (store, sut) = makeSUT()
         
-        sut.load({ _ in })
+        sut.load { _ in }
         store.completeRetrieval(with: anyNSError())
         
         XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
+    }
+    
+    func test_load_doesNotDeleteCacheOnEmptyCache() {
+        let (store, sut) = makeSUT()
+        
+        sut.load { _ in }
+        store.completeRetrievalWithEmptyCache()
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
     func test_load_returnsFeedOnExactMatchingCacheTimestamp() {
@@ -68,6 +77,28 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         expect(sut: sut, toCompleteWith: .success(feed.models)) {
             store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
         }
+    }
+    
+    func test_load_doesNotDeleteLessThanSevenDaysOldCache() {
+        let fixedDate = Date()
+        let (store, sut) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueImageFeed()
+        
+        sut.load { _ in }
+        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(1)))
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    func test_load_deletesMoreThanSevenDaysOldCache() {
+        let fixedDate = Date()
+        let (store, sut) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueImageFeed()
+        
+        sut.load { _ in }
+        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
     }
     
     func test_load_returnsFeedOnValidCacheTimestamp() {

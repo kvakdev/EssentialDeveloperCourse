@@ -50,6 +50,10 @@ class FeedStoreSpy: FeedStore {
         self.retrieveCompletions[index](.found(feed: result.items, timestamp: result.date))
     }
     
+    func completeRetrievalWithEmptyCache(at index: Int = 0) {
+        self.retrieveCompletions[index](.empty)
+    }
+    
     func completeRetrieval(at index: Int = 0, with error: Error) {
         self.retrieveCompletions[index](.failure(error))
     }
