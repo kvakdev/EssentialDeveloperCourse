@@ -28,7 +28,7 @@ class FeedStoreSpy: FeedStore {
         self.insertionCompletions.append(completion)
     }
     
-    func retrieve(completion: @escaping (LocalFeedLoader.LoadFeedResult) -> Swift.Void) {
+    func retrieve(completion: @escaping (FeedRetrieveResult) -> Swift.Void) {
         self.receivedMessages.append(.retrieve)
         self.retrieveCompletions.append(completion)
     }
@@ -46,12 +46,12 @@ class FeedStoreSpy: FeedStore {
         self.deletionCompletions[index](nil)
     }
     
-    func completeRetrieveSuccessfully(at index: Int = 0, result: (items: [FeedImage], date: Date)) {
-        self.retrieveCompletions[index](.success(result.items, result.date))
+    func completeRetrieveSuccessfully(at index: Int = 0, result: (items: [LocalFeedImage], date: Date)) {
+        self.retrieveCompletions[index](.found(feed: result.items, timestamp: result.date))
     }
     
     func completeRetrieval(at index: Int = 0, with error: Error) {
-        self.retrieveCompletions[index](.failure(error))
+        self.retrieveCompletions[index](.notFound(error))
     }
     
     func completeInsertion(with error: Error?, at index: Int = 0) {

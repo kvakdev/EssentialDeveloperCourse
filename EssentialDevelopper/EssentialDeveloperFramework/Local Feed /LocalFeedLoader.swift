@@ -15,7 +15,7 @@ public final class LocalFeedLoader {
     public typealias SaveResult = Error?
     
     public enum LoadFeedResult {
-        case success([FeedImage], Date)
+        case success([FeedImage])
         case failure(Error)
     }
     
@@ -49,20 +49,22 @@ public final class LocalFeedLoader {
             guard let self = self else { return }
             
             switch result {
-            case .failure:
-                completion(result)
-            case .success(let feed, let retrievedTimestamp):
+            case .notFound(let error):
+                completion(.failure(error))
+            case .found(let feed, let retrievedTimestamp):
                 if LocalFeedValidationPolicy.isValidTimestamp(retrievedTimestamp, against: self.timestamp()) {
-                    completion(.success(feed, retrievedTimestamp))
+                    completion(.success(feed.toModels()))
                 } else {
                     self.store.deleteCache(completion: { error in
                         if let error = error {
                             completion(.failure(error))
                         } else {
-                            completion(.success([], retrievedTimestamp))
+                            completion(.success([]))
                         }
                     })
                 }
+            case .empty:
+                completion(.success([]))
             }
         }
     }
@@ -82,6 +84,12 @@ public final class LocalFeedLoader {
 public extension Array where Element == FeedImage {
     func toLocal() -> [LocalFeedImage] {
         return map { LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.imageURL) }
+    }
+}
+
+public extension Array where Element == LocalFeedImage {
+    func toModels() -> [FeedImage] {
+        return map { FeedImage(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.url) }
     }
 }
 
