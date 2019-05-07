@@ -63,9 +63,11 @@ public final class LocalFeedLoader {
             switch result {
             case .failure:
                 self.store.deleteCache { _ in }
+                
             case .found(_, let timestamp) where !LocalFeedValidationPolicy.isValidTimestamp(timestamp, against: self.timestamp()):
                 self.store.deleteCache { _ in }
-            default: break
+                
+            case .empty, .found: break
             }
         }
     }
