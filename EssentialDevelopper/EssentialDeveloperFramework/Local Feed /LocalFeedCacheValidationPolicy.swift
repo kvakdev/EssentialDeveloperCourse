@@ -15,8 +15,10 @@ public protocol DateValidationProtocol {
 public class LocalFeedValidationPolicy: DateValidationProtocol {
     public init() {}
     
+    private let maxAgeInDays = 7
+    
     public func isValidTimestamp(_ timestamp: Date, against date: Date) -> Bool {
-        let expirationDate = timestamp.addingDays(7)
+        let expirationDate = timestamp.addingDays(maxAgeInDays)
         
         return expirationDate > date
     }

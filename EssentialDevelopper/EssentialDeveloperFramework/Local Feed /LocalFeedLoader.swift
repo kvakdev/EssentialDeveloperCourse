@@ -11,20 +11,20 @@ import Foundation
 public final class LocalFeedLoader: FeedLoaderProtocol {
     private let store: FeedStore
     private let timestamp: () -> Date
-    private let policy: DateValidationProtocol
+    private let cachePolicy: DateValidationProtocol
     
     public typealias SaveResult = Error?
     
     public typealias Result = FeedLoaderResult
     
-    public init(store: FeedStore, timestamp: @escaping () -> Date, policy: DateValidationProtocol = LocalFeedValidationPolicy()) {
+    public init(store: FeedStore, timestamp: @escaping () -> Date, cachePolicy: DateValidationProtocol = LocalFeedValidationPolicy()) {
         self.store = store
         self.timestamp = timestamp
-        self.policy = policy
+        self.cachePolicy = cachePolicy
     }
     
     private func isValid(_ date: Date) -> Bool {
-        return policy.isValidTimestamp(date, against: self.timestamp())
+        return cachePolicy.isValidTimestamp(date, against: self.timestamp())
     }
 }
 extension LocalFeedLoader {

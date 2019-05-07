@@ -24,10 +24,20 @@ func anyNSError() -> NSError {
 }
 
 internal extension Date {
+    func minusMaxAge() -> Date {
+        return addingDays(-maxAgeInDays)
+    }
+    
+    private var maxAgeInDays: Int {
+        return 7
+    }
+    
     func addingDays(_ amount: Int) -> Date {
         return Calendar(identifier: .gregorian).date(byAdding: .day, value: amount, to: self)!
     }
-    
+}
+
+internal extension Date {
     func addingSeconds(_ amount: TimeInterval) -> Date {
         return self.addingTimeInterval(amount)
     }

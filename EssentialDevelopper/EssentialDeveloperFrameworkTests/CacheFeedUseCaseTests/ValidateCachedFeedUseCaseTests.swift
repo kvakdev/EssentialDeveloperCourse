@@ -27,38 +27,39 @@ class ValidateCachedFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
     }
     
-    func test_validate_deletesMoreThanSevenDaysOldCache() {
+    func test_validate_deletesCacheOnExpiredDate() {
         let timestamp = Date()
-        let moreThanSevenDaysOldDate = timestamp.addingDays(-7).addingSeconds(-1)
+        let expiredDate = timestamp.minusMaxAge().addingSeconds(-1)
         let (store, sut) = makeSUT(timestamp: { timestamp })
         let feed = uniqueImageFeed()
         
-        
         sut.validateCache()
         
-        store.completeRetrieveSuccessfully(result: ( feed.local, moreThanSevenDaysOldDate ))
+        store.completeRetrieveSuccessfully(result: ( feed.local, expiredDate ))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
     }
     
-    func test_validate_deletesSevenDaysOldCache() {
+    func test_validate_deletesCacheOnExpirationDate() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
+        let expirationDate = fixedDate.minusMaxAge()
         
         sut.validateCache()
-        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
+        store.completeRetrieveSuccessfully(result: (feed.local, expirationDate))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
     }
     
-    func test_validate_doesNotDeleteLessThanSevenDaysOldCache() {
+    func test_validate_doesNotDeleteNonExpiredCache() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
+        let nonExpiredDate = fixedDate.minusMaxAge().addingSeconds(1)
         
         sut.validateCache()
-        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(1)))
+        store.completeRetrieveSuccessfully(result: (feed.local, nonExpiredDate))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }

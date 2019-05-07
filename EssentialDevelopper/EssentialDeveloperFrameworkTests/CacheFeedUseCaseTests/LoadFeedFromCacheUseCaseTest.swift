@@ -42,9 +42,10 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
+        let expiredDate = fixedDate.minusMaxAge().addingSeconds(-1)
         
         expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
+            store.completeRetrieveSuccessfully(result: (feed.local, expiredDate))
         }
     }
     
@@ -70,31 +71,33 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
+        let nonExpiredDate = fixedDate.minusMaxAge().addingSeconds(1)
         
         sut.load { _ in }
-        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(1)))
+        store.completeRetrieveSuccessfully(result: (feed.local, nonExpiredDate))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
-    func test_load_doesNotHaveSideEffectsOnMoreThanSevenDays() {
+    func test_load_doesNotHaveSideEffectsOnExpired() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
+        let expiredDate = fixedDate.minusMaxAge().addingSeconds(-1)
         
         sut.load { _ in }
-        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
+        store.completeRetrieveSuccessfully(result: (feed.local, expiredDate))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
     func test_load_returnsFeedOnValidCacheTimestamp() {
-        let timestamp = Date().addingDays(-7).addingSeconds(1)
+        let nonExpiredTimestamp = Date().minusMaxAge().addingSeconds(1)
         let (store, sut) = makeSUT()
         let feed = uniqueImageFeed()
         
         expect(sut: sut, toCompleteWith: .success(feed.models)) {
-            store.completeRetrieveSuccessfully(result: (feed.local, timestamp))
+            store.completeRetrieveSuccessfully(result: (feed.local, nonExpiredTimestamp))
         }
     }
     
