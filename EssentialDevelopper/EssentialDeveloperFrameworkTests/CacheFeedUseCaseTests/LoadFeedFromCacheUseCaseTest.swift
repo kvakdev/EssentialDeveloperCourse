@@ -32,10 +32,9 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
     
     func test_retrieve_returnsNoResultsOnEmptyCache() {
         let (store, sut) = makeSUT()
-        let date = Date()
         
         expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveSuccessfully(result: ([], date))
+            store.completeRetrievalWithEmptyCache()
         }
     }
     
