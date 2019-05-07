@@ -38,6 +38,16 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
+    func test_load_deliversEmptyImageFeedOnMoreThanSevenDays() {
+        let fixedDate = Date()
+        let (store, sut) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueImageFeed()
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
+        }
+    }
+    
     func test_load_hasNoSideEffectsOnRetrievalError() {
         let (store, sut) = makeSUT()
         

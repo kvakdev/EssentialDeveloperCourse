@@ -43,16 +43,16 @@ public final class LocalFeedLoader {
     
     public func load(_ completion: @escaping (Result) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
-            guard self != nil else { return }
+            guard let self = self else { return }
             
             switch result {
             case .failure(let error):
                 completion(.failure(error))
                 
-            case .found(let feed, _):
+            case .found(let feed, let date) where LocalFeedValidationPolicy.isValidTimestamp(date, against: self.timestamp()):
                 completion(.success(feed.toModels()))
                 
-            case .empty:
+            case .found, .empty:
                 completion(.success([]))
             }
         }
