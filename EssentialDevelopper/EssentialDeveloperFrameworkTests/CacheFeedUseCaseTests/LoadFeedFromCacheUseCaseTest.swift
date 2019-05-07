@@ -74,7 +74,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
         
-        expect(sut: sut, toCompleteWith: .success(feed.models)) {
+        expect(sut: sut, toCompleteWith: .success([])) {
             store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
         }
     }
@@ -97,6 +97,17 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         
         sut.load { _ in }
         store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
+    }
+    
+    func test_load_deletesSevenDaysOldCache() {
+        let fixedDate = Date()
+        let (store, sut) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueImageFeed()
+        
+        sut.load { _ in }
+        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
     }

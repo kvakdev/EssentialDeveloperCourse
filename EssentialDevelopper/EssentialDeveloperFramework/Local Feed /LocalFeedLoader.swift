@@ -56,13 +56,8 @@ public final class LocalFeedLoader {
                 if LocalFeedValidationPolicy.isValidTimestamp(retrievedTimestamp, against: self.timestamp()) {
                     completion(.success(feed.toModels()))
                 } else {
-                    self.store.deleteCache(completion: { error in
-                        if let error = error {
-                            completion(.failure(error))
-                        } else {
-                            completion(.success([]))
-                        }
-                    })
+                    self.store.deleteCache { _ in }
+                    completion(.success([]))
                 }
             case .empty:
                 completion(.success([]))
@@ -74,7 +69,7 @@ public final class LocalFeedLoader {
         static func isValidTimestamp(_ timestamp: Date, against date: Date) -> Bool {
             let expirationDate = timestamp.addingDays(7)
             
-            return expirationDate >= date
+            return expirationDate > date
         }
     }
 }
