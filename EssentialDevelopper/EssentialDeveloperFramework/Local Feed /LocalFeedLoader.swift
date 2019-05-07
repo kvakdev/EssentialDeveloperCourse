@@ -14,7 +14,7 @@ public final class LocalFeedLoader {
     
     public typealias SaveResult = Error?
     
-    public enum Result {
+    public enum LoadFeedResult {
         case success([FeedImage], Date)
         case failure(Error)
     }
@@ -44,22 +44,22 @@ public final class LocalFeedLoader {
         }
     }
     
-    public func retrieveFeed(completion: @escaping (Result) -> Swift.Void) {
+    public func load(completion: @escaping (LoadFeedResult) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .failure:
                 completion(result)
-            case .success(let feed, let timestamp):
-                if self.isValidTimestamp(timestamp) {
-                    completion(.success(feed, timestamp))
+            case .success(let feed, let retrievedTimestamp):
+                if LocalFeedValidationPolicy.isValidTimestamp(retrievedTimestamp, against: self.timestamp()) {
+                    completion(.success(feed, retrievedTimestamp))
                 } else {
                     self.store.deleteCache(completion: { error in
                         if let error = error {
                             completion(.failure(error))
                         } else {
-                            completion(.success([], timestamp))
+                            completion(.success([], retrievedTimestamp))
                         }
                     })
                 }
@@ -67,18 +67,30 @@ public final class LocalFeedLoader {
         }
     }
     
-    private func isValidTimestamp(_ timestamp: Date) -> Bool {
-        let calendar = Calendar.current
-        
-        let expirationDate = calendar.date(byAdding: DateComponents(day: 7), to: timestamp)!
-        
-        return expirationDate >= Date()
+    private class LocalFeedValidationPolicy {
+        static func isValidTimestamp(_ timestamp: Date, against date: Date) -> Bool {
+            let expirationDate = timestamp.addingDays(7)
+            
+            let result = expirationDate >= date
+            print("comparing \(expirationDate) >= \(date) result = \(result)")
+            
+            return result
+        }
     }
-    
 }
 
 public extension Array where Element == FeedImage {
     func toLocal() -> [LocalFeedImage] {
         return map { LocalFeedImage(id: $0.id, description: $0.description, location: $0.location, imageUrl: $0.imageURL) }
+    }
+}
+
+fileprivate extension Date {
+    func addingDays(_ amount: Int) -> Date {
+        return Calendar.current.date(byAdding: DateComponents(day: amount), to: self)!
+    }
+    
+    func addingSeconds(_ amount: Int) -> Date {
+        return Calendar.current.date(byAdding: DateComponents(second: amount), to: self)!
     }
 }

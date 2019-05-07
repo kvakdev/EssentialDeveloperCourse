@@ -28,7 +28,7 @@ class FeedStoreSpy: FeedStore {
         self.insertionCompletions.append(completion)
     }
     
-    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void) {
+    func retrieve(completion: @escaping (LocalFeedLoader.LoadFeedResult) -> Swift.Void) {
         self.receivedMessages.append(.retrieve)
         self.retrieveCompletions.append(completion)
     }

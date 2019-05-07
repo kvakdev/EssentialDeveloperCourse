@@ -39,18 +39,29 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func test_retrieve_returnsEmptyFeedOnExpiredCacheAndSuccessfullDeletion() {
-        let timestamp = Date().addingDays(-7).addingSeconds(-1)
+    func test_load_returnsEmptyFeedOnExpiredCacheAndSuccessfullDeletion() {
+        let timestamp = Date()
+        let expiredTimestamp = timestamp.addingDays(-7).addingSeconds(-1)
         let (store, sut) = makeSUT(timestamp: { timestamp })
         let feed = uniqueImageFeed().models
         
-        expect(sut: sut, toCompleteWith: .success([], timestamp)) {
-            store.completeRetrieveSuccessfully(result: (feed, timestamp))
+        expect(sut: sut, toCompleteWith: .success([], expiredTimestamp)) {
+            store.completeRetrieveSuccessfully(result: (feed, expiredTimestamp))
             store.completeDeletionSuccessfully()
         }
     }
     
-    func test_retrieve_returnsFeedOnValidCacheTimestamp() {
+    func test_load_returnsFeedOnExactMatchingCacheTimestamp() {
+        let fixedDate = Date()
+        let (store, sut) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueImageFeed().models
+        
+        expect(sut: sut, toCompleteWith: .success(feed, fixedDate.addingDays(-7))) {
+            store.completeRetrieveSuccessfully(result: (feed, fixedDate.addingDays(-7)))
+        }
+    }
+    
+    func test_load_returnsFeedOnValidCacheTimestamp() {
         let timestamp = Date().addingDays(-7).addingSeconds(1)
         let (store, sut) = makeSUT()
         let feed = uniqueImageFeed().models
@@ -60,14 +71,14 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, when action: () -> Void) {
+    func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadFeedResult, file: StaticString = #file, line: UInt = #line, when action: () -> Void) {
         let exp = expectation(description: "waiting for retrieve to complete")
         
-        sut.retrieveFeed { result in
+        sut.load { result in
             switch (result, expectedResult) {
                 case let (.success(imageFeed, timestamp), .success(expectedImageFeed, expectedTimestamp)):
-                    XCTAssertEqual(imageFeed, expectedImageFeed)
-                    XCTAssertEqual(timestamp, expectedTimestamp)
+                    XCTAssertEqual(imageFeed, expectedImageFeed, file: file, line: line)
+                    XCTAssertEqual(timestamp, expectedTimestamp, file: file, line: line)
                 
                 case let (.failure(error as NSError), .failure(expectedError as NSError)):
                     XCTAssertEqual(error, expectedError)
@@ -96,10 +107,10 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
 
 fileprivate extension Date {
     func addingDays(_ amount: Int) -> Date {
-        return Calendar.current.date(byAdding: DateComponents(day: amount), to: self)!
+        return Calendar(identifier: .gregorian).date(byAdding: .day, value: amount, to: self)!
     }
     
-    func addingSeconds(_ amount: Int) -> Date {
-        return Calendar.current.date(byAdding: DateComponents(second: amount), to: self)!
+    func addingSeconds(_ amount: TimeInterval) -> Date {
+        return self.addingTimeInterval(amount)
     }
 }

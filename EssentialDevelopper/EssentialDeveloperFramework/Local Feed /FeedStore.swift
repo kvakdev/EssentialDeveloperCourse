@@ -11,9 +11,9 @@ import Foundation
 public protocol FeedStore {
     typealias DeletionCallback = (Error?) -> Void
     typealias InsertionCallback = (Error?) -> Void
-    typealias RetrieveCallback = (LocalFeedLoader.Result) -> Void
+    typealias RetrieveCallback = (LocalFeedLoader.LoadFeedResult) -> Void
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCallback)
-    func retrieve(completion: @escaping (LocalFeedLoader.Result) -> Swift.Void)
+    func retrieve(completion: @escaping (LocalFeedLoader.LoadFeedResult) -> Swift.Void)
     func deleteCache(completion: @escaping DeletionCallback)
 }
