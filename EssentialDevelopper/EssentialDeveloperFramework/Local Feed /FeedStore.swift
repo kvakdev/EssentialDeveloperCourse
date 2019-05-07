@@ -10,7 +10,7 @@ import Foundation
 
 public enum FeedRetrieveResult {
     case empty
-    case notFound(Error)
+    case failure(Error)
     case found(feed: [LocalFeedImage], timestamp: Date)
 }
 

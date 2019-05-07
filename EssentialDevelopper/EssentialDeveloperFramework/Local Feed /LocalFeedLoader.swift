@@ -49,7 +49,7 @@ public final class LocalFeedLoader {
             guard let self = self else { return }
             
             switch result {
-            case .notFound(let error):
+            case .failure(let error):
                 self.store.deleteCache(completion: { _ in })
                 completion(.failure(error))
             case .found(let feed, let retrievedTimestamp):
