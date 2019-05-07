@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class LocalFeedLoader {
+public final class LocalFeedLoader: FeedLoaderProtocol {
     private let store: FeedStore
     private let timestamp: () -> Date
     private let policy: DateValidationProtocol
@@ -50,7 +50,7 @@ extension LocalFeedLoader {
 }
 
 extension LocalFeedLoader {
-    public func load(_ completion: @escaping (Result) -> Swift.Void) {
+    public func load(completion: @escaping (Result) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
             guard let self = self else { return }
             
