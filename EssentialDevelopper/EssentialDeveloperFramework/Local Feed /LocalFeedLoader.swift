@@ -11,16 +11,23 @@ import Foundation
 public final class LocalFeedLoader {
     private let store: FeedStore
     private let timestamp: () -> Date
+    private let policy: DateValidationProtocol
     
     public typealias SaveResult = Error?
     
     public typealias Result = FeedLoaderResult
     
-    public init(store: FeedStore, timestamp: @escaping () -> Date) {
+    public init(store: FeedStore, timestamp: @escaping () -> Date, policy: DateValidationProtocol = LocalFeedValidationPolicy()) {
         self.store = store
         self.timestamp = timestamp
+        self.policy = policy
     }
     
+    private func isValid(_ date: Date) -> Bool {
+        return policy.isValidTimestamp(date, against: self.timestamp())
+    }
+}
+extension LocalFeedLoader {
     public func save(_ feed: [FeedImage], completion: @escaping (SaveResult) -> Swift.Void) {
         self.store.deleteCache { [weak self] error in
             guard let self = self else { return }
@@ -40,7 +47,9 @@ public final class LocalFeedLoader {
             completion(err)
         }
     }
-    
+}
+
+extension LocalFeedLoader {
     public func load(_ completion: @escaping (Result) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
             guard let self = self else { return }
@@ -49,7 +58,7 @@ public final class LocalFeedLoader {
             case .failure(let error):
                 completion(.failure(error))
                 
-            case .found(let feed, let date) where LocalFeedValidationPolicy.isValidTimestamp(date, against: self.timestamp()):
+            case .found(let feed, let date) where self.isValid(date):
                 completion(.success(feed.toModels()))
                 
             case .found, .empty:
@@ -57,26 +66,20 @@ public final class LocalFeedLoader {
             }
         }
     }
-    
-    public func validate() {
+}
+
+extension LocalFeedLoader {
+    public func validateCache() {
         store.retrieve { [unowned self] result in
             switch result {
             case .failure:
                 self.store.deleteCache { _ in }
                 
-            case .found(_, let timestamp) where !LocalFeedValidationPolicy.isValidTimestamp(timestamp, against: self.timestamp()):
+            case .found(_, let timestamp) where !self.isValid(timestamp):
                 self.store.deleteCache { _ in }
                 
             case .empty, .found: break
             }
-        }
-    }
-    
-    private class LocalFeedValidationPolicy {
-        static func isValidTimestamp(_ timestamp: Date, against date: Date) -> Bool {
-            let expirationDate = timestamp.addingDays(7)
-            
-            return expirationDate > date
         }
     }
 }
@@ -93,12 +96,4 @@ public extension Array where Element == LocalFeedImage {
     }
 }
 
-fileprivate extension Date {
-    func addingDays(_ amount: Int) -> Date {
-        return Calendar.current.date(byAdding: DateComponents(day: amount), to: self)!
-    }
-    
-    func addingSeconds(_ amount: Int) -> Date {
-        return Calendar.current.date(byAdding: DateComponents(second: amount), to: self)!
-    }
-}
+

@@ -20,7 +20,7 @@ class ValidateCachedFeedUseCaseTests: XCTestCase {
     func test_validate_deletesCacheOnRetrievalError() {
         let (store, sut) = makeSUT()
         
-        sut.validate()
+        sut.validateCache()
         
         store.completeRetrieval(with: anyNSError())
         
@@ -34,7 +34,7 @@ class ValidateCachedFeedUseCaseTests: XCTestCase {
         let feed = uniqueImageFeed()
         
         
-        sut.validate()
+        sut.validateCache()
         
         store.completeRetrieveSuccessfully(result: ( feed.local, moreThanSevenDaysOldDate ))
         
@@ -46,7 +46,7 @@ class ValidateCachedFeedUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
         
-        sut.validate()
+        sut.validateCache()
         store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
@@ -57,7 +57,7 @@ class ValidateCachedFeedUseCaseTests: XCTestCase {
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
         
-        sut.validate()
+        sut.validateCache()
         store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(1)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])

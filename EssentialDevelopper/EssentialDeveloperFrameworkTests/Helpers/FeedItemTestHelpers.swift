@@ -23,7 +23,7 @@ func anyNSError() -> NSError {
     return NSError(domain: "CacheFeedError", code: 1, userInfo: nil)
 }
 
-extension Date {
+internal extension Date {
     func addingDays(_ amount: Int) -> Date {
         return Calendar(identifier: .gregorian).date(byAdding: .day, value: amount, to: self)!
     }
