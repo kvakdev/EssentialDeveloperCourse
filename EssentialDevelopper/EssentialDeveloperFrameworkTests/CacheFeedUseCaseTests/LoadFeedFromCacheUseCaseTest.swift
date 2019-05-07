@@ -30,7 +30,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func test_retrieve_returnsNoResultsOnEmptyCache() {
+    func test_retrieve_returnsEmptyOnEmptyCache() {
         let (store, sut) = makeSUT()
         
         expect(sut: sut, toCompleteWith: .success([])) {
@@ -63,6 +63,17 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         
         sut.load { _ in }
         store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(1)))
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve])
+    }
+    
+    func test_load_doesNotHaveSideEffectsOnMoreThanSevenDays() {
+        let fixedDate = Date()
+        let (store, sut) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueImageFeed()
+        
+        sut.load { _ in }
+        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
