@@ -39,18 +39,6 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func test_load_returnsEmptyFeedOnExpiredCacheAndSuccessfullDeletion() {
-        let timestamp = Date()
-        let expiredTimestamp = timestamp.addingDays(-7).addingSeconds(-1)
-        let (store, sut) = makeSUT(timestamp: { timestamp })
-        let feed = uniqueImageFeed()
-        
-        expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveSuccessfully(result: (feed.local, expiredTimestamp))
-            store.completeDeletionSuccessfully()
-        }
-    }
-    
     func test_load_hasNoSideEffectsOnRetrievalError() {
         let (store, sut) = makeSUT()
         
@@ -69,17 +57,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
-    func test_load_returnsFeedOnExactMatchingCacheTimestamp() {
-        let fixedDate = Date()
-        let (store, sut) = makeSUT(timestamp: { fixedDate })
-        let feed = uniqueImageFeed()
-        
-        expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
-        }
-    }
-    
-    func test_load_doesNotDeleteLessThanSevenDaysOldCache() {
+    func test_load_doesNotHaveSideEffectsOnLessThanSevenDaysOldCache() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
@@ -88,28 +66,6 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(1)))
         
         XCTAssertEqual(store.receivedMessages, [.retrieve])
-    }
-    
-    func test_load_deletesMoreThanSevenDaysOldCache() {
-        let fixedDate = Date()
-        let (store, sut) = makeSUT(timestamp: { fixedDate })
-        let feed = uniqueImageFeed()
-        
-        sut.load { _ in }
-        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7).addingSeconds(-1)))
-        
-        XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
-    }
-    
-    func test_load_deletesSevenDaysOldCache() {
-        let fixedDate = Date()
-        let (store, sut) = makeSUT(timestamp: { fixedDate })
-        let feed = uniqueImageFeed()
-        
-        sut.load { _ in }
-        store.completeRetrieveSuccessfully(result: (feed.local, fixedDate.addingDays(-7)))
-        
-        XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
     }
     
     func test_load_returnsFeedOnValidCacheTimestamp() {
@@ -165,15 +121,5 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         trackMemoryLeaks(store, file: file, line: line)
         
         return (store, sut)
-    }
-}
-
-fileprivate extension Date {
-    func addingDays(_ amount: Int) -> Date {
-        return Calendar(identifier: .gregorian).date(byAdding: .day, value: amount, to: self)!
-    }
-    
-    func addingSeconds(_ amount: TimeInterval) -> Date {
-        return self.addingTimeInterval(amount)
     }
 }

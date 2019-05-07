@@ -22,3 +22,13 @@ func uniqueImageFeed() -> (models: [FeedImage], local: [LocalFeedImage]) {
 func anyNSError() -> NSError {
     return NSError(domain: "CacheFeedError", code: 1, userInfo: nil)
 }
+
+extension Date {
+    func addingDays(_ amount: Int) -> Date {
+        return Calendar(identifier: .gregorian).date(byAdding: .day, value: amount, to: self)!
+    }
+    
+    func addingSeconds(_ amount: TimeInterval) -> Date {
+        return self.addingTimeInterval(amount)
+    }
+}

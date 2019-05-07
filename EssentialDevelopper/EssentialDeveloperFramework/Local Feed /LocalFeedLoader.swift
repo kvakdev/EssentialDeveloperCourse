@@ -43,19 +43,15 @@ public final class LocalFeedLoader {
     
     public func load(_ completion: @escaping (Result) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
-            guard let self = self else { return }
+            guard self != nil else { return }
             
             switch result {
             case .failure(let error):
                 completion(.failure(error))
                 
-            case .found(let feed, let retrievedTimestamp):
-                if LocalFeedValidationPolicy.isValidTimestamp(retrievedTimestamp, against: self.timestamp()) {
-                    completion(.success(feed.toModels()))
-                } else {
-                    self.store.deleteCache { _ in }
-                    completion(.success([]))
-                }
+            case .found(let feed, _):
+                completion(.success(feed.toModels()))
+                
             case .empty:
                 completion(.success([]))
             }
@@ -66,6 +62,8 @@ public final class LocalFeedLoader {
         store.retrieve { [unowned self] result in
             switch result {
             case .failure:
+                self.store.deleteCache { _ in }
+            case .found(_, let timestamp) where !LocalFeedValidationPolicy.isValidTimestamp(timestamp, against: self.timestamp()):
                 self.store.deleteCache { _ in }
             default: break
             }
