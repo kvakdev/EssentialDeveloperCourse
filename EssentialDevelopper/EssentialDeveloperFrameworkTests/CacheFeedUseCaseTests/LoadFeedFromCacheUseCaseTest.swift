@@ -122,7 +122,20 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadFeedResult, file: StaticString = #file, line: UInt = #line, when action: () -> Void) {
+    func test_load_doesNotDeliverResultsAfterSUTHasBeenDeallocated() {
+        var sut: LocalFeedLoader?
+        let store = FeedStoreSpy()
+        sut = LocalFeedLoader(store: store, timestamp: Date.init)
+        var capturedResult = [LocalFeedLoader.Result]()
+        
+        sut!.load { capturedResult.append($0) }
+        sut = nil
+        store.completeRetrievalWithEmptyCache()
+        
+        XCTAssertTrue(capturedResult.isEmpty)
+    }
+    
+    func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, file: StaticString = #file, line: UInt = #line, when action: () -> Void) {
         let exp = expectation(description: "waiting for retrieve to complete")
         
         sut.load { result in
