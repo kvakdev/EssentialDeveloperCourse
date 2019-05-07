@@ -14,10 +14,7 @@ public final class LocalFeedLoader {
     
     public typealias SaveResult = Error?
     
-    public enum LoadFeedResult {
-        case success([FeedImage])
-        case failure(Error)
-    }
+    public typealias Result = FeedLoaderResult
     
     public init(store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
@@ -44,7 +41,7 @@ public final class LocalFeedLoader {
         }
     }
     
-    public func load(_ completion: @escaping (LoadFeedResult) -> Swift.Void) {
+    public func load(_ completion: @escaping (Result) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
             guard let self = self else { return }
             
