@@ -51,6 +51,15 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
+    func test_load_SUT_receivesDeleteMessageOnRetrievalError() {
+        let (store, sut) = makeSUT()
+        
+        sut.load({ _ in })
+        store.completeRetrieval(with: anyNSError())
+        
+        XCTAssertEqual(store.receivedMessages, [.retrieve, .delete])
+    }
+    
     func test_load_returnsFeedOnExactMatchingCacheTimestamp() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })

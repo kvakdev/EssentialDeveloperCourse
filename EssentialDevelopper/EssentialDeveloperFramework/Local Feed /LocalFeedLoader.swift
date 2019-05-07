@@ -44,12 +44,13 @@ public final class LocalFeedLoader {
         }
     }
     
-    public func load(completion: @escaping (LoadFeedResult) -> Swift.Void) {
+    public func load(_ completion: @escaping (LoadFeedResult) -> Swift.Void) {
         self.store.retrieve() { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case .notFound(let error):
+                self.store.deleteCache(completion: { _ in })
                 completion(.failure(error))
             case .found(let feed, let retrievedTimestamp):
                 if LocalFeedValidationPolicy.isValidTimestamp(retrievedTimestamp, against: self.timestamp()) {
@@ -73,10 +74,7 @@ public final class LocalFeedLoader {
         static func isValidTimestamp(_ timestamp: Date, against date: Date) -> Bool {
             let expirationDate = timestamp.addingDays(7)
             
-            let result = expirationDate >= date
-            print("comparing \(expirationDate) >= \(date) result = \(result)")
-            
-            return result
+            return expirationDate >= date
         }
     }
 }
