@@ -47,8 +47,8 @@ public final class LocalFeedLoader {
             
             switch result {
             case .failure(let error):
-                self.store.deleteCache(completion: { _ in })
                 completion(.failure(error))
+                
             case .found(let feed, let retrievedTimestamp):
                 if LocalFeedValidationPolicy.isValidTimestamp(retrievedTimestamp, against: self.timestamp()) {
                     completion(.success(feed.toModels()))
@@ -58,6 +58,16 @@ public final class LocalFeedLoader {
                 }
             case .empty:
                 completion(.success([]))
+            }
+        }
+    }
+    
+    public func validate() {
+        store.retrieve { [unowned self] result in
+            switch result {
+            case .failure:
+                self.store.deleteCache { _ in }
+            default: break
             }
         }
     }
