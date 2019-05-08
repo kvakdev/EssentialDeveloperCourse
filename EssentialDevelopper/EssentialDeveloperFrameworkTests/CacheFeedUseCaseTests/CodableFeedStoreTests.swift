@@ -120,5 +120,51 @@ class CodableFeedStoreTests: XCTestCase {
         }
     }
     
+    func test_retrieveTwice_deliversTheSameValues() {
+        let sut = makeSUT()
+        let feed = uniqueImageFeed().local
+        let timestamp = Date()
+        let expectedResult = FeedRetrieveResult.found(feed: feed, timestamp: timestamp)
+        
+        let insertionError = insert(sut, feed: feed, timestamp: timestamp)
+        
+        XCTAssertNil(insertionError)
+        
+        expect(sut, result: expectedResult)
+        expect(sut, result: expectedResult)
+    }
+    
+    @discardableResult
+    func insert(_ sut: CodableFeedStore, feed: [LocalFeedImage], timestamp: Date) -> Error? {
+        let exp = expectation(description: "waitin for insert to complete")
+        var insertionError: Error?
+        
+        sut.insert(feed, timestamp: timestamp) { error in
+            insertionError = error
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        return insertionError
+    }
+    
+    func expect(_ sut: CodableFeedStore, result: FeedRetrieveResult) {
+        sut.retrieve(completion: { retrievedResult in
+            switch (retrievedResult, result) {
+                
+            case (.found(let retrievedFeed, let retrievedTimestamp), .found(let expectedFeed, let expectedTimestamp)):
+                XCTAssertEqual(retrievedFeed, expectedFeed)
+                XCTAssertEqual(retrievedTimestamp, expectedTimestamp)
+                
+            case (.empty, .empty): break
+                
+            case (.failure(let retrievedError), .failure(let expectedError)):
+                XCTAssertEqual(retrievedError as NSError, expectedError as NSError)
+            default:
+                XCTFail("expected \(result) got \(retrievedResult) instead")
+            }
+        })
+    }
     
 }
