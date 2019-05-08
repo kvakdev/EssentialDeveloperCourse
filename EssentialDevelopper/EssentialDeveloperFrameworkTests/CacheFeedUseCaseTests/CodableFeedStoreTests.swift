@@ -66,8 +66,8 @@ class CodableFeedStoreTests: XCTestCase {
         try? FileManager.default.removeItem(at: testStoreUrl)
     }
     
-    func makeSUT() -> CodableFeedStore {
-        return CodableFeedStore(storeUrl: testStoreUrl)
+    func makeSUT(url: URL? = nil) -> CodableFeedStore {
+        return CodableFeedStore(storeUrl: url ?? testStoreUrl)
     }
     
     func test_retrieve_deliversEmptyOnEmptyCache() {
@@ -108,21 +108,11 @@ class CodableFeedStoreTests: XCTestCase {
         let sut = makeSUT()
         let feed = uniqueImageFeed().local
         let timestamp = Date()
+        let expectedResult = FeedRetrieveResult.found(feed: feed, timestamp: timestamp)
         
+        insert(sut, feed: feed, timestamp: timestamp)
         
-        sut.insert(feed, timestamp: timestamp) { error in
-            XCTAssertNil(error)
-            
-            sut.retrieve(completion: { result in
-                switch result {
-                case .found(let retrievedFeed, let retrievedTimestamp):
-                    XCTAssertEqual(retrievedFeed, feed)
-                    XCTAssertEqual(retrievedTimestamp, timestamp)
-                default:
-                    XCTFail("expected success with \(feed) and \(timestamp) got \(result) instead")
-                }
-            })
-        }
+        expect(sut, result: expectedResult)
     }
     
     func test_retrieveTwice_deliversTheSameValues() {
@@ -131,9 +121,7 @@ class CodableFeedStoreTests: XCTestCase {
         let timestamp = Date()
         let expectedResult = FeedRetrieveResult.found(feed: feed, timestamp: timestamp)
         
-        let insertionError = insert(sut, feed: feed, timestamp: timestamp)
-        
-        XCTAssertNil(insertionError)
+        insert(sut, feed: feed, timestamp: timestamp)
         
         expect(sut, result: expectedResult)
         expect(sut, result: expectedResult)
@@ -145,6 +133,15 @@ class CodableFeedStoreTests: XCTestCase {
         insertCurruptedData(url: testStoreUrl)
         
         expect(sut, result: .failure(anyNSError()))
+    }
+    
+    func test_insert_deliversInsertionErrorOnFailure() {
+        let sut = makeSUT(url: URL(string: "http://corruptedUrl.com")!)
+        let feed = uniqueImageFeed().local
+        let timestamp = Date()
+        
+        let insertionError = insert(sut, feed: feed, timestamp: timestamp)
+        XCTAssertNotNil(insertionError)
     }
     
     @discardableResult
