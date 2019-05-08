@@ -19,7 +19,12 @@ public protocol FeedStore {
     typealias InsertionCallback = (Error?) -> Void
     typealias RetrieveCallback = (FeedRetrieveResult) -> Void
     
+    ///client is responsible for dispatching the proper queue
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping InsertionCallback)
+    
+    ///client is responsible for dispatching the proper queue
     func retrieve(completion: @escaping (FeedRetrieveResult) -> Swift.Void)
+    
+    ///client is responsible for dispatching the proper queue
     func deleteCache(completion: @escaping DeletionCallback)
 }

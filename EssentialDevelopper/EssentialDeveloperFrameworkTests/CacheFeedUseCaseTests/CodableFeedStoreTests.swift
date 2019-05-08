@@ -111,6 +111,33 @@ class CodableFeedStoreTests: XCTestCase {
         
         expect(sut, toRetrieve: .empty)
     }
+    
+    func test_operations_completeSerially() {
+        let sut = makeSUT()
+        var operations = [XCTestExpectation]()
+        
+        let op1 = expectation(description: "Operation 1")
+        sut.insert(uniqueImageFeed().local, timestamp: Date()) { _ in
+            operations.append(op1)
+            op1.fulfill()
+        }
+        
+        let op2 = expectation(description: "Operation 2")
+        sut.deleteCache { _ in
+            operations.append(op2)
+            op2.fulfill()
+        }
+        
+        let op3 = expectation(description: "Operation 3")
+        sut.insert(uniqueImageFeed().local, timestamp: Date()) { _ in
+            operations.append(op3)
+            op3.fulfill()
+        }
+        
+        wait(for: [op1, op2, op3], timeout: 4.0)
+        
+        XCTAssertEqual(operations, [op1, op2, op3])
+    }
 }
 
 //MARK: - Helpers
@@ -128,12 +155,16 @@ extension CodableFeedStoreTests {
         try? FileManager.default.removeItem(at: testStoreUrl)
     }
     
-    func makeSUT(url: URL? = nil) -> CodableFeedStore {
-        return CodableFeedStore(storeUrl: url ?? testStoreUrl)
+    func makeSUT(url: URL? = nil) -> FeedStore {
+        let sut = CodableFeedStore(storeUrl: url ?? testStoreUrl)
+        
+        trackMemoryLeaks(sut)
+        
+        return sut
     }
     
     @discardableResult
-    func insert(_ sut: CodableFeedStore, feed: [LocalFeedImage], timestamp: Date) -> Error? {
+    func insert(_ sut: FeedStore, feed: [LocalFeedImage], timestamp: Date) -> Error? {
         let exp = expectation(description: "waitin for insert to complete")
         var insertionError: Error?
         
@@ -148,7 +179,7 @@ extension CodableFeedStoreTests {
     }
     
     @discardableResult
-    func deleteCache(_ sut: CodableFeedStore) -> Error? {
+    func deleteCache(_ sut: FeedStore) -> Error? {
         let exp = expectation(description: "waiting for delete to complete")
         var capturedError: Error?
         
@@ -167,7 +198,7 @@ extension CodableFeedStoreTests {
         try! data?.write(to: url, options: .atomic)
     }
     
-    func expect(_ sut: CodableFeedStore, toRetrieve expectedResult: FeedRetrieveResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(_ sut: FeedStore, toRetrieve expectedResult: FeedRetrieveResult, file: StaticString = #file, line: UInt = #line) {
         sut.retrieve(completion: { retrievedResult in
             switch (retrievedResult, expectedResult) {
                 
