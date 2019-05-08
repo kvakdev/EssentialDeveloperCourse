@@ -48,8 +48,6 @@ class CodableFeedStore {
 }
 
 class CodableFeedStoreTests: XCTestCase {
-    private let testStoreUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
-    
     override func setUp() {
         super.setUp()
         
@@ -129,6 +127,10 @@ class CodableFeedStoreTests: XCTestCase {
 
 //MARK: - Helpers
 extension CodableFeedStoreTests {
+    
+    private var testStoreUrl: URL {
+        return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
+    }
     
     private func cleanUpCache() {
         try? FileManager.default.removeItem(at: testStoreUrl)
