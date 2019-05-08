@@ -95,7 +95,7 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func test_retrieveAfterIsnsertion_deliversTheSameValues() {
+    func test_retrieveAfterInsertion_deliversTheSameValues() {
         let sut = makeSUT()
         let feed = uniqueImageFeed().local
         let timestamp = Date()
