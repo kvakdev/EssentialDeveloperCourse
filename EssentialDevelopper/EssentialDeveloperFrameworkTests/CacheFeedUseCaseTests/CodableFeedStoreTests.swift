@@ -45,6 +45,15 @@ class CodableFeedStore {
             completion(error)
         }
     }
+    
+    func deleteCache(completion: @escaping FeedStore.DeletionCallback) {
+        do {
+            try FileManager.default.removeItem(at: self.storeUrl)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
+    }
 }
 
 class CodableFeedStoreTests: XCTestCase {
@@ -123,6 +132,18 @@ class CodableFeedStoreTests: XCTestCase {
         XCTAssertNotNil(insertionError)
     }
     
+    func test_delete_deliversErrorOnDeletionFailure() {
+        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let sut = makeSUT(url: url)
+        let exp = expectation(description: "waiting for delete to complete")
+        
+        sut.deleteCache { error in
+            XCTAssertNotNil(error)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
 }
 
 //MARK: - Helpers
