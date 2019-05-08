@@ -39,7 +39,7 @@ class CodableFeedStore {
             let cache = FeedCache(feed: feed, timestamp: timestamp)
             let data = try encoder.encode(cache)
             
-            try data.write(to: storeUrl)
+            try data.write(to: storeUrl, options: .atomic)
             completion(nil)
         } catch {
             completion(error)
@@ -100,6 +100,22 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieve: .failure(anyNSError()))
     }
     
+    func test_retrieve_deliversLatestResults() {
+        let sut = makeSUT()
+        let firstFeed = uniqueImageFeed().local
+        let timestamp = Date()
+        
+        let firstInsertionError = insert(sut, feed: firstFeed, timestamp: timestamp)
+        XCTAssertNil(firstInsertionError, "expected to insert succesfully")
+        
+        let latestFeed = uniqueImageFeed().local
+        let latestTimestamp = Date()
+        let secondInsertionError = insert(sut, feed: latestFeed, timestamp: latestTimestamp)
+        XCTAssertNil(secondInsertionError, "expected to insert succesfully")
+        
+        expect(sut, toRetrieve: .found(feed: latestFeed, timestamp: latestTimestamp))
+    }
+    
     func test_insert_deliversSameInsertionErrorOnFailure() {
         let sut = makeSUT(url: URL(string: "http://corruptedUrl.com")!)
         let feed = uniqueImageFeed().local
@@ -108,6 +124,7 @@ class CodableFeedStoreTests: XCTestCase {
         let insertionError = insert(sut, feed: feed, timestamp: timestamp)
         XCTAssertNotNil(insertionError)
     }
+    
 }
 
 //MARK: - Helpers
@@ -153,7 +170,7 @@ extension CodableFeedStoreTests {
                  (.failure, .failure): break
                 
             default:
-                XCTFail("expected \(expectedResult) got \(retrievedResult) instead file: \(file), line: \(line)")
+                XCTFail("expected \(expectedResult) got \(retrievedResult) instead file: \(file), line: \(line)", file: file, line: line)
             }
         })
     }
