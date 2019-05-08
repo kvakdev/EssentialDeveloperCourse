@@ -9,53 +9,6 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class CodableFeedStore {
-    private struct FeedCache: Codable {
-        let feed: [LocalFeedImage]
-        let timestamp: Date
-    }
-    private let storeUrl: URL
-    
-    init(storeUrl: URL) {
-        self.storeUrl = storeUrl
-    }
-    
-    func retrieve(completion: @escaping (FeedRetrieveResult) -> Swift.Void) {
-        guard let data = try? Data(contentsOf: storeUrl) else {
-            return completion(.empty)
-        }
-        
-        do {
-            let cache = try JSONDecoder().decode(FeedCache.self, from: data)
-            completion(.found(feed: cache.feed, timestamp: cache.timestamp))
-        } catch {
-            completion(.failure(error))
-        }
-    }
-    
-    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.InsertionCallback) {
-        do {
-            let encoder = JSONEncoder()
-            let cache = FeedCache(feed: feed, timestamp: timestamp)
-            let data = try encoder.encode(cache)
-            
-            try data.write(to: storeUrl, options: .atomic)
-            completion(nil)
-        } catch {
-            completion(error)
-        }
-    }
-    
-    func deleteCache(completion: @escaping FeedStore.DeletionCallback) {
-        do {
-            try FileManager.default.removeItem(at: self.storeUrl)
-            completion(nil)
-        } catch {
-            completion(error)
-        }
-    }
-}
-
 class CodableFeedStoreTests: XCTestCase {
     override func setUp() {
         super.setUp()

@@ -30,6 +30,7 @@
 		F4BA2C0F2269EE690015EABC /* EssentialDeveloperFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BA2BE72269E66F0015EABC /* EssentialDeveloperFramework.framework */; };
 		F4BA2C172269FB600015EABC /* XCTestCase+MemoryLeak.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2C162269FB600015EABC /* XCTestCase+MemoryLeak.swift */; };
 		F4BA2C18226A05560015EABC /* XCTestCase+MemoryLeak.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2C162269FB600015EABC /* XCTestCase+MemoryLeak.swift */; };
+		F4F4786E2282E95C008C41A5 /* CodableFeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4F4786D2282E95C008C41A5 /* CodableFeedStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -83,6 +84,7 @@
 		F4BA2C0C2269EE690015EABC /* FeedApiEndToEndTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedApiEndToEndTests.swift; sourceTree = "<group>"; };
 		F4BA2C0E2269EE690015EABC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F4BA2C162269FB600015EABC /* XCTestCase+MemoryLeak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+MemoryLeak.swift"; sourceTree = "<group>"; };
+		F4F4786D2282E95C008C41A5 /* CodableFeedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodableFeedStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				F48563B52273941A001437EE /* LocalFeedLoader.swift */,
+				F4F4786D2282E95C008C41A5 /* CodableFeedStore.swift */,
 				F42124502281A3B100892AFF /* LocalFeedCacheValidationPolicy.swift */,
 				F48563B722739448001437EE /* FeedStore.swift */,
 				F48563B922739462001437EE /* LocalFeedImage.swift */,
@@ -384,6 +387,7 @@
 				F48563BA22739462001437EE /* LocalFeedImage.swift in Sources */,
 				F4BA2C042269E7E90015EABC /* URLSessionHTTPClient.swift in Sources */,
 				F4BA2C012269E7E30015EABC /* FeedItemMapper.swift in Sources */,
+				F4F4786E2282E95C008C41A5 /* CodableFeedStore.swift in Sources */,
 				F4BA2C032269E7E90015EABC /* HTTPClient.swift in Sources */,
 				F48563B3227393BE001437EE /* RemoteFeedItem.swift in Sources */,
 				F4BA2C022269E7E90015EABC /* FeedImage.swift in Sources */,
