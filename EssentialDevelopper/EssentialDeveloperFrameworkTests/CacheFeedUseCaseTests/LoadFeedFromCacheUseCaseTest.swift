@@ -38,7 +38,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         }
     }
     
-    func test_load_deliversEmptyImageFeedOnMoreThanSevenDays() {
+    func test_load_deliversEmptyImageFeedOnExpiredCache() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
@@ -67,7 +67,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         XCTAssertEqual(store.receivedMessages, [.retrieve])
     }
     
-    func test_load_doesNotHaveSideEffectsOnLessThanSevenDaysOldCache() {
+    func test_load_doesNotHaveSideEffectsNonExpiredCache() {
         let fixedDate = Date()
         let (store, sut) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueImageFeed()
@@ -133,7 +133,7 @@ class LoadFeedFromCacheUseCaseTest: XCTestCase {
         
         action()
         
-        wait(for: [exp], timeout: 1.0)
+        wait(for: [exp], timeout: 2.0)
     }
     
     func makeSUT(timestamp: @escaping () -> Date = Date.init, file: StaticString = #file, line: UInt = #line) -> (store: FeedStoreSpy, sut: LocalFeedLoader) {
