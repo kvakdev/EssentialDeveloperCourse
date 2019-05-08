@@ -134,7 +134,7 @@ class CodableFeedStoreTests: XCTestCase {
             op3.fulfill()
         }
         
-        wait(for: [op1, op2, op3], timeout: 10.0)
+        wait(for: [op1, op2, op3], timeout: 5.0)
         
         XCTAssertEqual(operations, [op1, op2, op3])
     }
