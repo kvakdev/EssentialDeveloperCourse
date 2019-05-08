@@ -48,7 +48,7 @@ class CodableFeedStore {
 }
 
 class CodableFeedStoreTests: XCTestCase {
-    private let testStoreUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("feed-image.store")
+    private let testStoreUrl = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
     
     override func setUp() {
         super.setUp()
