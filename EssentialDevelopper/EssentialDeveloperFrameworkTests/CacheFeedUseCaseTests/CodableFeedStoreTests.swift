@@ -61,50 +61,15 @@ class CodableFeedStoreTests: XCTestCase {
         
         cleanUpCache()
     }
-    
-    private func cleanUpCache() {
-        try? FileManager.default.removeItem(at: testStoreUrl)
-    }
-    
-    func makeSUT(url: URL? = nil) -> CodableFeedStore {
-        return CodableFeedStore(storeUrl: url ?? testStoreUrl)
-    }
-    
-    func test_retrieve_deliversEmptyOnEmptyCache() {
-        let sut = makeSUT()
-        let exp = expectation(description: "waiting for retrieve to complete")
-        
-        sut.retrieve { result in
-            switch result {
-            case .empty:
-                break
-            default:
-                XCTFail("expected empty got \(result) instead")
-            }
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-    }
-    
+
     func test_retrieve_hasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-        let exp = expectation(description: "waiting for retrieve to complete")
-        sut.retrieve { firstResult in
-            sut.retrieve { secondResult in
-                switch (firstResult, secondResult){
-                case (.empty, .empty):
-                    break
-                default:
-                    XCTFail("expected empty got \(firstResult) and \(secondResult) instead")
-                }
-                exp.fulfill()
-            }
-        }
-        wait(for: [exp], timeout: 1.0)
+        
+        expect(sut, toRetrieve: .empty)
+        expect(sut, toRetrieve: .empty)
     }
     
-    func test_retrieveAfterInsertion_deliversTheSameValues() {
+    func test_retrieve_deliversTheInsertedValues() {
         let sut = makeSUT()
         let feed = uniqueImageFeed().local
         let timestamp = Date()
@@ -112,10 +77,10 @@ class CodableFeedStoreTests: XCTestCase {
         
         insert(sut, feed: feed, timestamp: timestamp)
         
-        expect(sut, result: expectedResult)
+        expect(sut, toRetrieve: expectedResult)
     }
     
-    func test_retrieveTwice_deliversTheSameValues() {
+    func test_retrieve_deliversTheSameValues() {
         let sut = makeSUT()
         let feed = uniqueImageFeed().local
         let timestamp = Date()
@@ -123,8 +88,8 @@ class CodableFeedStoreTests: XCTestCase {
         
         insert(sut, feed: feed, timestamp: timestamp)
         
-        expect(sut, result: expectedResult)
-        expect(sut, result: expectedResult)
+        expect(sut, toRetrieve: expectedResult)
+        expect(sut, toRetrieve: expectedResult)
     }
     
     func test_retrieve_deliversErrorOnCurruptedData() {
@@ -132,16 +97,28 @@ class CodableFeedStoreTests: XCTestCase {
         
         insertCurruptedData(url: testStoreUrl)
         
-        expect(sut, result: .failure(anyNSError()))
+        expect(sut, toRetrieve: .failure(anyNSError()))
     }
     
-    func test_insert_deliversInsertionErrorOnFailure() {
+    func test_insert_deliversSameInsertionErrorOnFailure() {
         let sut = makeSUT(url: URL(string: "http://corruptedUrl.com")!)
         let feed = uniqueImageFeed().local
         let timestamp = Date()
         
         let insertionError = insert(sut, feed: feed, timestamp: timestamp)
         XCTAssertNotNil(insertionError)
+    }
+}
+
+//MARK: - Helpers
+extension CodableFeedStoreTests {
+    
+    private func cleanUpCache() {
+        try? FileManager.default.removeItem(at: testStoreUrl)
+    }
+    
+    func makeSUT(url: URL? = nil) -> CodableFeedStore {
+        return CodableFeedStore(storeUrl: url ?? testStoreUrl)
     }
     
     @discardableResult
@@ -164,9 +141,9 @@ class CodableFeedStoreTests: XCTestCase {
         try! data?.write(to: url, options: .atomic)
     }
     
-    func expect(_ sut: CodableFeedStore, result: FeedRetrieveResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(_ sut: CodableFeedStore, toRetrieve expectedResult: FeedRetrieveResult, file: StaticString = #file, line: UInt = #line) {
         sut.retrieve(completion: { retrievedResult in
-            switch (retrievedResult, result) {
+            switch (retrievedResult, expectedResult) {
                 
             case (.found(let retrievedFeed, let retrievedTimestamp), .found(let expectedFeed, let expectedTimestamp)):
                 XCTAssertEqual(retrievedFeed, expectedFeed, file: file, line: line)
@@ -176,9 +153,8 @@ class CodableFeedStoreTests: XCTestCase {
                  (.failure, .failure): break
                 
             default:
-                XCTFail("expected \(result) got \(retrievedResult) instead file: \(file), line: \(line)")
+                XCTFail("expected \(expectedResult) got \(retrievedResult) instead file: \(file), line: \(line)")
             }
         })
     }
-    
 }
