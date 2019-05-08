@@ -107,7 +107,7 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut, toRetrieve: .failure(anyNSError()))
     }
     
-    func test_retrieve_deliversLatestResults() {
+    func test_insert_overwritesLatestResults() {
         let sut = makeSUT()
         let firstFeed = uniqueImageFeed().local
         let timestamp = Date()
@@ -133,16 +133,30 @@ class CodableFeedStoreTests: XCTestCase {
     }
     
     func test_delete_deliversErrorOnDeletionFailure() {
-        let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let url = docsDirUrl
         let sut = makeSUT(url: url)
-        let exp = expectation(description: "waiting for delete to complete")
         
-        sut.deleteCache { error in
-            XCTAssertNotNil(error)
-            exp.fulfill()
-        }
+        let deletionError = deleteCache(sut)
         
-        wait(for: [exp], timeout: 1.0)
+        XCTAssertNotNil(deletionError)
+    }
+    
+    func test_delete_removesCacheOnNonEmptyCache() {
+        let sut = makeSUT()
+        let feed = uniqueImageFeed().local
+        let timestamp = Date()
+        
+        insert(sut, feed: feed, timestamp: timestamp)
+        deleteCache(sut)
+        
+        expect(sut, toRetrieve: .empty)
+    }
+    
+    func test_delete_hasNoSideEffects() {
+        let sut = makeSUT()
+        deleteCache(sut)
+        
+        expect(sut, toRetrieve: .empty)
     }
 }
 
@@ -151,6 +165,10 @@ extension CodableFeedStoreTests {
     
     private var testStoreUrl: URL {
         return FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("\(type(of: self)).store")
+    }
+    
+    private var docsDirUrl: URL {
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
     
     private func cleanUpCache() {
@@ -174,6 +192,21 @@ extension CodableFeedStoreTests {
         wait(for: [exp], timeout: 1.0)
         
         return insertionError
+    }
+    
+    @discardableResult
+    func deleteCache(_ sut: CodableFeedStore) -> Error? {
+        let exp = expectation(description: "waiting for delete to complete")
+        var capturedError: Error?
+        
+        sut.deleteCache { error in
+            capturedError = error
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        
+        return capturedError
     }
     
     func insertCurruptedData(url: URL) {
