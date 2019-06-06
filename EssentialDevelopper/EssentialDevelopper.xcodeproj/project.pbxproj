@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F40D188A22A8EF9500B32414 /* CoreDataFeedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40D188922A8EF9500B32414 /* CoreDataFeedStoreTests.swift */; };
 		F421244F22817D3800892AFF /* ValidateCachedFeedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F421244E22817D3800892AFF /* ValidateCachedFeedUseCaseTests.swift */; };
 		F42124512281A3B100892AFF /* LocalFeedCacheValidationPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42124502281A3B100892AFF /* LocalFeedCacheValidationPolicy.swift */; };
 		F42124532281B62E00892AFF /* CodableFeedStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42124522281B62E00892AFF /* CodableFeedStoreTests.swift */; };
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F40D188922A8EF9500B32414 /* CoreDataFeedStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataFeedStoreTests.swift; sourceTree = "<group>"; };
 		F40FF15D226475ED00359F40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F40FF15F226475ED00359F40 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F40FF161226475EF00359F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -164,6 +166,7 @@
 				F48563AE2272FFDE001437EE /* LoadFeedFromCacheUseCaseTest.swift */,
 				F421244E22817D3800892AFF /* ValidateCachedFeedUseCaseTests.swift */,
 				F42124522281B62E00892AFF /* CodableFeedStoreTests.swift */,
+				F40D188922A8EF9500B32414 /* CoreDataFeedStoreTests.swift */,
 			);
 			path = CacheFeedUseCaseTests;
 			sourceTree = "<group>";
@@ -404,6 +407,7 @@
 				F421244F22817D3800892AFF /* ValidateCachedFeedUseCaseTests.swift in Sources */,
 				F42124532281B62E00892AFF /* CodableFeedStoreTests.swift in Sources */,
 				F44600862271C41A00D4A9BF /* CacheFeedUseCaseTests.swift in Sources */,
+				F40D188A22A8EF9500B32414 /* CoreDataFeedStoreTests.swift in Sources */,
 				F4BA2BFF2269E7850015EABC /* URLSessionHTTPClientTests.swift in Sources */,
 				F48563AF2272FFDE001437EE /* LoadFeedFromCacheUseCaseTest.swift in Sources */,
 			);
