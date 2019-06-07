@@ -64,28 +64,3 @@ class CoreDataFeedStoreTests: XCTestCase {
     }
 }
 
-
-
-extension NSManagedObjectModel {
-    static func with(name: String, bundle: Bundle) throws -> NSManagedObjectModel {
-        guard let path = bundle.path(forResource: name, ofType: "momd") else {
-            throw anyNSError()
-        }
-        
-        let url = URL(fileURLWithPath: path)
-        
-        return NSManagedObjectModel(contentsOf: url)!
-    }
-}
-
-extension NSPersistentContainer {
-    internal static func load(url: URL, name: String, bundle: Bundle) throws -> NSPersistentContainer {
-        let model = try NSManagedObjectModel.with(name: name, bundle: bundle)
-        let description = NSPersistentStoreDescription(url: url)
-        
-        let container = NSPersistentContainer(name: name, managedObjectModel: model)
-        container.persistentStoreDescriptions = [description]
-        
-        return container
-    }
-}
