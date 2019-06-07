@@ -35,7 +35,7 @@ class CoreDataFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func makeSUT() -> CoreDataFeedStore {
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> CoreDataFeedStore {
         let bundle = Bundle(for: CoreDataFeedStore.self)
         let url = URL(fileURLWithPath: "/dev/null")
         let sut = try! CoreDataFeedStore(url: url, bundle: bundle)
