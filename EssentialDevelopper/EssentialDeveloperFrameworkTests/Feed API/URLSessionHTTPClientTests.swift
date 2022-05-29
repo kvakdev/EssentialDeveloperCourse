@@ -45,7 +45,9 @@ class URLSessionHTTPClientTests: XCTestCase {
         
         let receivedError = errorFor(data: nil, response: nil, error: error)
         
-        XCTAssertEqual(error, receivedError as NSError?)
+        XCTAssertEqual(error.domain, (receivedError as? NSError)?.domain)
+        XCTAssertEqual(error.code, (receivedError as? NSError)?.code)
+        XCTAssertEqual(error.localizedDescription, (receivedError as? NSError)?.localizedDescription)
     }
     
     func test_load_returnsSuccessOnNilData() {
@@ -124,7 +126,7 @@ class URLSessionHTTPClientTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 1.0)
+        wait(for: [exp], timeout: 5.0)
         
         return receivedResult
     }
