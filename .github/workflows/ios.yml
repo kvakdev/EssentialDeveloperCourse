@@ -17,5 +17,5 @@ jobs:
               swift-version: "5.6.1"
               xcode-version: latest-stable
       - name: Build and test
-        run: xcodebuild clean build test -project EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme 'CI' CODE_SIGN_IDENTITY='' CODE_SIGN_REQUIRED=NO
+        run: xcodebuild clean build test -project ./../../EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme 'CI' CODE_SIGN_IDENTITY='' CODE_SIGN_REQUIRED=NO
           
