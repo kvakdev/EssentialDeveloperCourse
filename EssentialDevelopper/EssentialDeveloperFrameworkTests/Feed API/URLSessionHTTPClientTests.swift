@@ -93,7 +93,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     
     func errorFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> Error? {
         
-        let result = resultFor(data: data, response: response, error: error)
+        let result = resultFor(data: data, response: response, error: error, file: file, line: line)
         
         switch result {
         case .failure(let receivedError):
@@ -121,7 +121,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let exp = expectation(description: "waiting for load to end with error")
         var receivedResult: HTTPClientResult!
         
-        makeSUT().get(from: anyURL()) { result in
+        makeSUT(file: file, line: line).get(from: anyURL()) { result in
             receivedResult = result
             exp.fulfill()
         }
