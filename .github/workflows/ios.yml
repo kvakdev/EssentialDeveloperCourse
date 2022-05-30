@@ -12,7 +12,6 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Test 1
         run: xcodebuild clean build test -project EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme 'CI' CODE_SIGN_IDENTITY='' CODE_SIGN_REQUIRED=NO
           
