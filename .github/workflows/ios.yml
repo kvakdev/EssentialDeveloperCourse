@@ -1,4 +1,5 @@
-name: iOS starter workflow
+
+name: CI
 
 on:
   push:
@@ -7,11 +8,15 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-    name: Build and Test CI scheme using any available iPhone simulator
+  build-and-test:
     runs-on: macos-latest
 
     steps:
-      - name: Test 1
-        run: xcodebuild clean build test -project ./../EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme 'CI' CODE_SIGN_IDENTITY='' CODE_SIGN_REQUIRED=NO
+    - uses: actions/checkout@v2
+
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_13.app
+
+    - name: Build and test
+      run: xcodebuild clean build test -project EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme 'CI' CODE_SIGN_IDENTITY='' CODE_SIGN_REQUIRED=NO
           
