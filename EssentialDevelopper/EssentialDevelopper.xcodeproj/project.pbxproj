@@ -272,9 +272,11 @@
 				TargetAttributes = {
 					F4BA2BE62269E66F0015EABC = {
 						CreatedOnToolsVersion = 10.2;
+						LastSwiftMigration = 1330;
 					};
 					F4BA2BEE2269E66F0015EABC = {
 						CreatedOnToolsVersion = 10.2;
+						LastSwiftMigration = 1330;
 					};
 					F4BA2C092269EE690015EABC = {
 						CreatedOnToolsVersion = 10.2;
@@ -522,7 +524,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = andre.kvashuk.EssentialDeveloperFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -550,7 +552,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = andre.kvashuk.EssentialDeveloperFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -570,7 +572,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = andre.kvashuk.EssentialDeveloperFrameworkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -588,7 +590,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = andre.kvashuk.EssentialDeveloperFrameworkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
