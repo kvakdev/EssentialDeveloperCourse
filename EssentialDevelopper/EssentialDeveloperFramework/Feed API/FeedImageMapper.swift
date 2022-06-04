@@ -1,5 +1,5 @@
 //
-//  FeedItemMapper.swift
+//  FeedImageMapper.swift
 //  EssentialDevelopper
 //
 //  Created by Andre Kvashuk on 4/16/19.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-internal final class FeedItemMapper {
+internal final class FeedImageMapper {
     private static let OK = Int(200)
     
     internal static func map(_ response: HTTPURLResponse, data: Data) -> RemoteFeedLoader.Result {
@@ -25,7 +25,7 @@ internal final class FeedItemMapper {
 private class Root: Decodable {
     let items: [Item]
     
-    var feed: [FeedItem] {
+    var feed: [FeedImage] {
         return items.map { $0.feedItem }
     }
 }
@@ -36,8 +36,8 @@ private struct Item: Decodable, Equatable {
     public let location: String?
     public let image: URL
     
-    var feedItem: FeedItem {
-        return FeedItem(id: self.id, description: self.description, location: self.location, imageUrl: self.image)
+    var feedItem: FeedImage {
+        return FeedImage(id: self.id, description: self.description, location: self.location, imageUrl: self.image)
     }
     
     public init(id: UUID, description: String? = nil, location: String? = nil, imageUrl: URL) {

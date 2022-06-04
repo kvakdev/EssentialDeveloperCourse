@@ -126,7 +126,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func success(_ items: [FeedItem]) -> RemoteFeedLoader.Result {
+    func success(_ items: [FeedImage]) -> RemoteFeedLoader.Result {
         return RemoteFeedLoader.Result.success(items)
     }
     
@@ -144,21 +144,21 @@ class RemoteFeedLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedItem, json: [String: Any]) {
-        let feedItem = FeedItem(id: id, description: description, location: location, imageUrl: image)
+    func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedImage, json: [String: Any]) {
+        let feedImage = FeedImage(id: id, description: description, location: location, imageUrl: image)
         
-        let json = dictFrom(item: feedItem)
+        let json = dictFrom(feedImage: feedImage)
         
-        return (feedItem, json)
+        return (feedImage, json)
     }
     
-    private func dictFrom(item: FeedItem) -> [String: Any] {
+    private func dictFrom(feedImage: FeedImage) -> [String: Any] {
         
         return [
-            "id"            : item.id.uuidString,
-            "image"         : item.imageURL.absoluteString,
-            "location"      : item.location,
-            "description"   : item.description
+            "id"            : feedImage.id.uuidString,
+            "image"         : feedImage.imageURL.absoluteString,
+            "location"      : feedImage.location,
+            "description"   : feedImage.description
             ]
             .reduce(into: [String: Any]()) { result, dict in
                 if let value = dict.value {
