@@ -1,6 +1,0 @@
-os: osx
-osx_image: xcode13.3
-language: swift
-env: SWIFT_SNAPSHOT=5.6.1
-before_install: gem install bundler
-script: xcodebuild clean build test -project EssentialDevelopper/EssentialDevelopper.xcodeproj -scheme "CI" CODE_SIGN_IDENTITY="" CODE_SIGN_REQUIRED=NO
