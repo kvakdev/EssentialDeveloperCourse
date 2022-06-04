@@ -16,14 +16,14 @@ class FeedApiEndToEndTests: XCTestCase {
         case .failure(let error):
             XCTFail("expected success with 8 items got \(error) instead")
         case .success(let feedItems):
-            XCTAssertEqual(feedItem(at: 0), feedItems[0])
-            XCTAssertEqual(feedItem(at: 1), feedItems[1])
-            XCTAssertEqual(feedItem(at: 2), feedItems[2])
-            XCTAssertEqual(feedItem(at: 3), feedItems[3])
-            XCTAssertEqual(feedItem(at: 4), feedItems[4])
-            XCTAssertEqual(feedItem(at: 5), feedItems[5])
-            XCTAssertEqual(feedItem(at: 6), feedItems[6])
-            XCTAssertEqual(feedItem(at: 7), feedItems[7])
+            XCTAssertEqual(feedImage(at: 0), feedItems[0])
+            XCTAssertEqual(feedImage(at: 1), feedItems[1])
+            XCTAssertEqual(feedImage(at: 2), feedItems[2])
+            XCTAssertEqual(feedImage(at: 3), feedItems[3])
+            XCTAssertEqual(feedImage(at: 4), feedItems[4])
+            XCTAssertEqual(feedImage(at: 5), feedItems[5])
+            XCTAssertEqual(feedImage(at: 6), feedItems[6])
+            XCTAssertEqual(feedImage(at: 7), feedItems[7])
         }
     }
     
@@ -88,8 +88,8 @@ class FeedApiEndToEndTests: XCTestCase {
         return URL(string: "https://url-\(index+1).com")!
     }
     
-    private func feedItem(at index: Int) -> FeedItem {
-        return FeedItem(id: id(at: index),
+    private func feedImage(at index: Int) -> FeedImage {
+        return FeedImage(id: id(at: index),
                         description: description(at: index),
                         location: location(at: index),
                         imageUrl: imageURL(at: index)
