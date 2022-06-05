@@ -79,7 +79,7 @@ class LocalFeedLoader {
     
     private func cache(_ feed: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
         self.store.insert(feed, timestamp: timestamp()) { [weak self] result in
-//            guard self != nil else { return }
+            guard self != nil else { return }
             
             completion(result)
         }
@@ -140,15 +140,30 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_saveDoesNotDeliverDeletionError_afterLoaderIsDeallocated() {
         let store = FeedStoreSpy()
         var sut: LocalFeedLoader? = LocalFeedLoader(store, timestamp: Date.init)
-        var expectedResults: [LocalFeedLoader.ReceivedResult] = []
+        var receivedResults: [LocalFeedLoader.ReceivedResult] = []
         sut?.save([uniqueFeedImage()], completion: { result in
-            expectedResults.append(result)
+            receivedResults.append(result)
         })
         
         sut = nil
         store.completeDeletionWith(NSError())
         
-        XCTAssertEqual(expectedResults.count, 0)
+        XCTAssertEqual(receivedResults.count, 0)
+    }
+    
+    func test_saveDoesNotDeliverInsertionError_afterLoaderIsDeallocated() {
+        let store = FeedStoreSpy()
+        var sut: LocalFeedLoader? = LocalFeedLoader(store, timestamp: Date.init)
+        var receivedResults: [LocalFeedLoader.ReceivedResult] = []
+        sut?.save([uniqueFeedImage()], completion: { result in
+            receivedResults.append(result)
+        })
+        
+        store.successfulyCompleteDeletion()
+        sut = nil
+        store.completeInsertionWith(NSError())
+        
+        XCTAssertEqual(receivedResults.count, 0)
     }
     
     private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.ReceivedResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
