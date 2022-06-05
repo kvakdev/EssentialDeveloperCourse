@@ -8,12 +8,11 @@
 
 import Foundation
 
-
-public class LocalFeedLoader {
+public final class LocalFeedLoader {
     public typealias ReceivedResult = Error?
     
-    let store: FeedStore
-    let timestamp: () -> Date
+    private let store: FeedStore
+    private let timestamp: () -> Date
     
     public init(_ store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
