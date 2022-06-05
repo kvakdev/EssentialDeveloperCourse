@@ -12,8 +12,8 @@ import EssentialDeveloperFramework
 protocol FeedStore {
     typealias TransactionCompletion = (Error?) -> Void
     
-    func deleteCache(completion: @escaping TransactionCompletion)
-    func insert(_ feedImages: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion)
+    func deleteCachedFeed(completion: @escaping TransactionCompletion)
+    func insert(_ feed: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion)
 }
 
 class FeedStoreSpy: FeedStore {
@@ -27,7 +27,7 @@ class FeedStoreSpy: FeedStore {
     
     var savedMessages: [Message] = []
     
-    func deleteCache(completion: @escaping TransactionCompletion) {
+    func deleteCachedFeed(completion: @escaping TransactionCompletion) {
         savedMessages.append(.delete)
         deletionCompletions.append(completion)
     }
@@ -64,7 +64,7 @@ class LocalFeedLoader {
     }
     
     func save(_ feedImages: [FeedImage], completion: @escaping (Error?) -> Void) {
-        store.deleteCache() { [unowned self] error in
+        store.deleteCachedFeed() { [unowned self] error in
             if error == nil {
                 self.store.insert(feedImages, timestamp: timestamp(), completion: completion)
             } else {
