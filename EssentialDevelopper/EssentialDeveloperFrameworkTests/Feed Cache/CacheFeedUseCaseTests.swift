@@ -12,32 +12,41 @@ import EssentialDeveloperFramework
 class FeedStore {
     typealias TransactionCompletion = (Error?) -> Void
     
-    var deletionCallCount = 0
-    var insertionCallCount = 0
+    enum Message: Equatable {
+        case delete
+        case insert(images: [FeedImage], timestamp: Date)
+    }
+
     var deletionCompletions: [TransactionCompletion] = []
     var insertionCompletions: [TransactionCompletion] = []
     
-    var savedFeed: [(images: [FeedImage], timestamp: Date)] = []
+    var savedMessages: [Message] = []
     
     func deleteCache(completion: @escaping TransactionCompletion) {
-        deletionCallCount += 1
+        savedMessages.append(.delete)
         deletionCompletions.append(completion)
     }
     
     func insert(_ feedImages: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
-        insertionCallCount += 1
-        savedFeed.append((feedImages, timestamp))
+        savedMessages.append(.insert(images: feedImages, timestamp: timestamp))
         insertionCompletions.append(completion)
     }
     
-    func completeDeletionWith(_ error: Error?, at index: Int = 0) {
+    func completeDeletionWith(_ error: Error, at index: Int = 0) {
         deletionCompletions[index](error)
     }
     
-    func completeInsertionWith(_ error: Error?, at index: Int = 0) {
+    func completeInsertionWith(_ error: Error, at index: Int = 0) {
         insertionCompletions[index](error)
     }
     
+    func successfulyCompleteDeletion(at index: Int = 0) {
+        deletionCompletions[index](nil)
+    }
+    
+    func successfulyCompleteInsertion(at index: Int = 0) {
+        insertionCompletions[index](nil)
+    }
 }
 
 class LocalFeedLoader {
@@ -65,30 +74,33 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_deletionIsNotInvoked_uponCreation() {
         let (_, store) = makeSUT()
         
-        XCTAssertEqual(store.deletionCallCount, 0)
+        XCTAssertEqual(store.savedMessages, [])
     }
-    
-    func test_deletionIsCalled_uponInsertion() {
-        let (sut, store) = makeSUT()
-        sut.save([]) { _ in }
-        
-        XCTAssertEqual(store.deletionCallCount, 1)
-    }
-    
-    func test_insertionIsInvoked_uponSuccessfulDeletion() {
+
+    func test_saveSucceeds_uponSuccessfulInsertion() {
         let (sut, store) = makeSUT()
         expect(sut: sut, toCompleteWith: nil) {
-            store.completeDeletionWith(nil)
-            store.completeInsertionWith(nil)
+            store.successfulyCompleteDeletion()
+            store.successfulyCompleteInsertion()
         }
     }
     
-    func test_insertionInNotInvoked_uponDeletionError() {
+    func test_saveFailsWithDeletionError_uponDeletionError() {
         let (sut, store) = makeSUT()
         let deletionError = NSError(domain: "deletionError", code: 0)
 
         expect(sut: sut, toCompleteWith: deletionError) {
             store.completeDeletionWith(deletionError)
+        }
+    }
+    
+    func test_saveFailsWithCorrectError_uponInsertionError() {
+        let (sut, store) = makeSUT()
+        let insertionError = NSError(domain: "insertionError", code: 0)
+        
+        expect(sut: sut, toCompleteWith: insertionError) {
+            store.successfulyCompleteDeletion()
+            store.completeInsertionWith(insertionError)
         }
     }
     
@@ -101,13 +113,11 @@ class CacheFeedUseCaseTests: XCTestCase {
         sut.save(images) { error in
             exp.fulfill()
         }
-        store.completeDeletionWith(nil)
-        store.completeInsertionWith(nil)
+        store.successfulyCompleteDeletion()
+        store.successfulyCompleteInsertion()
         
         wait(for: [exp], timeout: 1)
-        XCTAssertEqual(store.savedFeed.first?.images, images)
-        XCTAssertEqual(store.savedFeed.first?.timestamp, timestamp)
-        XCTAssertEqual(store.savedFeed.count, 1)
+        XCTAssertEqual(store.savedMessages, [.delete, .insert(images: images, timestamp: timestamp)])
     }
     
     private func expect(sut: LocalFeedLoader, toCompleteWith expectedError: NSError?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
