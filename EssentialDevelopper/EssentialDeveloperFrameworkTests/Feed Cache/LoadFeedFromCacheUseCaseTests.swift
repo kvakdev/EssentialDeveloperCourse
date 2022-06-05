@@ -72,11 +72,22 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_loadDeletesCach_onretrievalError() {
+    func test_loadDeletesCache_onRetrievalError() {
         let (sut, store) = makeSUT()
         
         sut.load { _ in }
         store.completeRetrieveWith(anyNSError())
+        
+        XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
+    }
+    
+    func test_loadDeletesCache_onCacheInvalidation() {
+        let fixedDate = Date()
+        let (sut, store) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueFeed()
+        
+        sut.load { _ in }
+        store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7).adding(seconds: -1))
         
         XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
     }
