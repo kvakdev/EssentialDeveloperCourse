@@ -57,7 +57,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         store.successfulyCompleteInsertion()
         
         wait(for: [exp], timeout: 1)
-        XCTAssertEqual(store.savedMessages, [.delete, .insert(images: images, timestamp: timestamp)])
+        XCTAssertEqual(store.savedMessages, [.delete, .insert(images: images.toLocal(), timestamp: timestamp)])
     }
     
     func test_saveDoesNotDeliverDeletionError_afterLoaderIsDeallocated() {
@@ -123,7 +123,7 @@ class CacheFeedUseCaseTests: XCTestCase {
 private class FeedStoreSpy: FeedStore {
     enum Message: Equatable {
         case delete
-        case insert(images: [FeedImage], timestamp: Date)
+        case insert(images: [LocalFeedImage], timestamp: Date)
     }
 
     var deletionCompletions: [TransactionCompletion] = []
@@ -136,7 +136,7 @@ private class FeedStoreSpy: FeedStore {
         deletionCompletions.append(completion)
     }
     
-    func insert(_ feedImages: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
+    func insert(_ feedImages: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
         savedMessages.append(.insert(images: feedImages, timestamp: timestamp))
         insertionCompletions.append(completion)
     }
@@ -155,5 +155,15 @@ private class FeedStoreSpy: FeedStore {
     
     func successfulyCompleteInsertion(at index: Int = 0) {
         insertionCompletions[index](nil)
+    }
+}
+
+private extension Array where Element == FeedImage {
+    func toLocal() -> [LocalFeedImage] {
+        compactMap { LocalFeedImage(id: $0.id,
+                                    description: $0.description,
+                                    location: $0.location,
+                                    imageUrl: $0.imageURL)
+        }
     }
 }
