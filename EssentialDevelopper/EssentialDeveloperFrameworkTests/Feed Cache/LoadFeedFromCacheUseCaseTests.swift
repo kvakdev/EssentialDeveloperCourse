@@ -28,38 +28,36 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     func test_loadFails_onRetrieveError() {
         let (sut, store) = makeSUT()
         let retrieveError = NSError(domain: "retrieveError", code: 0)
-        let exp = expectation(description: "wait for retrieval to complete")
-        var receivedResult: LocalFeedLoader.Result?
         
-        sut.load() { result  in
-            receivedResult = result
-            exp.fulfill()
+        expect(sut: sut, toCompleteWith: .failure(retrieveError)) {
+            store.completeRetrieveWith(retrieveError)
         }
-        store.completeRetrieveWith(retrieveError)
-        
-        wait(for: [exp], timeout: 1.0)
-        XCTAssertEqual(receivedResult, .failure(retrieveError))
     }
     
     func test_loadDeliversEmptyFeed_onExpiredCache() {
         let (sut, store) = makeSUT()
-        
-        let exp = expectation(description: "wait for retrieval to complete")
-        var receivedResult: LocalFeedLoader.Result?
-        var receivedError: Error?
-        
-        sut.load() { result in
-            receivedResult = result
-            exp.fulfill()
-        }
         let date = Date.distantPast
-        store.completeRetrieveWith([uniqueFeedImage()], timestamp: date)
         
-        wait(for: [exp], timeout: 1.0)
-        XCTAssertEqual(receivedResult, .success([]))
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieveWith([uniqueFeedImage()], timestamp: date)
+        }
     }
     
-    
+    private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, after action: () -> Void) {
+
+        sut.load { receivedResult in
+            switch (expectedResult, receivedResult) {
+            case (.success(let expectedFeed), .success(let receivedFeed)):
+                XCTAssertEqual(expectedFeed, receivedFeed)
+            case (.failure(let expectedError), .failure(let receivedError)):
+                XCTAssertEqual((expectedError as NSError), (receivedError as NSError))
+            default:
+                XCTFail("expected result \(expectedResult), got \(receivedResult) instead")
+            }
+        }
+        
+        action()
+    }
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
         let store = FeedStoreSpy()
