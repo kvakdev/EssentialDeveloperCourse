@@ -123,6 +123,7 @@ Given the customer doesn't have connectivity
 #### Primary course (happy path):
 1. Execute "Load Image Data" command with above data.
 2. System retrieves data from the cache.
+3. System validates cached feed is less than 7 days old
 3. System delivers cached image data.
 
 #### Cancel course:

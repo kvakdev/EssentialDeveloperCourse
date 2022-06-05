@@ -18,7 +18,7 @@ public class FeedStoreSpy: FeedStore {
 
     var deletionCompletions: [TransactionCompletion] = []
     var insertionCompletions: [TransactionCompletion] = []
-    var retrieveCompletions: [TransactionCompletion] = []
+    var retrieveCompletions: [RetrieveCompletion] = []
     
     var savedMessages: [Message] = []
     
@@ -32,7 +32,7 @@ public class FeedStoreSpy: FeedStore {
         insertionCompletions.append(completion)
     }
     
-    public func retrieve(_ completion: @escaping TransactionCompletion) {
+    public func retrieve(_ completion: @escaping RetrieveCompletion) {
         retrieveCompletions.append(completion)
         savedMessages.append(.retrieve)
     }
@@ -46,7 +46,11 @@ public class FeedStoreSpy: FeedStore {
     }
     
     func completeRetrieveWith(_ error: Error, at index: Int = 0) {
-        retrieveCompletions[index](error)
+        retrieveCompletions[index](.failure(error))
+    }
+    
+    func completeRetrieveWith(_ feed: [LocalFeedImage], timestamp: Date, at index: Int = 0) {
+        retrieveCompletions[index](.success(feed: feed, timestamp: timestamp))
     }
     
     func successfulyCompleteDeletion(at index: Int = 0) {
