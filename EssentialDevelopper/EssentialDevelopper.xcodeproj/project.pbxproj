@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		93BAE330284C889D0042B7E1 /* CacheFeedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAE32F284C889D0042B7E1 /* CacheFeedUseCaseTests.swift */; };
 		F4BA2BF02269E66F0015EABC /* EssentialDeveloperFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BA2BE72269E66F0015EABC /* EssentialDeveloperFramework.framework */; };
 		F4BA2BFE2269E7850015EABC /* LoadFeedFromRemoteUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF189226477A400359F40 /* LoadFeedFromRemoteUseCaseTests.swift */; };
 		F4BA2BFF2269E7850015EABC /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BD0226702E80015EABC /* URLSessionHTTPClientTests.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		93BAE32F284C889D0042B7E1 /* CacheFeedUseCaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheFeedUseCaseTests.swift; sourceTree = "<group>"; };
 		F40FF15D226475ED00359F40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F40FF15F226475ED00359F40 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F40FF161226475EF00359F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -92,6 +94,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		93BAE32E284C886E0042B7E1 /* Feed Cache */ = {
+			isa = PBXGroup;
+			children = (
+				93BAE32F284C889D0042B7E1 /* CacheFeedUseCaseTests.swift */,
+			);
+			path = "Feed Cache";
+			sourceTree = "<group>";
+		};
 		F40FF151226475ED00359F40 = {
 			isa = PBXGroup;
 			children = (
@@ -169,6 +179,7 @@
 		F4BA2BF32269E66F0015EABC /* EssentialDeveloperFrameworkTests */ = {
 			isa = PBXGroup;
 			children = (
+				93BAE32E284C886E0042B7E1 /* Feed Cache */,
 				F4BA2C152269FB430015EABC /* Helpers */,
 				F4BA2BCD22660D580015EABC /* Feed API */,
 				F4BA2BF62269E66F0015EABC /* Info.plist */,
@@ -347,6 +358,7 @@
 			files = (
 				F4BA2BFE2269E7850015EABC /* LoadFeedFromRemoteUseCaseTests.swift in Sources */,
 				F4BA2C172269FB600015EABC /* XCTestCase+MemoryLeak.swift in Sources */,
+				93BAE330284C889D0042B7E1 /* CacheFeedUseCaseTests.swift in Sources */,
 				F4BA2BFF2269E7850015EABC /* URLSessionHTTPClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
