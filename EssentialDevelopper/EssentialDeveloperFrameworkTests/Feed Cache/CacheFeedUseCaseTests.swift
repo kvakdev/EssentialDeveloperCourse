@@ -9,13 +9,6 @@
 import XCTest
 import EssentialDeveloperFramework
 
-protocol FeedStore {
-    typealias TransactionCompletion = (Error?) -> Void
-    
-    func deleteCachedFeed(completion: @escaping TransactionCompletion)
-    func insert(_ feed: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion)
-}
-
 class FeedStoreSpy: FeedStore {
     enum Message: Equatable {
         case delete
@@ -51,38 +44,6 @@ class FeedStoreSpy: FeedStore {
     
     func successfulyCompleteInsertion(at index: Int = 0) {
         insertionCompletions[index](nil)
-    }
-}
-
-class LocalFeedLoader {
-    typealias ReceivedResult = Error?
-    
-    let store: FeedStore
-    let timestamp: () -> Date
-    
-    init(_ store: FeedStore, timestamp: @escaping () -> Date) {
-        self.store = store
-        self.timestamp = timestamp
-    }
-    
-    func save(_ feedImages: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
-        store.deleteCachedFeed() { [weak self] error in
-            guard let self = self else { return }
-            
-            if let deletionError = error {
-                completion(deletionError)
-            } else {
-                self.cache(feedImages, completion: completion)
-            }
-        }
-    }
-    
-    private func cache(_ feed: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
-        self.store.insert(feed, timestamp: timestamp()) { [weak self] result in
-            guard self != nil else { return }
-            
-            completion(result)
-        }
     }
 }
 
