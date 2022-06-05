@@ -77,32 +77,19 @@ class CacheFeedUseCaseTests: XCTestCase {
     
     func test_insertionIsInvoked_uponSuccessfulDeletion() {
         let (sut, store) = makeSUT()
-        let exp = expectation(description: "wait for insertionToComplete")
-        sut.save([]) { _ in
-            exp.fulfill()
+        expect(sut: sut, toCompleteWith: nil) {
+            store.completeDeletionWith(nil)
+            store.completeInsertionWith(nil)
         }
-        store.completeDeletionWith(nil)
-        store.completeInsertionWith(nil)
-        
-        wait(for: [exp], timeout: 1)
-        XCTAssertEqual(store.insertionCompletions.count, 1)
     }
     
     func test_insertionInNotInvoked_uponDeletionError() {
         let (sut, store) = makeSUT()
         let deletionError = NSError(domain: "deletionError", code: 0)
-        var receivedError: Error?
-        let exp = expectation(description: "wait for insertion to complete")
 
-        sut.save([]) { error in
-            receivedError = error
-            exp.fulfill()
+        expect(sut: sut, toCompleteWith: deletionError) {
+            store.completeDeletionWith(deletionError)
         }
-        store.completeDeletionWith(deletionError)
-        wait(for: [exp], timeout: 1)
-
-        XCTAssertEqual((receivedError as? NSError)?.domain, deletionError.domain)
-        XCTAssertEqual((receivedError as? NSError)?.code, deletionError.code)
     }
     
     func test_feedStoreSavesCorrectFeedWithCorrectTimestamp_uponInsertion() {
@@ -120,6 +107,22 @@ class CacheFeedUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1)
         XCTAssertEqual(store.savedFeed.first?.images, images)
         XCTAssertEqual(store.savedFeed.first?.timestamp, timestamp)
+        XCTAssertEqual(store.savedFeed.count, 1)
+    }
+    
+    private func expect(sut: LocalFeedLoader, toCompleteWith expectedError: NSError?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "waiting for save to complete")
+        var receivedError: Error?
+        
+        sut.save([uniqueFeedImage()]) { error in
+            receivedError = error
+            exp.fulfill()
+        }
+        action()
+        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertEqual((receivedError as? NSError)?.code, expectedError?.code, file: file, line: line)
+        XCTAssertEqual((receivedError as? NSError)?.domain, expectedError?.domain, file: file, line: line)
     }
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStore) {
