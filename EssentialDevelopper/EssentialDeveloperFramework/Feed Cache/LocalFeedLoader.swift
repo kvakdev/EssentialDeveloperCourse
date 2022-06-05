@@ -53,6 +53,11 @@ public final class LocalFeedLoader {
         }
     }
     
+    public func validateCache() {
+        store.retrieve() { _ in }
+        store.deleteCachedFeed(completion: { _ in  })
+    }
+    
     private func validate(_ timestamp: Date) -> Bool {
         let calendar = Calendar(identifier: .gregorian)
         guard let maxCachedAge = calendar.date(byAdding: .day, value: maxAgeInDays, to: timestamp) else {

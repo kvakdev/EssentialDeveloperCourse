@@ -11,7 +11,7 @@ import EssentialDeveloperFramework
 
 class LoadFeedFromCacheUseCaseTests: XCTestCase {
     
-    func test_init() {
+    func test_init_doesNotHaveSideEffects() {
         let (_, store) = makeSUT()
         
         XCTAssertEqual(store.savedMessages, [])
