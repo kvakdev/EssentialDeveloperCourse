@@ -163,7 +163,7 @@ private extension Array where Element == FeedImage {
         compactMap { LocalFeedImage(id: $0.id,
                                     description: $0.description,
                                     location: $0.location,
-                                    imageUrl: $0.imageURL)
+                                    url: $0.url)
         }
     }
 }

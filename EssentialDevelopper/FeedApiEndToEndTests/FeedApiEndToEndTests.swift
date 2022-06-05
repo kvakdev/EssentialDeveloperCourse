@@ -14,16 +14,16 @@ class FeedApiEndToEndTests: XCTestCase {
     func test_endToEndTest_ReturnsTheFixedFeedData() {
         switch loadFeed() {
         case .failure(let error):
-            XCTFail("expected success with 8 items got \(error) instead")
-        case .success(let feedItems):
-            XCTAssertEqual(feedImage(at: 0), feedItems[0])
-            XCTAssertEqual(feedImage(at: 1), feedItems[1])
-            XCTAssertEqual(feedImage(at: 2), feedItems[2])
-            XCTAssertEqual(feedImage(at: 3), feedItems[3])
-            XCTAssertEqual(feedImage(at: 4), feedItems[4])
-            XCTAssertEqual(feedImage(at: 5), feedItems[5])
-            XCTAssertEqual(feedImage(at: 6), feedItems[6])
-            XCTAssertEqual(feedImage(at: 7), feedItems[7])
+            XCTFail("expected success with 8 images got \(error) instead")
+        case .success(let imageFeed):
+            XCTAssertEqual(feedImage(at: 0), imageFeed[0])
+            XCTAssertEqual(feedImage(at: 1), imageFeed[1])
+            XCTAssertEqual(feedImage(at: 2), imageFeed[2])
+            XCTAssertEqual(feedImage(at: 3), imageFeed[3])
+            XCTAssertEqual(feedImage(at: 4), imageFeed[4])
+            XCTAssertEqual(feedImage(at: 5), imageFeed[5])
+            XCTAssertEqual(feedImage(at: 6), imageFeed[6])
+            XCTAssertEqual(feedImage(at: 7), imageFeed[7])
         }
     }
     
