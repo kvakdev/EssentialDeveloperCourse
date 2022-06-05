@@ -13,6 +13,7 @@ public class FeedStoreSpy: FeedStore {
     enum Message: Equatable {
         case delete
         case insert(images: [LocalFeedImage], timestamp: Date)
+        case retrieve
     }
 
     var deletionCompletions: [TransactionCompletion] = []
@@ -28,6 +29,10 @@ public class FeedStoreSpy: FeedStore {
     public func insert(_ feedImages: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
         savedMessages.append(.insert(images: feedImages, timestamp: timestamp))
         insertionCompletions.append(completion)
+    }
+    
+    public func retrieve() {
+        savedMessages.append(.retrieve)
     }
     
     func completeDeletionWith(_ error: Error, at index: Int = 0) {
