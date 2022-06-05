@@ -44,11 +44,11 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     func test_loadDeliversEmptyFeed_onEmptyCache() {
-        let fixedDate = Date().adding(days: -7).adding(seconds: 1)
-        let (sut, store) = makeSUT()
+        let fixedDate = Date()
+        let (sut, store) = makeSUT(timestamp: { fixedDate })
         
         expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveWith([], timestamp: fixedDate)
+            store.completeRetrieveWith([], timestamp: fixedDate.adding(days: -7).adding(seconds: 1))
         }
     }
     
@@ -59,6 +59,16 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         
         expect(sut: sut, toCompleteWith: .success([feed.model])) {
             store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7).adding(seconds: 1))
+        }
+    }
+    
+    func test_loadDeliversNoFeed_onSevenDaysOldCache() {
+        let fixedDate = Date()
+        let (sut, store) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueFeed()
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7))
         }
     }
     
