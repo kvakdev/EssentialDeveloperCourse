@@ -72,6 +72,15 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
+    func test_loadDeletesCach_onretrievalError() {
+        let (sut, store) = makeSUT()
+        
+        sut.load { _ in }
+        store.completeRetrieveWith(anyNSError())
+        
+        XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
+    }
+    
     private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, after action: () -> Void, file: StaticString = #file, line: UInt = #line) {
 
         sut.load { receivedResult in
@@ -103,6 +112,10 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let model = FeedImage(id: local.id, description: local.description, location: local.location, imageUrl: local.url)
         
         return (local, model)
+    }
+    
+    private func anyNSError() -> NSError {
+        return NSError(domain: "anyDomain", code: 0)
     }
 }
 
