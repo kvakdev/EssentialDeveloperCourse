@@ -113,10 +113,6 @@ class CacheFeedUseCaseTests: XCTestCase {
         
         return (sut: sut, store: store)
     }
-    
-    private func uniqueFeedImage() -> FeedImage {
-        return FeedImage(id: UUID(), imageUrl: anyURL())
-    }
 }
 
 private extension Array where Element == FeedImage {

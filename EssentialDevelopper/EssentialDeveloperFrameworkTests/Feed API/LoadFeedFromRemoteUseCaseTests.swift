@@ -193,9 +193,3 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
         }
     }
 }
-
-//MARK: Helpers
-func anyURL() -> URL {
-    return URL(string: "http://any-url.com")!
-}
-
