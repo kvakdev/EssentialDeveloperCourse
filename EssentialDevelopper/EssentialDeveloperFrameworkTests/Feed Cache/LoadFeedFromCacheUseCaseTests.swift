@@ -35,24 +35,43 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
     }
     
     func test_loadDeliversEmptyFeed_onExpiredCache() {
-        let (sut, store) = makeSUT()
-        let date = Date.distantPast
+        let fixedDate = Date()
+        let (sut, store) = makeSUT(timestamp: { fixedDate })
         
         expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveWith([uniqueFeedImage()], timestamp: date)
+            store.completeRetrieveWith([uniqueFeed().local], timestamp: fixedDate.adding(days: -7).adding(seconds: -1))
         }
     }
     
-    private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, after action: () -> Void) {
+    func test_loadDeliversEmptyFeed_onEmptyCache() {
+        let fixedDate = Date().adding(days: -7).adding(seconds: 1)
+        let (sut, store) = makeSUT()
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieveWith([], timestamp: fixedDate)
+        }
+    }
+    
+    func test_loadDeliversFeed_onValidCache() {
+        let fixedDate = Date()
+        let (sut, store) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueFeed()
+        
+        expect(sut: sut, toCompleteWith: .success([feed.model])) {
+            store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7).adding(seconds: 1))
+        }
+    }
+    
+    private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, after action: () -> Void, file: StaticString = #file, line: UInt = #line) {
 
         sut.load { receivedResult in
             switch (expectedResult, receivedResult) {
             case (.success(let expectedFeed), .success(let receivedFeed)):
-                XCTAssertEqual(expectedFeed, receivedFeed)
+                XCTAssertEqual(expectedFeed, receivedFeed, file: file, line: line)
             case (.failure(let expectedError), .failure(let receivedError)):
-                XCTAssertEqual((expectedError as NSError), (receivedError as NSError))
+                XCTAssertEqual((expectedError as NSError), (receivedError as NSError), file: file, line: line)
             default:
-                XCTFail("expected result \(expectedResult), got \(receivedResult) instead")
+                XCTFail("expected result \(expectedResult), got \(receivedResult) instead", file: file, line: line)
             }
         }
         
@@ -69,7 +88,20 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         return (sut: sut, store: store)
     }
     
-    private func uniqueFeedImage() -> LocalFeedImage {
-        return LocalFeedImage(id: UUID(), url: anyURL())
+    private func uniqueFeed() -> (local: LocalFeedImage, model: FeedImage) {
+        let local = LocalFeedImage(id: UUID(), url: anyURL())
+        let model = FeedImage(id: local.id, description: local.description, location: local.location, imageUrl: local.url)
+        
+        return (local, model)
+    }
+}
+
+extension Date {
+    func adding(days: Int) -> Date {
+        return Calendar(identifier: .gregorian).date(byAdding: .day, value: days, to: self)!
+    }
+    
+    func adding(seconds: TimeInterval) -> Date {
+        return addingTimeInterval(seconds)
     }
 }

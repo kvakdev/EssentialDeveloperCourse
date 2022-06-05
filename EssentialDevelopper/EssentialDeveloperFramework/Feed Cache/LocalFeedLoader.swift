@@ -13,11 +13,13 @@ public final class LocalFeedLoader {
     public typealias Result = FeedLoaderResult
     
     private let store: FeedStore
-    private let timestamp: () -> Date
+    private let currentDate: () -> Date
+    private var maxAgeInDays: Int = 7
+    
     
     public init(_ store: FeedStore, timestamp: @escaping () -> Date) {
         self.store = store
-        self.timestamp = timestamp
+        self.currentDate = timestamp
     }
     
     public func save(_ feedImages: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
@@ -33,13 +35,13 @@ public final class LocalFeedLoader {
     }
     
     public func load(_ completion: @escaping (Result) -> Void) {
-        store.retrieve { result in
+        store.retrieve { [unowned self] result in
             switch result {
             case .success(let feed, let timestamp):
-                if timestamp.timeIntervalSinceNow < -(7*24*60*60) {
-                    completion(.success([]))
-                } else {
+                if self.validate(timestamp) {
                     completion(.success(feed.toModel()))
+                } else {
+                    completion(.success([]))
                 }
             case .failure(let error):
                 completion(.failure(error))
@@ -47,8 +49,17 @@ public final class LocalFeedLoader {
         }
     }
     
+    private func validate(_ timestamp: Date) -> Bool {
+        let calendar = Calendar(identifier: .gregorian)
+        guard let maxCachedAge = calendar.date(byAdding: .day, value: maxAgeInDays, to: timestamp) else {
+            return false
+        }
+        
+        return currentDate() < maxCachedAge
+    }
+    
     private func cache(_ feed: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
-        self.store.insert(feed.toLocal(), timestamp: timestamp()) { [weak self] result in
+        self.store.insert(feed.toLocal(), timestamp: currentDate()) { [weak self] result in
             guard self != nil else { return }
             
             completion(result)
