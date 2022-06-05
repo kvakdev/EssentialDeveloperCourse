@@ -119,45 +119,6 @@ class CacheFeedUseCaseTests: XCTestCase {
     }
 }
 
-
-private class FeedStoreSpy: FeedStore {
-    enum Message: Equatable {
-        case delete
-        case insert(images: [LocalFeedImage], timestamp: Date)
-    }
-
-    var deletionCompletions: [TransactionCompletion] = []
-    var insertionCompletions: [TransactionCompletion] = []
-    
-    var savedMessages: [Message] = []
-    
-    func deleteCachedFeed(completion: @escaping TransactionCompletion) {
-        savedMessages.append(.delete)
-        deletionCompletions.append(completion)
-    }
-    
-    func insert(_ feedImages: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
-        savedMessages.append(.insert(images: feedImages, timestamp: timestamp))
-        insertionCompletions.append(completion)
-    }
-    
-    func completeDeletionWith(_ error: Error, at index: Int = 0) {
-        deletionCompletions[index](error)
-    }
-    
-    func completeInsertionWith(_ error: Error, at index: Int = 0) {
-        insertionCompletions[index](error)
-    }
-    
-    func successfulyCompleteDeletion(at index: Int = 0) {
-        deletionCompletions[index](nil)
-    }
-    
-    func successfulyCompleteInsertion(at index: Int = 0) {
-        insertionCompletions[index](nil)
-    }
-}
-
 private extension Array where Element == FeedImage {
     func toLocal() -> [LocalFeedImage] {
         compactMap { LocalFeedImage(id: $0.id,
