@@ -55,6 +55,8 @@ class FeedStoreSpy: FeedStore {
 }
 
 class LocalFeedLoader {
+    typealias ReceivedResult = Error?
+    
     let store: FeedStore
     let timestamp: () -> Date
     
@@ -63,7 +65,7 @@ class LocalFeedLoader {
         self.timestamp = timestamp
     }
     
-    func save(_ feedImages: [FeedImage], completion: @escaping (Error?) -> Void) {
+    func save(_ feedImages: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
         store.deleteCachedFeed() { [unowned self] error in
             if error == nil {
                 self.store.insert(feedImages, timestamp: timestamp(), completion: completion)
@@ -125,19 +127,19 @@ class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual(store.savedMessages, [.delete, .insert(images: images, timestamp: timestamp)])
     }
     
-    private func expect(sut: LocalFeedLoader, toCompleteWith expectedError: NSError?, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+    private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.ReceivedResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "waiting for save to complete")
-        var receivedError: Error?
+        var receivedResult: LocalFeedLoader.ReceivedResult?
         
-        sut.save([uniqueFeedImage()]) { error in
-            receivedError = error
+        sut.save([uniqueFeedImage()]) { result in
+            receivedResult = result
             exp.fulfill()
         }
         action()
         wait(for: [exp], timeout: 1.0)
         
-        XCTAssertEqual((receivedError as? NSError)?.code, expectedError?.code, file: file, line: line)
-        XCTAssertEqual((receivedError as? NSError)?.domain, expectedError?.domain, file: file, line: line)
+        XCTAssertEqual((receivedResult as? NSError)?.code, (expectedResult as? NSError)?.code, file: file, line: line)
+        XCTAssertEqual((receivedResult as? NSError)?.domain, (expectedResult as? NSError)?.domain, file: file, line: line)
     }
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
