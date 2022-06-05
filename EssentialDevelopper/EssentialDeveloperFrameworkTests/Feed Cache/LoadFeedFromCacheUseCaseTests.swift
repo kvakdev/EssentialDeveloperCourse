@@ -52,23 +52,13 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         }
     }
     
-    func test_loadDeliversFeed_onValidCache() {
+    func test_loadDeliversFeed_onLessThanSevenDaysOldCache() {
         let fixedDate = Date()
         let (sut, store) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueFeed()
         
         expect(sut: sut, toCompleteWith: .success([feed.model])) {
             store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7).adding(seconds: 1))
-        }
-    }
-    
-    func test_loadDeliversNoFeed_onSevenDaysOldCache() {
-        let fixedDate = Date()
-        let (sut, store) = makeSUT(timestamp: { fixedDate })
-        let feed = uniqueFeed()
-        
-        expect(sut: sut, toCompleteWith: .success([])) {
-            store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7))
         }
     }
     
@@ -81,7 +71,17 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
     }
     
-    func test_loadDeletesCache_onCacheInvalidation() {
+    func test_loadDeliversNoFeed_onSevenDaysOldCache() {
+        let fixedDate = Date()
+        let (sut, store) = makeSUT(timestamp: { fixedDate })
+        let feed = uniqueFeed()
+        
+        expect(sut: sut, toCompleteWith: .success([])) {
+            store.completeRetrieveWith([feed.local], timestamp: fixedDate.adding(days: -7))
+        }
+    }
+    
+    func test_loadDeletesCache_onMoreThanSevenDaysOldCache() {
         let fixedDate = Date()
         let (sut, store) = makeSUT(timestamp: { fixedDate })
         let feed = uniqueFeed()
