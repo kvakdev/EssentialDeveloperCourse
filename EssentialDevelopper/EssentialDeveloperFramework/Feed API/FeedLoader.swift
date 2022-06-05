@@ -16,3 +16,16 @@ public enum FeedLoaderResult {
 public protocol FeedLoaderProtocol {
     func load(completion: @escaping (FeedLoaderResult) -> ())
 }
+
+extension FeedLoaderResult: Equatable {
+    public static func == (lhs: FeedLoaderResult, rhs: FeedLoaderResult) -> Bool {
+        switch (lhs, rhs) {
+        case (.success(let leftFeed), .success(let rightFeed)):
+                return leftFeed == rightFeed
+        case (.failure(let leftError), .failure(let rightError)):
+                return (leftError as? NSError) == (rightError as? NSError)
+        default:
+                return false
+        }
+    }
+}

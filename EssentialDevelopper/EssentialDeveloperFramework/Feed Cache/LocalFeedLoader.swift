@@ -10,6 +10,7 @@ import Foundation
 
 public final class LocalFeedLoader {
     public typealias ReceivedResult = Error?
+    public typealias Result = FeedLoaderResult
     
     private let store: FeedStore
     private let timestamp: () -> Date
@@ -31,17 +32,17 @@ public final class LocalFeedLoader {
         }
     }
     
-    public func load(_ completion: @escaping ([FeedImage]?, Error?) -> Void) {
+    public func load(_ completion: @escaping (Result) -> Void) {
         store.retrieve { result in
             switch result {
             case .success(let feed, let timestamp):
                 if timestamp.timeIntervalSinceNow < -(7*24*60*60) {
-                    completion([], nil)
+                    completion(.success([]))
                 } else {
-                    completion(feed.toModel(), nil)
+                    completion(.success(feed.toModel()))
                 }
             case .failure(let error):
-                completion(nil, error)
+                completion(.failure(error))
             }
         }
     }
