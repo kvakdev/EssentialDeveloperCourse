@@ -17,6 +17,8 @@ class FeedStore {
     var deletionCompletions: [TransactionCompletion] = []
     var insertionCompletions: [TransactionCompletion] = []
     
+    var savedFeed: [(images: [FeedImage], timestamp: Date)] = []
+    
     func deleteCache(completion: @escaping TransactionCompletion) {
         deletionCallCount += 1
         deletionCompletions.append(completion)
@@ -24,6 +26,7 @@ class FeedStore {
     
     func insert(_ feedImages: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
         insertionCallCount += 1
+        savedFeed.append((feedImages, timestamp))
         insertionCompletions.append(completion)
     }
     
@@ -67,8 +70,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     
     func test_deletionIsCalled_uponInsertion() {
         let (sut, store) = makeSUT()
-        let feedItems = [uniqueFeedImage(), uniqueFeedImage()]
-        sut.save(feedItems) { error in }
+        sut.save([]) { _ in }
         
         XCTAssertEqual(store.deletionCallCount, 1)
     }
@@ -76,7 +78,7 @@ class CacheFeedUseCaseTests: XCTestCase {
     func test_insertionIsInvoked_uponSuccessfulDeletion() {
         let (sut, store) = makeSUT()
         let exp = expectation(description: "wait for insertionToComplete")
-        sut.save([uniqueFeedImage()]) { _ in
+        sut.save([]) { _ in
             exp.fulfill()
         }
         store.completeDeletionWith(nil)
@@ -92,7 +94,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         var receivedError: Error?
         let exp = expectation(description: "wait for insertion to complete")
 
-        sut.save([uniqueFeedImage()]) { error in
+        sut.save([]) { error in
             receivedError = error
             exp.fulfill()
         }
@@ -101,6 +103,23 @@ class CacheFeedUseCaseTests: XCTestCase {
 
         XCTAssertEqual((receivedError as? NSError)?.domain, deletionError.domain)
         XCTAssertEqual((receivedError as? NSError)?.code, deletionError.code)
+    }
+    
+    func test_feedStoreSavesCorrectFeedWithCorrectTimestamp_uponInsertion() {
+        let timestamp = Date()
+        let (sut, store) = makeSUT(timestamp: { timestamp })
+        let images = [uniqueFeedImage(), uniqueFeedImage()]
+        let exp = expectation(description: "waiting for save to complete")
+        
+        sut.save(images) { error in
+            exp.fulfill()
+        }
+        store.completeDeletionWith(nil)
+        store.completeInsertionWith(nil)
+        
+        wait(for: [exp], timeout: 1)
+        XCTAssertEqual(store.savedFeed.first?.images, images)
+        XCTAssertEqual(store.savedFeed.first?.timestamp, timestamp)
     }
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStore) {
