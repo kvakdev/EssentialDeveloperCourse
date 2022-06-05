@@ -54,8 +54,16 @@ public final class LocalFeedLoader {
     }
     
     public func validateCache() {
-        store.retrieve() { _ in }
-        store.deleteCachedFeed(completion: { _ in  })
+        store.retrieve() { [unowned self] result in
+            switch result {
+            case .success(_, let timestamp):
+                if !self.validate(timestamp) {
+                    self.store.deleteCachedFeed(completion: { _ in  })
+                }
+            case .failure:
+                self.store.deleteCachedFeed(completion: { _ in })
+            }
+        }
     }
     
     private func validate(_ timestamp: Date) -> Bool {

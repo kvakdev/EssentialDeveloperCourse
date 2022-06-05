@@ -17,13 +17,22 @@ class ValidateFeedCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.savedMessages, [])
     }
     
-    func test_validateFeed_deletesCacheOnError() {
+    func test_validateFeed_deletesCacheOnRetrievalError() {
         let (sut, store) = makeSUT()
         
         sut.validateCache()
         store.completeRetrieveWith(anyNSError())
         
         XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
+    }
+    
+    func test_validateFeed_hasNoSideEffectsOnLessThanSevenDaysOldCache() {
+        let (sut, store) = makeSUT()
+        
+        sut.validateCache()
+        store.completeRetrieveWith([uniqueFeed().local], timestamp: Date())
+        
+        XCTAssertEqual(store.savedMessages, [.retrieve])
     }
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
