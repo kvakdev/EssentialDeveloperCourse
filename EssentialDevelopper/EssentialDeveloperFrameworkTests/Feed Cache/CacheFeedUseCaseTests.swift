@@ -9,9 +9,14 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class FeedStore {
+protocol FeedStore {
     typealias TransactionCompletion = (Error?) -> Void
     
+    func deleteCache(completion: @escaping TransactionCompletion)
+    func insert(_ feedImages: [FeedImage], timestamp: Date, completion: @escaping TransactionCompletion)
+}
+
+class FeedStoreSpy: FeedStore {
     enum Message: Equatable {
         case delete
         case insert(images: [FeedImage], timestamp: Date)
@@ -135,8 +140,8 @@ class CacheFeedUseCaseTests: XCTestCase {
         XCTAssertEqual((receivedError as? NSError)?.domain, expectedError?.domain, file: file, line: line)
     }
     
-    private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStore) {
-        let store = FeedStore()
+    private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
+        let store = FeedStoreSpy()
         let sut = LocalFeedLoader(store, timestamp: timestamp)
         
         return (sut: sut, store: store)
