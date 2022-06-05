@@ -43,7 +43,6 @@ public final class LocalFeedLoader {
                 if self.validate(timestamp) {
                     completion(.success(feed.toModel()))
                 } else {
-                    self.store.deleteCachedFeed(completion: { _ in })
                     completion(.success([]))
                 }
             case .failure(let error):
