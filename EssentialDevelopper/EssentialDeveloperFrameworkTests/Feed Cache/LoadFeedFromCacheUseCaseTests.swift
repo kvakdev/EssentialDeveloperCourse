@@ -127,7 +127,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(receivedResults, [])
     }
     
-    private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.Result, after action: () -> Void, file: StaticString = #file, line: UInt = #line) {
+    private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, after action: () -> Void, file: StaticString = #file, line: UInt = #line) {
 
         sut.load { receivedResult in
             switch (expectedResult, receivedResult) {
