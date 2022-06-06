@@ -66,18 +66,18 @@ class CodableFeedStore {
 }
 
 class CodableFeedStoreTests: XCTestCase {
-    static let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("image-feed.store")
+    private let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("CodableFeedStoreTests.store")
     
     override func setUp() {
         super.setUp()
         
-        try? FileManager.default.removeItem(atPath: Self.storeURL.path)
+        try? FileManager.default.removeItem(atPath: storeURL.path)
     }
     
     override func tearDown() {
         super.tearDown()
         
-        try? FileManager.default.removeItem(atPath: Self.storeURL.path)
+        try? FileManager.default.removeItem(atPath: storeURL.path)
     }
     
     func test_init() {
@@ -142,10 +142,10 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_retreivingCorruptData_returnFailure() throws {
         let corruptData = Data("anyString".utf8)
-        try corruptData.write(to: Self.storeURL)
+        try corruptData.write(to: storeURL)
 
         let exp = expectation(description: "wait for retreive to complete")
-        let sut = makeSUT(storeURL: Self.storeURL)
+        let sut = makeSUT()
         
         sut.retrieve { result in
             switch result {
@@ -159,7 +159,11 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    private func makeSUT(storeURL: URL = CodableFeedStoreTests.storeURL) -> CodableFeedStore {
-        return CodableFeedStore(storeURL: storeURL)
+    private func makeSUT() -> CodableFeedStore {
+        let sut = CodableFeedStore(storeURL: storeURL)
+        
+        trackMemoryLeaks(sut)
+        
+        return sut
     }
 }
