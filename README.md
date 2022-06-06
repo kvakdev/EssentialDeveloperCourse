@@ -193,14 +193,17 @@ Given the customer doesn't have connectivity
     ✅ empty cache
     ✅ empty cache twice
     ✅ non-empty cache
+    -  non-empty cache twice
     ✅ failure
+    
+- Insert
+    - to non-empty cache overrides old cache
+    ✅ to empty cache writes new cache
+    - failure
     
 - Delete
     - empty cache
     - non-empty cache leaves empty cache
     - failure
     
-- Insert
-    - to non-empty cache overrides old cache
-    ✅ to empty cache writes new cache
-    - failure
+

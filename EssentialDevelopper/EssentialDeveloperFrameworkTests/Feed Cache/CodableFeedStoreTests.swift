@@ -80,81 +80,68 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_init() {
         let sut = makeSUT()
-        let expectedResult: RetrieveResult = .empty
-        let exp = expectation(description: "wait for retreive to complete")
-        sut.retrieve { result in
-            switch (expectedResult, result) {
-            case (.empty, .empty):
-                exp.fulfill()
-                break
-            default:
-                XCTFail("expected empty result, got \(result) instead")
-            }
-        }
-        
-        wait(for: [exp], timeout: 1)
+
+        expect(sut: sut, toRetreive: .empty)
     }
     
     func test_retreivingTwice_hasNoSideEffects() {
         let sut = makeSUT()
-        let exp = expectation(description: "wait for retreive to complete")
         
-        sut.retrieve { firstResult in
-            sut.retrieve { secondResult in
-                switch (firstResult, secondResult) {
-                case (.empty, .empty):
-                    exp.fulfill()
-                    break
-                default:
-                    XCTFail("expected empty results twice, got \(firstResult) and \(secondResult) instead")
-                }
-            }
-        }
-        
-        wait(for: [exp], timeout: 1)
+        expect(sut: sut, toRetreiveTwice: .empty)
     }
     
     func test_retreivingNonEmptyCache_returnsInsertedFeed() {
         let sut = makeSUT()
         let feed = uniqueFeed().local
         let inputTimestamp = Date()
-        let exp = expectation(description: "wait for retreive to complete")
         
-        sut.insert([feed], timestamp: inputTimestamp) { error in
-            XCTAssertNil(error)
-            
-            sut.retrieve { result in
-                switch result {
-                case .success(let retreivedfeed, let timestamp):
-                    XCTAssertEqual(retreivedfeed, [feed])
-                    XCTAssertEqual(timestamp, inputTimestamp)
-                    exp.fulfill()
-                default:
-                    XCTFail("expected \(RetrieveResult.success(feed: [feed], timestamp: inputTimestamp ))result, got \(result) instead")
-                }
-            }
-        }
-        
-        wait(for: [exp], timeout: 1)
+        insert(sut: sut, feed: [feed], timestamp: inputTimestamp)
+        expect(sut: sut, toRetreive: .success(feed: [feed], timestamp: inputTimestamp))
     }
     
     func test_retreivingCorruptData_returnFailure() throws {
         let corruptData = Data("anyString".utf8)
         try corruptData.write(to: testSpecificStoreURL())
 
-        let exp = expectation(description: "wait for retreive to complete")
         let sut = makeSUT()
         
+        expect(sut: sut, toRetreive: .failure(anyNSError()))
+    }
+    
+    private func insert(sut: CodableFeedStore, feed: [LocalFeedImage], timestamp: Date) {
+        let exp = expectation(description: "wait for retreive to complete")
+        
+        sut.insert(feed, timestamp: timestamp) { error in
+            XCTAssertNil(error)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
+    }
+    
+    private func expect(sut: CodableFeedStore, toRetreive expectedResult: RetrieveResult, file: StaticString = #file, line: UInt = #line) {
+        let sut = makeSUT()
+        let exp = expectation(description: "wait for retreive to complete")
+  
         sut.retrieve { result in
-            switch result {
-            case .failure:
+            switch (result, expectedResult) {
+            case (.empty, .empty), (.failure, .failure):
+                exp.fulfill()
+            case (.success(let retreivedfeed, let timestamp), .success(feed: let expectedFeed, let expectedTimestamp)):
+                XCTAssertEqual(retreivedfeed, expectedFeed, file: file, line: line)
+                XCTAssertEqual(timestamp, expectedTimestamp, file: file, line: line)
                 exp.fulfill()
             default:
-                XCTFail("Expected error got \(result) instead")
+                XCTFail("expected \(expectedResult)) result, got \(result) instead", file: file, line: line)
             }
         }
         
         wait(for: [exp], timeout: 1)
+    }
+    
+    private func expect(sut: CodableFeedStore, toRetreiveTwice result: RetrieveResult) {
+        expect(sut: sut, toRetreive: result)
+        expect(sut: sut, toRetreive: result)
     }
     
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
