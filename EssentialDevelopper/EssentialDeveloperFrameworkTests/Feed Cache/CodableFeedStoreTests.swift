@@ -16,7 +16,11 @@ class CodableFeedStore {
         let timestamp: Date
     }
     
-    let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("image-feed.store")
+    private let storeURL: URL
+    
+    init(storeURL: URL) {
+        self.storeURL = storeURL
+    }
     
     func retrieve(_ completion: @escaping FeedStore.RetrieveCompletion) {
         guard let data = try? Data(contentsOf: storeURL) else {
@@ -29,7 +33,7 @@ class CodableFeedStore {
             let decoded = try decoder.decode(FeedContainer.self, from: data)
             completion(.success(feed: decoded.feed, timestamp: decoded.timestamp))
         } catch {
-            completion(.failure(NSError.invalidData()))
+            completion(.failure(error))
         }
     }
     
@@ -44,22 +48,22 @@ class CodableFeedStore {
 }
 
 class CodableFeedStoreTests: XCTestCase {
-    let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("image-feed.store")
+    static let storeURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("image-feed.store")
     
     override func setUp() {
         super.setUp()
         
-        try? FileManager.default.removeItem(atPath: storeURL.path)
+        try? FileManager.default.removeItem(atPath: Self.storeURL.path)
     }
     
     override func tearDown() {
         super.tearDown()
         
-        try? FileManager.default.removeItem(atPath: storeURL.path)
+        try? FileManager.default.removeItem(atPath: Self.storeURL.path)
     }
     
     func test_init() {
-        let sut = CodableFeedStore()
+        let sut = makeSUT()
         let expectedResult: RetrieveResult = .empty
         let exp = expectation(description: "wait for retreive to complete")
         sut.retrieve { result in
@@ -76,7 +80,7 @@ class CodableFeedStoreTests: XCTestCase {
     }
     
     func test_retreivingTwice_hasNoSideEffects() {
-        let sut = CodableFeedStore()
+        let sut = makeSUT()
         let exp = expectation(description: "wait for retreive to complete")
         
         sut.retrieve { firstResult in
@@ -95,7 +99,7 @@ class CodableFeedStoreTests: XCTestCase {
     }
     
     func test_retreivingNonEmptyCache_returnsInsertedFeed() {
-        let sut = CodableFeedStore()
+        let sut = makeSUT()
         let feed = uniqueFeed().local
         let inputTimestamp = Date()
         let exp = expectation(description: "wait for retreive to complete")
@@ -120,14 +124,14 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_retreivingCorruptData_returnFailure() throws {
         let corruptData = Data("anyString".utf8)
-        try corruptData.write(to: storeURL)
-        let expectedResult = RetrieveResult.failure(NSError.invalidData())
+        try corruptData.write(to: Self.storeURL)
+
         let exp = expectation(description: "wait for retreive to complete")
-        let sut = CodableFeedStore()
+        let sut = makeSUT(storeURL: Self.storeURL)
+        
         sut.retrieve { result in
-            switch (expectedResult, result) {
-            case (.failure(let expectedError), .failure(let resultError)):
-                XCTAssertEqual((expectedError as NSError).domain, (resultError as NSError).domain)
+            switch result {
+            case .failure:
                 exp.fulfill()
             default:
                 XCTFail("Expected error got \(result) instead")
@@ -137,10 +141,7 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-}
-
-extension NSError {
-    static func invalidData() -> Error {
-        NSError(domain: "invalid data", code: 0)
+    private func makeSUT(storeURL: URL = CodableFeedStoreTests.storeURL) -> CodableFeedStore {
+        return CodableFeedStore(storeURL: storeURL)
     }
 }
