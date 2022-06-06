@@ -186,3 +186,21 @@ Given the customer doesn't have connectivity
 
 #### Saving error course (sad path):
 1. System delivers error.
+
+
+### Feed store implementation
+- Retreive
+    ✅ empty cache
+    ✅ empty cache twice
+    ✅ non-empty cache
+    ✅ failure
+    
+- Delete
+    - empty cache
+    - non-empty cache leaves empty cache
+    - failure
+    
+- Insert
+    - to non-empty cache overrides old cache
+    ✅ to empty cache writes new cache
+    - failure

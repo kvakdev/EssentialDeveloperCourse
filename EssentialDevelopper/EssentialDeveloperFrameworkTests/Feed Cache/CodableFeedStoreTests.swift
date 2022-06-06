@@ -12,8 +12,26 @@ import EssentialDeveloperFramework
 class CodableFeedStore {
     
     private struct FeedContainer: Codable {
-        let feed: [LocalFeedImage]
+        let feed: [CodableFeedImage]
         let timestamp: Date
+    }
+    
+    private struct CodableFeedImage: Codable {
+        public let id: UUID
+        public let description: String?
+        public let location: String?
+        public let url: URL
+        
+        var local: LocalFeedImage {
+            LocalFeedImage(id: id, description: description, location: location, url: url)
+        }
+        
+        init(local: LocalFeedImage) {
+            self.id = local.id
+            self.description = local.description
+            self.url = local.url
+            self.location = local.location
+        }
     }
     
     private let storeURL: URL
@@ -31,7 +49,7 @@ class CodableFeedStore {
         
         do {
             let decoded = try decoder.decode(FeedContainer.self, from: data)
-            completion(.success(feed: decoded.feed, timestamp: decoded.timestamp))
+            completion(.success(feed: decoded.feed.map { $0.local }, timestamp: decoded.timestamp))
         } catch {
             completion(.failure(error))
         }
@@ -39,7 +57,7 @@ class CodableFeedStore {
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping FeedStore.TransactionCompletion) {
         let encoder = JSONEncoder()
-        let encoded = try! encoder.encode(FeedContainer(feed: feed, timestamp: timestamp))
+        let encoded = try! encoder.encode(FeedContainer(feed: feed.map(CodableFeedImage.init), timestamp: timestamp))
        
         
         try! encoded.write(to: storeURL)
