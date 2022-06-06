@@ -14,7 +14,6 @@ public final class LocalFeedLoader {
     
     private let store: FeedStore
     private let currentDate: () -> Date
-    private var maxAgeInDays: Int = 7
     
     
     public init(_ store: FeedStore, timestamp: @escaping () -> Date) {
@@ -40,7 +39,7 @@ public final class LocalFeedLoader {
             
             switch result {
             case .success(let feed, let timestamp):
-                if self.validate(timestamp) {
+                if FeedCachePolicy.validate(timestamp, against: self.currentDate()) {
                     completion(.success(feed.toModel()))
                 } else {
                     completion(.success([]))
@@ -57,7 +56,7 @@ public final class LocalFeedLoader {
             
             switch result {
             case .success(_, let timestamp):
-                if !self.validate(timestamp) {
+                if !FeedCachePolicy.validate(timestamp, against: self.currentDate()) {
                     self.store.deleteCachedFeed(completion: { _ in  })
                 }
             case .failure:
@@ -66,14 +65,7 @@ public final class LocalFeedLoader {
         }
     }
     
-    private func validate(_ timestamp: Date) -> Bool {
-        let calendar = Calendar(identifier: .gregorian)
-        guard let maxCachedAge = calendar.date(byAdding: .day, value: maxAgeInDays, to: timestamp) else {
-            return false
-        }
-        
-        return currentDate() < maxCachedAge
-    }
+
     
     private func cache(_ feed: [FeedImage], completion: @escaping (ReceivedResult) -> Void) {
         self.store.insert(feed.toLocal(), timestamp: currentDate()) { [weak self] result in
