@@ -44,6 +44,8 @@ public final class LocalFeedLoader {
                 } else {
                     completion(.success([]))
                 }
+            case .empty:
+                completion(.success([]))
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -59,6 +61,8 @@ public final class LocalFeedLoader {
                 if !FeedCachePolicy.validate(timestamp, against: self.currentDate()) {
                     self.store.deleteCachedFeed(completion: { _ in  })
                 }
+            case .empty:
+                break
             case .failure:
                 self.store.deleteCachedFeed(completion: { _ in })
             }
