@@ -26,31 +26,33 @@ class ValidateFeedCacheUseCaseTests: XCTestCase {
         XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
     }
     
-    func test_validateFeed_hasNoSideEffectsOnLessThanSevenDaysOldCache() {
+    func test_validateFeed_hasNoSideEffectsOnValidTimestamp() {
         let (sut, store) = makeSUT()
         
         sut.validateCache()
-        store.completeRetrieveWith([uniqueFeed().local], timestamp: Date())
+        store.completeRetrieveWith([uniqueFeed().local], timestamp: Date().minusMaxCacheAge().adding(seconds: 1))
         
         XCTAssertEqual(store.savedMessages, [.retrieve])
     }
     
-    func test_validate_deletesCacheOnSevenDaysOldCache() {
+    func test_validate_deletesCacheOnExactExpirationTimestamp() {
         let fixedDate = Date()
         let (sut, store) = makeSUT(timestamp: { fixedDate })
         
         sut.validateCache()
-        store.completeRetrieveWith([], timestamp: fixedDate.adding(days: -7))
+        let expirationTimestamp = fixedDate.minusMaxCacheAge()
+        store.completeRetrieveWith([], timestamp: expirationTimestamp)
         
         XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
     }
     
-    func test_validate_deletesCacheOnMoreThanSevenDaysOldCache() {
+    func test_validate_deletesCacheOnExpiredTimestamp() {
         let fixedDate = Date()
         let (sut, store) = makeSUT(timestamp: { fixedDate })
         
         sut.validateCache()
-        store.completeRetrieveWith([], timestamp: fixedDate.adding(days: -7).adding(seconds: -1))
+        let expiredTimestamp = fixedDate.minusMaxCacheAge().adding(seconds: -1)
+        store.completeRetrieveWith([], timestamp: expiredTimestamp)
         
         XCTAssertEqual(store.savedMessages, [.retrieve, .delete])
     }
