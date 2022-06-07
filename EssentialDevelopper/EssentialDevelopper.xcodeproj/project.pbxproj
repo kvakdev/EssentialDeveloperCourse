@@ -155,13 +155,21 @@
 			isa = PBXGroup;
 			children = (
 				93BAE332284CBA490042B7E1 /* LocalFeedLoader.swift */,
-				93BAE345284F366C0042B7E1 /* CodableFeedStore.swift */,
 				93BAE334284CBA700042B7E1 /* FeedStore.swift */,
 				93BAE341284DE6650042B7E1 /* FeedCachePolicy.swift */,
+				93BAE380284F8A140042B7E1 /* Infrastructure */,
+			);
+			path = "Feed Cache";
+			sourceTree = "<group>";
+		};
+		93BAE380284F8A140042B7E1 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				93BAE345284F366C0042B7E1 /* CodableFeedStore.swift */,
 				93BAE358284F62B40042B7E1 /* CoreDataFeedStore.swift */,
 				93BAE37D284F6B870042B7E1 /* FeedStore.xcdatamodeld */,
 			);
-			path = "Feed Cache";
+			path = Infrastructure;
 			sourceTree = "<group>";
 		};
 		F40FF151226475ED00359F40 = {

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class CodableFeedStore: FeedStore {
+public final class CodableFeedStore: FeedStore {
     
     private struct FeedContainer: Codable {
         let feed: [CodableFeedImage]
