@@ -66,6 +66,12 @@ class CodableFeedStore {
             completion(error)
         }
     }
+    
+    func deleteCachedFeed(completion: @escaping FeedStore.TransactionCompletion) {
+        try? FileManager.default.removeItem(at: storeURL)
+        
+        completion(nil)
+    }
 }
 
 class CodableFeedStoreTests: XCTestCase {
@@ -115,6 +121,31 @@ class CodableFeedStoreTests: XCTestCase {
         
         insert(sut: sut, feed: [secondFeed], timestamp: secondTimestamp)
         expect(sut: sut, toRetreive: .success(feed: [secondFeed], timestamp: secondTimestamp))
+    }
+    
+    func test_delete_returnsNoErrorOnEmptyCache() {
+        let sut = makeSUT()
+        let exp = expectation(description: "waiting for delete to complete")
+        sut.deleteCachedFeed { error in
+            XCTAssertNil(nil)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_delete_removesOldCache() {
+        let sut = makeSUT()
+        let exp = expectation(description: "waiting for delete to complete")
+        
+        insert(sut: sut, feed: [uniqueFeed().local], timestamp: Date())
+        
+        sut.deleteCachedFeed { error in
+            XCTAssertNil(nil)
+            exp.fulfill()
+        }
+        wait(for: [exp], timeout: 1.0)
+        
+        expect(sut: sut, toRetreive: .empty)
     }
     
     func test_retreivingCorruptData_returnsFailure() throws {
@@ -174,7 +205,7 @@ class CodableFeedStoreTests: XCTestCase {
                 XCTAssertEqual(timestamp, expectedTimestamp, file: file, line: line)
                 exp.fulfill()
             default:
-                XCTFail("expected \(expectedResult)) result, got \(result) instead", file: file, line: line)
+                XCTFail("expected \(expectedResult) result, got \(result) instead", file: file, line: line)
             }
         }
         

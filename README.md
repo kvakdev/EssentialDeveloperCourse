@@ -198,7 +198,7 @@ Given the customer doesn't have connectivity
     ✅ failure on corrupt data twice
     
 - Insert
-    - to non-empty cache overrides old cache
+    ✅ to non-empty cache overrides old cache
     ✅ to empty cache writes new cache
     ✅ completes with failure _C
     
