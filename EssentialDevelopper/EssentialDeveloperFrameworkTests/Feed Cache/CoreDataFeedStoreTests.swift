@@ -9,7 +9,7 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
+class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs, SerialFeedStore {
   
     func test_insert_deliversErrorIfAny() {
      
@@ -24,7 +24,7 @@ class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
     
     func test_deleteError_hasNoSideEffects() {
-        assertDeleteErrorHasNoSideEffects(makeSUT())
+        
     }
     
     func test_retreivingCorruptData_returnsFailure() {
@@ -36,7 +36,7 @@ class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
     
     func test_sideEffect_runSerially() {
-        
+        assertSideEffectsRunSerially(makeSUT())
     }
     
     func test_retreiveHasNoSideEffectsOnEmptyCache() {
