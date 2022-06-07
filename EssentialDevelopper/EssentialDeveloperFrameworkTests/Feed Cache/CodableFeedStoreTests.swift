@@ -25,24 +25,20 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     
     func test_retreiveHasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
-
-        expect(sut: sut, toRetreive: .empty)
+        
+        assertStoreInitHasNoSideEffects(sut)
     }
     
     func test_retreivingTwice_hasNoSideEffects() {
         let sut = makeSUT()
         
-        expect(sut: sut, toRetreiveTwice: .empty)
+        assertRetreivingTwiceHasNoSideEffects(sut)
     }
-    
+
     func test_retreivingNonEmptyCache_returnsInsertedFeed() {
         let sut = makeSUT()
-        let feed = uniqueFeed().local
-        let inputTimestamp = Date()
         
-        insert(sut: sut, feed: [feed], timestamp: inputTimestamp)
-        expect(sut: sut, toRetreive: .success(feed: [feed], timestamp: inputTimestamp))
-        expect(sut: sut, toRetreiveTwice: .success(feed: [feed], timestamp: inputTimestamp))
+        assertRetreiveReturnsInsertedFeed(sut)
     }
     
     func test_inserting_overridesPreviousCache() {
@@ -59,9 +55,10 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
 
     func test_deleteError_hasNoSideEffects() {
-        let sut = makeSUT()
+        let unauthorizedURL = systemCacheDirectory()
+        let sut = makeSUT(storeURL: unauthorizedURL)
         
-        assertDeleteHasNoSideEffects(sut)
+        assertDeleteErrorHasNoSideEffects(sut)
     }
     
     func test_delete_removesOldCache() {
@@ -104,14 +101,8 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     func test_insert_deliversErrorIfAny() {
         let invalidURL = anyURL()
         let sut = makeSUT(storeURL: invalidURL)
-        let exp = expectation(description: "wait for insert to complete")
         
-        sut.insert([uniqueFeed().local], timestamp: Date()) { error in
-            XCTAssertNotNil(error)
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1)
+        assertInsertErrorReturnsFailure(sut)
     }
     
     func test_sideEffect_runSerially() {

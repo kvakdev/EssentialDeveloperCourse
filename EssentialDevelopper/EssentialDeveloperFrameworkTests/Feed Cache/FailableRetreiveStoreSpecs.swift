@@ -11,12 +11,12 @@ import XCTest
 
 extension FailableRetreiveStore where Self: XCTestCase {
     
-    func assertThatRetreiveDeliverFailureOnRetreiveError(_ sut: FeedStore) {
-        expect(sut: sut, toRetreive: .failure(anyNSError()))
+    func assertThatRetreiveDeliverFailureOnRetreiveError(_ sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        expect(sut: sut, toRetreive: .failure(anyNSError()), file: file, line: line)
     }
     
-    func assertThatRetreiveErrorHasNoSideEffects(_ sut: FeedStore) {
-        expect(sut: sut, toRetreiveTwice: .failure(anyNSError()))
+    func assertThatRetreiveErrorHasNoSideEffects(_ sut: FeedStore, file: StaticString = #file, line: UInt = #line) {
+        expect(sut: sut, toRetreiveTwice: .failure(anyNSError()), file: file, line: line)
     }
     
 }
