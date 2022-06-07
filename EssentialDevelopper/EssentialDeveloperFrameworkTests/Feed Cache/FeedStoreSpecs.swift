@@ -14,7 +14,6 @@ protocol FeedStoreSpecs {
     func test_retreivingNonEmptyCache_returnsInsertedFeed()
     func test_delete_removesOldCache()
     func test_inserting_overridesPreviousCache()
-    func test_sideEffect_runSerially()
 }
 
 protocol FailableInsertStore: FeedStoreSpecs {
@@ -32,4 +31,8 @@ protocol FailableRetreiveStore: FeedStoreSpecs {
     func test_retreiveError_hasNoSideEffects()
 }
 
-typealias CombinedFeedStoreSpecs = FailableInsertStore & FailableDeleteStore & FailableRetreiveStore
+protocol SerialFeedStore: FeedStoreSpecs {
+    func test_sideEffect_runSerially()
+}
+
+typealias CombinedFeedStoreSpecs = FailableInsertStore & FailableDeleteStore & FailableRetreiveStore & SerialFeedStore
