@@ -26,10 +26,56 @@ public class CoreDataFeedStore: FeedStore {
     
     public func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
         
+        let context = backgroundContext
+        
+        context.perform {
+            do {
+                let cache = ManagedFeedCache(context: context)
+                cache.timestamp = timestamp
+                cache.feed = NSOrderedSet(array: feed.compactMap { item in
+                    let image = ManagedFeedImage(context: context)
+                    image.id = item.id
+                    image.imageDescription = item.description
+                    image.location = item.location
+                    image.url = item.url
+                    
+                    return image
+                })
+                
+                try context.save()
+                completion(nil)
+            } catch {
+                completion(error)
+            }
+        }
     }
     
     public func retrieve(_ completion: @escaping RetrieveCompletion) {
-        completion(.empty)
+        let context = self.backgroundContext
+        
+        context.perform {
+            do {
+                let request = NSFetchRequest<ManagedFeedCache>(entityName: "ManagedFeedCache")
+                request.returnsObjectsAsFaults = false
+                
+                if let cache = try context.fetch(request).first {
+                    let feed = cache.feed
+                        .compactMap { ($0 as? ManagedFeedImage) }
+                        .map {
+                        LocalFeedImage(id: $0.id,
+                                       description: $0.imageDescription,
+                                       location: $0.location,
+                                       url: $0.url)
+                    }
+                    let timestamp = cache.timestamp
+                    completion(.success(feed: feed, timestamp: timestamp))
+                } else {
+                    completion(.empty)
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 }
 
@@ -71,11 +117,13 @@ extension NSManagedObjectModel {
 }
 
 
+@objc(ManagedFeedCache)
 private class ManagedFeedCache: NSManagedObject {
     @NSManaged var timestamp: Date
     @NSManaged var feed: NSOrderedSet
 }
 
+@objc(ManagedFeedImage)
 private class ManagedFeedImage: NSManagedObject {
     @NSManaged var id: UUID
     @NSManaged var imageDescription: String?

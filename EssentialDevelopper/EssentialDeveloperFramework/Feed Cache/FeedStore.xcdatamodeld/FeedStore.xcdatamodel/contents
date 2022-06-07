@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="ManagedFeedCache" representedClassName=".ManagedFeedCache" syncable="YES">
+    <entity name="ManagedFeedCache" representedClassName="ManagedFeedCache" syncable="YES">
         <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="feed" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ManagedFeedImage"/>
     </entity>
-    <entity name="ManagedFeedImage" representedClassName=".ManagedFeedImage" syncable="YES">
+    <entity name="ManagedFeedImage" representedClassName="ManagedFeedImage" syncable="YES">
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageDescription" optional="YES" attributeType="String"/>
         <attribute name="location" optional="YES" attributeType="String"/>

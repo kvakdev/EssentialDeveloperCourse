@@ -9,10 +9,10 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
+class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
   
     func test_insert_deliversErrorIfAny() {
-        
+     
     }
     
     func test_insertError_hasNoSideEffects() {
@@ -40,16 +40,18 @@ class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     }
     
     func test_retreiveHasNoSideEffectsOnEmptyCache() {
-        let sut = try makeSUT()
+        let sut = makeSUT()
         assertStoreInitHasNoSideEffects(sut)
     }
     
     func test_retreivingTwice_hasNoSideEffects() {
-        
+        let sut = makeSUT()
+        assertRetreivingTwiceHasNoSideEffects(sut)
     }
     
     func test_retreivingNonEmptyCache_returnsInsertedFeed() {
-        
+        let sut = makeSUT()
+        assertRetreiveReturnsInsertedFeed(sut)
     }
     
     func test_delete_removesOldCache() {
@@ -57,7 +59,7 @@ class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     }
     
     func test_inserting_overridesPreviousCache() {
-        
+   
     }
     
     func makeSUT() -> CoreDataFeedStore {
