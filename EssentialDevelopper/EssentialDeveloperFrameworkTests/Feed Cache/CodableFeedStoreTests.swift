@@ -47,51 +47,34 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     
     func test_inserting_overridesPreviousCache() {
         let sut = makeSUT()
-        let firstFeed = uniqueFeed().local
-        let firstTimestamp = Date().adding(seconds: -1)
-        let secondFeed = uniqueFeed().local
-        let secondTimestamp = Date()
         
-        insert(sut: sut, feed: [firstFeed], timestamp: firstTimestamp)
-        expect(sut: sut, toRetreive: .success(feed: [firstFeed], timestamp: firstTimestamp))
-        
-        insert(sut: sut, feed: [secondFeed], timestamp: secondTimestamp)
-        expect(sut: sut, toRetreive: .success(feed: [secondFeed], timestamp: secondTimestamp))
+        assertInsertingOverridesPreviousCache(sut)
     }
     
     func test_insertError_hasNoSideEffects() {
         let invalidURL = anyURL()
         let sut = makeSUT(storeURL: invalidURL)
-        let exp = expectation(description: "wait for insert to complete")
         
-        sut.insert([uniqueFeed().local], timestamp: Date()) { error in
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1)
-        expect(sut: sut, toRetreive: .empty)
+        assertInsertErrorHasNoSideEffects(sut)
     }
-    
+
     func test_deleteError_hasNoSideEffects() {
         let sut = makeSUT()
         
-        XCTAssertNil(deleteCache(sut: sut))
+        assertDeleteHasNoSideEffects(sut)
     }
     
     func test_delete_removesOldCache() {
         let sut = makeSUT()
         
-        insert(sut: sut, feed: [uniqueFeed().local], timestamp: Date())
-        deleteCache(sut: sut)
-        expect(sut: sut, toRetreive: .empty)
+        assertDeleteRemovesOldCache(sut)
     }
     
     func test_delete_returnsFailureOnDeleteError() {
         let unautorizedURL = systemCacheDirectory()
         let sut = makeSUT(storeURL: unautorizedURL)
-        let error = deleteCache(sut: sut)
         
-        XCTAssertNotNil(error, "expected to get permission error")
+        assertDeletereturnsFailureOnDeleteError(sut)
     }
     
     private func systemCacheDirectory() -> URL {
@@ -105,7 +88,7 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
         
         try! corruptData.write(to: storeURL)
         
-        expect(sut: sut, toRetreive: .failure(anyNSError()))
+        assertThatRetreiveDeliverFailureOnRetreiveError(sut)
     }
     
     func test_retreiveError_hasNoSideEffects() {
@@ -115,7 +98,7 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
         
         try! corruptData.write(to: storeURL)
         
-        expect(sut: sut, toRetreiveTwice: .failure(anyNSError()))
+        assertThatRetreiveErrorHasNoSideEffects(sut)
     }
     
     func test_insert_deliversErrorIfAny() {

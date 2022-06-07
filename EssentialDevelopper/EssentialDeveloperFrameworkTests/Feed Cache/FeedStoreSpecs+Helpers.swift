@@ -12,6 +12,47 @@ import EssentialDeveloperFramework
 
 extension FeedStoreSpecs where Self: XCTestCase {
     
+    func assertInsertingOverridesPreviousCache(_ sut: FeedStore) {
+        let firstFeed = uniqueFeed().local
+        let firstTimestamp = Date().adding(seconds: -1)
+        let secondFeed = uniqueFeed().local
+        let secondTimestamp = Date()
+        
+        insert(sut: sut, feed: [firstFeed], timestamp: firstTimestamp)
+        expect(sut: sut, toRetreive: .success(feed: [firstFeed], timestamp: firstTimestamp))
+        
+        insert(sut: sut, feed: [secondFeed], timestamp: secondTimestamp)
+        expect(sut: sut, toRetreive: .success(feed: [secondFeed], timestamp: secondTimestamp))
+    }
+    
+    func assertInsertErrorHasNoSideEffects(_ sut: FeedStore) {
+        let exp = expectation(description: "wait for insert to complete")
+        
+        sut.insert([uniqueFeed().local], timestamp: Date()) { error in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1)
+        expect(sut: sut, toRetreive: .empty)
+    }
+    
+    func assertDeleteHasNoSideEffects(_ sut: FeedStore) {
+        deleteCache(sut: sut)
+        expect(sut: sut, toRetreive: .empty)
+    }
+    
+    func assertDeleteRemovesOldCache(_ sut: FeedStore) {
+        insert(sut: sut, feed: [uniqueFeed().local], timestamp: Date())
+        deleteCache(sut: sut)
+        expect(sut: sut, toRetreive: .empty)
+    }
+    
+    func assertDeletereturnsFailureOnDeleteError(_ sut: FeedStore) {
+        let error = deleteCache(sut: sut)
+        
+        XCTAssertNotNil(error, "expected to get permission error")
+    }
+    
     @discardableResult
     func deleteCache(sut: FeedStore) -> Error? {
         let exp = expectation(description: "wait for delete to complete")
