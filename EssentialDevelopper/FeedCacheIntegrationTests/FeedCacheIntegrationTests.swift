@@ -42,6 +42,18 @@ class FeedCacheIntegrationTests: XCTestCase {
         expect(readSUT, toLoad: .success(feed))
     }
     
+    func test_save_overridesOldCacheOnDisk() {
+        let writeSUTOne = makeSUT()
+        let writeSUTTwo = makeSUT()
+        let readSUT = makeSUT()
+        let feedOne = [uniqueFeed().model]
+        let feedTwo = [uniqueFeed().model]
+  
+        expect(writeSUTOne, toSave: feedOne)
+        expect(writeSUTTwo, toSave: feedTwo)
+        expect(readSUT, toLoad: .success(feedTwo))
+    }
+    
     private func expect(_ sut: LocalFeedLoader, toSave feed: [FeedImage]) {
         let exp = expectation(description: "wait for save to complete")
         
