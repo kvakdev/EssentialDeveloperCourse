@@ -11,30 +11,6 @@ import EssentialDeveloperFramework
 
 class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs, SerialFeedStore {
   
-    func test_insert_deliversErrorIfAny() {
-     
-    }
-    
-    func test_insertError_hasNoSideEffects() {
-        
-    }
-    
-    func test_delete_returnsFailureOnDeleteError() {
-
-    }
-    
-    func test_deleteError_hasNoSideEffects() {
-        
-    }
-    
-    func test_retreivingCorruptData_returnsFailure() {
-        
-    }
-    
-    func test_retreiveError_hasNoSideEffects() {
-        
-    }
-    
     func test_sideEffect_runSerially() {
         assertSideEffectsRunSerially(makeSUT())
     }
