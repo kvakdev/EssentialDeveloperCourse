@@ -9,8 +9,8 @@
 import XCTest
 import EssentialDeveloperFramework
 
+class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
 
-class CodableFeedStoreTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
@@ -23,7 +23,7 @@ class CodableFeedStoreTests: XCTestCase {
         try? removeSideEffects()
     }
     
-    func test_init() {
+    func test_retreiveHasNoSideEffectsOnEmptyCache() {
         let sut = makeSUT()
 
         expect(sut: sut, toRetreive: .empty)
@@ -85,36 +85,22 @@ class CodableFeedStoreTests: XCTestCase {
         FileManager.default.urls(for: .cachesDirectory, in: .systemDomainMask).first!
     }
     
-    @discardableResult
-    private func deleteCache(sut: FeedStore) -> Error? {
-        let exp = expectation(description: "wait for delete to complete")
-        var receivedError: Error?
-        
-        sut.deleteCachedFeed { error in
-            receivedError = error
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        return receivedError
-    }
-    
-    func test_retreivingCorruptData_returnsFailure() throws {
+    func test_retreivingCorruptData_returnsFailure() {
         let corruptData = Data("anyString".utf8)
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)
         
-        try corruptData.write(to: storeURL)
+        try! corruptData.write(to: storeURL)
         
         expect(sut: sut, toRetreive: .failure(anyNSError()))
     }
     
-    func test_retreivingCorruptDataTwice_returnsFailureTwice() throws {
+    func test_retreivingCorruptDataTwice_returnsFailureTwice() {
         let corruptData = Data("anyString".utf8)
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)
         
-        try corruptData.write(to: storeURL)
+        try! corruptData.write(to: storeURL)
         
         expect(sut: sut, toRetreiveTwice: .failure(anyNSError()))
     }
@@ -156,6 +142,20 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [op1, op2, op3], timeout: 5)
         
         XCTAssertEqual([op1, op2, op3], operations, "order is not consistent")
+    }
+    
+    @discardableResult
+    private func deleteCache(sut: FeedStore) -> Error? {
+        let exp = expectation(description: "wait for delete to complete")
+        var receivedError: Error?
+        
+        sut.deleteCachedFeed { error in
+            receivedError = error
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+        return receivedError
     }
     
     private func insert(sut: FeedStore, feed: [LocalFeedImage], timestamp: Date) {
