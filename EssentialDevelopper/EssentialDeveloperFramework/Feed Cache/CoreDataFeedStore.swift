@@ -15,10 +15,8 @@ public class CoreDataFeedStore: FeedStore {
     private let backgroundContext: NSManagedObjectContext
     
     public init(bundle: Bundle = .main, storeURL: URL) throws {
-        try self.container = NSPersistentContainer.load(with: "FeedStore", in: bundle)
-        let storeDescription = NSPersistentStoreDescription(url: storeURL)
-        self.container.persistentStoreDescriptions = [storeDescription]
-        
+        try self.container = NSPersistentContainer.load(with: "FeedStore", in: bundle, storeURL: storeURL)
+       
         backgroundContext = self.container.newBackgroundContext()
     }
     
@@ -42,13 +40,16 @@ enum LoadingError: Swift.Error {
 
 
 extension NSPersistentContainer {
-    static func load(with modelName: String, in bundle: Bundle) throws -> NSPersistentContainer {
+    static func load(with modelName: String, in bundle: Bundle, storeURL: URL) throws -> NSPersistentContainer {
         
         guard let model = NSManagedObjectModel.load(with: modelName, in: bundle) else {
             throw LoadingError.modelNotFound
         }
         
+        let storeDescription = NSPersistentStoreDescription(url: storeURL)
         let container = NSPersistentContainer(name: modelName, managedObjectModel: model)
+        container.persistentStoreDescriptions = [storeDescription]
+        
         var loadError: Error?
         
         container.loadPersistentStores { _, error in
