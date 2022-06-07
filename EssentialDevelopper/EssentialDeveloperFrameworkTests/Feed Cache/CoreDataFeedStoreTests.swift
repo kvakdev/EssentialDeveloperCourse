@@ -10,6 +10,7 @@ import XCTest
 import EssentialDeveloperFramework
 
 class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
+  
     func test_insert_deliversErrorIfAny() {
         
     }
@@ -39,7 +40,7 @@ class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     }
     
     func test_retreiveHasNoSideEffectsOnEmptyCache() {
-        let sut = makeSUT()
+        let sut = try makeSUT()
         assertStoreInitHasNoSideEffects(sut)
     }
     
@@ -60,7 +61,8 @@ class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     }
     
     func makeSUT() -> CoreDataFeedStore {
-        let sut = CoreDataFeedStore()
+        let bundle = Bundle(for: CoreDataFeedStoreTests.self)
+        let sut = try! CoreDataFeedStore(bundle: bundle)
         
         trackMemoryLeaks(sut)
         

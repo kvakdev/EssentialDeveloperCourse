@@ -10,21 +10,11 @@ import Foundation
 import CoreData
 
 public class CoreDataFeedStore: FeedStore {
-    private class ManagedCache: NSManagedObject {
-         @NSManaged var timestamp: Date
-         @NSManaged var feed: NSOrderedSet
-     }
-
-     private class ManagedFeedImage: NSManagedObject {
-         @NSManaged var id: UUID
-         @NSManaged var imageDescription: String?
-         @NSManaged var location: String?
-         @NSManaged var url: URL
-         @NSManaged var cache: ManagedCache
-     }
     
-    public init() {
-        
+    private let container: NSPersistentContainer
+    
+    public init(bundle: Bundle = .main) throws {
+        try self.container = NSPersistentContainer.load(with: "FeedStore", in: bundle)
     }
     
     public func deleteCachedFeed(completion: @escaping TransactionCompletion) {
@@ -37,5 +27,39 @@ public class CoreDataFeedStore: FeedStore {
     
     public func retrieve(_ completion: @escaping RetrieveCompletion) {
         completion(.empty)
+    }
+}
+
+enum LoadingError: Swift.Error {
+    case modelNotFound
+    case failedToLoadPersistentStores(Swift.Error)
+}
+
+
+extension NSPersistentContainer {
+    static func load(with modelName: String, in bundle: Bundle) throws -> NSPersistentContainer {
+        
+        guard let model = NSManagedObjectModel.load(with: modelName, in: bundle) else {
+            throw LoadingError.modelNotFound
+        }
+        
+        let container = NSPersistentContainer(name: modelName, managedObjectModel: model)
+        var loadError: Error?
+        
+        container.loadPersistentStores { _, error in
+            loadError = error
+        }
+        
+        try loadError.map { throw LoadingError.failedToLoadPersistentStores($0) }
+        
+        return container
+    }
+}
+
+extension NSManagedObjectModel {
+    static func load(with modelName: String, in bundle: Bundle) -> NSManagedObjectModel? {
+        bundle
+            .url(forResource: modelName, withExtension: "momd")
+            .flatMap { NSManagedObjectModel(contentsOf: $0) }
     }
 }
