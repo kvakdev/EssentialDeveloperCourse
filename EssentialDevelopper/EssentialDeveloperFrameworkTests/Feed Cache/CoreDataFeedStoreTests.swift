@@ -20,7 +20,7 @@ class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
     
     func test_delete_returnsFailureOnDeleteError() {
-        
+
     }
     
     func test_deleteError_hasNoSideEffects() {
@@ -55,7 +55,7 @@ class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
     
     func test_delete_removesOldCache() {
-        
+        assertDeleteRemovesOldCache(makeSUT())
     }
     
     func test_inserting_overridesPreviousCache() {
