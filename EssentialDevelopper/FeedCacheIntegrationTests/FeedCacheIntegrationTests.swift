@@ -55,18 +55,26 @@ class FeedCacheIntegrationTests: XCTestCase {
         }
         wait(for: [writeExp], timeout: 1.0)
         
-        let readExp = expectation(description: "wait for load to complete")
-        readSUT.load { result in
-            switch result {
-            case .success(let retreivedFeed):
-                XCTAssertEqual(retreivedFeed, feed)
-            case .failure:
-                XCTFail("Expected result got error instead")
+        expect(readSUT, toLoad: .success(feed))
+    }
+    
+    private func expect(_ sut: LocalFeedLoader, toLoad expectedResult: FeedLoaderResult, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "wait for load to complete")
+        
+        sut.load { receivedResult in
+            switch (receivedResult, expectedResult) {
+            case (.success(let retreivedFeed), .success(let expectedFeed)):
+                XCTAssertEqual(retreivedFeed, expectedFeed, file: file, line: line)
+            case (.failure, .failure):
+                break
+            default:
+                XCTFail("expected \(expectedResult), got \(receivedResult) instead")
             }
-            readExp.fulfill()
+            
+            exp.fulfill()
         }
         
-        wait(for: [readExp], timeout: 1.0)
+        wait(for: [exp], timeout: 1.0)
     }
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> LocalFeedLoader {
