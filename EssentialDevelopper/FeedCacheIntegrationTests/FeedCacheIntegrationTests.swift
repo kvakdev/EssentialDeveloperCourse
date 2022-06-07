@@ -28,12 +28,38 @@ class FeedCacheIntegrationTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func test_cache_storesTheDataOnDisk() {
+        let writeSUT = makeSUT()
+        let readSUT = makeSUT()
+        let feed = [uniqueFeed().model]
+        let writeExp = expectation(description: "wait for save to complete")
+        
+        writeSUT.save(feed) { result in
+            writeExp.fulfill()
+        }
+        wait(for: [writeExp], timeout: 1.0)
+        
+        let readExp = expectation(description: "wait for load to complete")
+        readSUT.load { result in
+            switch result {
+            case .success(let retreivedFeed):
+                XCTAssertEqual(retreivedFeed, feed)
+            case .failure:
+                XCTFail("Expected result got error instead")
+            }
+            readExp.fulfill()
+        }
+        
+        wait(for: [readExp], timeout: 1.0)
+    }
+    
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> LocalFeedLoader {
         let storeURL = testSpecificaStoreURL()
         let bundle = Bundle(for: CoreDataFeedStore.self)
         let feedStore = try! CoreDataFeedStore(bundle: bundle, storeURL: storeURL)
         let sut = LocalFeedLoader(feedStore, timestamp: { Date() })
          
+        trackMemoryLeaks(sut, file: file, line: line)
         trackMemoryLeaks(sut, file: file, line: line)
         
         return sut
