@@ -11,6 +11,22 @@ import EssentialDeveloperFramework
 
 class FeedCacheIntegrationTests: XCTestCase {
     
+    override func setUp() {
+        super.setUp()
+        
+        removeSideEffects()
+    }
+    
+    override func tearDown() {
+        super.tearDown()
+        
+        removeSideEffects()
+    }
+    
+    private func removeSideEffects() {
+        try? FileManager.default.removeItem(at: testSpecificaStoreURL())
+    }
+    
     func test_cache_hasNoSideEffectsReadingFromAnEmptyCache() {
         let sut = makeSUT()
         let exp = expectation(description: "wait for load to complete")
