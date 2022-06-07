@@ -59,7 +59,7 @@ class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
     
     func test_inserting_overridesPreviousCache() {
-   
+        assertInsertingOverridesPreviousCache(makeSUT())
     }
     
     func makeSUT() -> CoreDataFeedStore {
