@@ -72,7 +72,7 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
         expect(sut: sut, toRetreive: .empty)
     }
     
-    func test_delete_returnsNoErrorOnEmptyCache() {
+    func test_deleteError_hasNoSideEffects() {
         let sut = makeSUT()
         
         XCTAssertNil(deleteCache(sut: sut))
@@ -108,7 +108,7 @@ class CodableFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
         expect(sut: sut, toRetreive: .failure(anyNSError()))
     }
     
-    func test_retreivingCorruptDataTwice_returnsFailureTwice() {
+    func test_retreiveError_hasNoSideEffects() {
         let corruptData = Data("anyString".utf8)
         let storeURL = testSpecificStoreURL()
         let sut = makeSUT(storeURL: storeURL)

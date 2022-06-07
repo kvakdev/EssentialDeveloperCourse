@@ -24,12 +24,12 @@ protocol FailableInsertStore: FeedStoreSpecs {
 
 protocol FailableDeleteStore: FeedStoreSpecs {
     func test_delete_returnsFailureOnDeleteError()
-    func test_delete_returnsNoErrorOnEmptyCache()
+    func test_deleteError_hasNoSideEffects()
 }
 
 protocol FailableRetreiveStore: FeedStoreSpecs {
-    func test_retreivingCorruptDataTwice_returnsFailureTwice()
     func test_retreivingCorruptData_returnsFailure()
+    func test_retreiveError_hasNoSideEffects()
 }
 
 typealias CombinedFeedStoreSpecs = FailableInsertStore & FailableDeleteStore & FailableRetreiveStore
