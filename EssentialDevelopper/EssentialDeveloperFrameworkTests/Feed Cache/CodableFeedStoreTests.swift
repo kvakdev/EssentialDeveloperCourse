@@ -132,6 +132,32 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
+    func test_sideEffect_runSerially() {
+        let sut = makeSUT()
+        var operations = [XCTestExpectation]()
+        
+        let op1 = expectation(description: "Operation1")
+        sut.insert([uniqueFeed().local], timestamp: Date()) { _ in
+            operations.append(op1)
+            op1.fulfill()
+        }
+        
+        let op2 = expectation(description: "Operation2")
+        sut.deleteCachedFeed { _ in
+            operations.append(op2)
+            op2.fulfill()
+        }
+        
+        let op3 = expectation(description: "Operation3")
+        sut.retrieve { _ in
+            operations.append(op3)
+            op3.fulfill()
+        }
+        wait(for: [op1, op2, op3], timeout: 5)
+        
+        XCTAssertEqual([op1, op2, op3], operations, "order is not consistent")
+    }
+    
     private func insert(sut: FeedStore, feed: [LocalFeedImage], timestamp: Date) {
         let exp = expectation(description: "wait for retreive to complete")
         
