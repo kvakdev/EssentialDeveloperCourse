@@ -189,7 +189,7 @@ Given the customer doesn't have connectivity
 
 
 ### Feed store implementation
-- Retreive
+✅ Retreive
     ✅ empty cache
     ✅ empty cache twice
     ✅ non-empty cache
@@ -197,14 +197,15 @@ Given the customer doesn't have connectivity
     ✅ failure on corrupt data
     ✅ failure on corrupt data twice
     
-- Insert
+✅ Insert
     ✅ to non-empty cache overrides old cache
     ✅ to empty cache writes new cache
-    ✅ completes with failure _C
+    ✅ completes with failure
     
-- Delete
-    - empty cache
-    - non-empty cache leaves empty cache
-    - failure
+✅ Delete
+    ✅ empty cache
+    ✅ non-empty cache leaves empty cache
+    ✅ failure
+    - twice returns no error
     
 

@@ -68,9 +68,16 @@ class CodableFeedStore {
     }
     
     func deleteCachedFeed(completion: @escaping FeedStore.TransactionCompletion) {
-        try? FileManager.default.removeItem(at: storeURL)
+        guard FileManager.default.fileExists(atPath: storeURL.path) else {
+            return completion(nil)
+        }
         
-        completion(nil)
+        do {
+            try FileManager.default.removeItem(at: storeURL)
+            completion(nil)
+        } catch {
+            completion(error)
+        }
     }
 }
 
@@ -125,27 +132,42 @@ class CodableFeedStoreTests: XCTestCase {
     
     func test_delete_returnsNoErrorOnEmptyCache() {
         let sut = makeSUT()
-        let exp = expectation(description: "waiting for delete to complete")
-        sut.deleteCachedFeed { error in
-            XCTAssertNil(nil)
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        
+        XCTAssertNil(deleteCache(sut: sut))
     }
     
     func test_delete_removesOldCache() {
         let sut = makeSUT()
-        let exp = expectation(description: "waiting for delete to complete")
         
         insert(sut: sut, feed: [uniqueFeed().local], timestamp: Date())
+        deleteCache(sut: sut)
+        expect(sut: sut, toRetreive: .empty)
+    }
+    
+    func test_delete_returnsFailureOnDeleteError() {
+        let unautorizedURL = systemCacheDirectory()
+        let sut = makeSUT(storeURL: unautorizedURL)
+        let error = deleteCache(sut: sut)
+        
+        XCTAssertNotNil(error, "expected to get permission error")
+    }
+    
+    private func systemCacheDirectory() -> URL {
+        FileManager.default.urls(for: .cachesDirectory, in: .systemDomainMask).first!
+    }
+    
+    @discardableResult
+    private func deleteCache(sut: CodableFeedStore) -> Error? {
+        let exp = expectation(description: "wait for delete to complete")
+        var receivedError: Error?
         
         sut.deleteCachedFeed { error in
-            XCTAssertNil(nil)
+            receivedError = error
             exp.fulfill()
         }
-        wait(for: [exp], timeout: 1.0)
         
-        expect(sut: sut, toRetreive: .empty)
+        wait(for: [exp], timeout: 1.0)
+        return receivedError
     }
     
     func test_retreivingCorruptData_returnsFailure() throws {
