@@ -19,6 +19,7 @@ protocol FeedStoreSpecs {
 
 protocol FailableInsertStore: FeedStoreSpecs {
     func test_insert_deliversErrorIfAny()
+    func test_insertError_hasNoSideEffects()
 }
 
 protocol FailableDeleteStore: FeedStoreSpecs {
