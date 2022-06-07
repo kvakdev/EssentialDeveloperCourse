@@ -29,33 +29,27 @@ class FeedCacheIntegrationTests: XCTestCase {
     
     func test_cache_hasNoSideEffectsReadingFromAnEmptyCache() {
         let sut = makeSUT()
-        let exp = expectation(description: "wait for load to complete")
         
-        sut.load { result in
-            switch result {
-            case .success(let feed):
-                XCTAssertEqual(feed, [])
-            case .failure:
-                XCTFail("Load failed, expected empty feed")
-            }
-            
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
+        expect(sut, toLoad: .success([]))
     }
     
     func test_cache_storesTheDataOnDisk() {
         let writeSUT = makeSUT()
         let readSUT = makeSUT()
         let feed = [uniqueFeed().model]
-        let writeExp = expectation(description: "wait for save to complete")
-        
-        writeSUT.save(feed) { result in
-            writeExp.fulfill()
-        }
-        wait(for: [writeExp], timeout: 1.0)
-        
+  
+        expect(writeSUT, toSave: feed)
         expect(readSUT, toLoad: .success(feed))
+    }
+    
+    private func expect(_ sut: LocalFeedLoader, toSave feed: [FeedImage]) {
+        let exp = expectation(description: "wait for save to complete")
+        
+        sut.save(feed) { result in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func expect(_ sut: LocalFeedLoader, toLoad expectedResult: FeedLoaderResult, file: StaticString = #file, line: UInt = #line) {
