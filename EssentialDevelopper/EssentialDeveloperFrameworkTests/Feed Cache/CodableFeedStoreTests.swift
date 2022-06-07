@@ -97,15 +97,27 @@ class CodableFeedStoreTests: XCTestCase {
         
         insert(sut: sut, feed: [feed], timestamp: inputTimestamp)
         expect(sut: sut, toRetreive: .success(feed: [feed], timestamp: inputTimestamp))
+        expect(sut: sut, toRetreiveTwice: .success(feed: [feed], timestamp: inputTimestamp))
     }
     
-    func test_retreivingCorruptData_returnFailure() throws {
+    func test_retreivingCorruptData_returnsFailure() throws {
         let corruptData = Data("anyString".utf8)
-        try corruptData.write(to: testSpecificStoreURL())
-
-        let sut = makeSUT()
+        let storeURL = testSpecificStoreURL()
+        let sut = makeSUT(storeURL: storeURL)
+        
+        try corruptData.write(to: storeURL)
         
         expect(sut: sut, toRetreive: .failure(anyNSError()))
+    }
+    
+    func test_retreivingCorruptDataTwice_returnsFailureTwice() throws {
+        let corruptData = Data("anyString".utf8)
+        let storeURL = testSpecificStoreURL()
+        let sut = makeSUT(storeURL: storeURL)
+        
+        try corruptData.write(to: storeURL)
+        
+        expect(sut: sut, toRetreiveTwice: .failure(anyNSError()))
     }
     
     private func insert(sut: CodableFeedStore, feed: [LocalFeedImage], timestamp: Date) {
@@ -144,8 +156,8 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut: sut, toRetreive: result)
     }
     
-    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
-        let sut = CodableFeedStore(storeURL: testSpecificStoreURL())
+    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
+        let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL())
         
         trackMemoryLeaks(sut, file: file, line: line)
         
