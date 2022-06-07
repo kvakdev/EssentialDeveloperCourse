@@ -9,7 +9,7 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class CodableFeedStore {
+class CodableFeedStore: FeedStore {
     
     private struct FeedContainer: Codable {
         let feed: [CodableFeedImage]
@@ -157,7 +157,7 @@ class CodableFeedStoreTests: XCTestCase {
     }
     
     @discardableResult
-    private func deleteCache(sut: CodableFeedStore) -> Error? {
+    private func deleteCache(sut: FeedStore) -> Error? {
         let exp = expectation(description: "wait for delete to complete")
         var receivedError: Error?
         
@@ -203,7 +203,7 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    private func insert(sut: CodableFeedStore, feed: [LocalFeedImage], timestamp: Date) {
+    private func insert(sut: FeedStore, feed: [LocalFeedImage], timestamp: Date) {
         let exp = expectation(description: "wait for retreive to complete")
         
         sut.insert(feed, timestamp: timestamp) { error in
@@ -214,7 +214,7 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    private func expect(sut: CodableFeedStore, toRetreive expectedResult: RetrieveResult, file: StaticString = #file, line: UInt = #line) {
+    private func expect(sut: FeedStore, toRetreive expectedResult: RetrieveResult, file: StaticString = #file, line: UInt = #line) {
         let sut = makeSUT()
         let exp = expectation(description: "wait for retreive to complete")
   
@@ -234,12 +234,12 @@ class CodableFeedStoreTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    private func expect(sut: CodableFeedStore, toRetreiveTwice result: RetrieveResult) {
+    private func expect(sut: FeedStore, toRetreiveTwice result: RetrieveResult) {
         expect(sut: sut, toRetreive: result)
         expect(sut: sut, toRetreive: result)
     }
     
-    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> CodableFeedStore {
+    private func makeSUT(storeURL: URL? = nil, file: StaticString = #file, line: UInt = #line) -> FeedStore {
         let sut = CodableFeedStore(storeURL: storeURL ?? testSpecificStoreURL())
         
         trackMemoryLeaks(sut, file: file, line: line)
