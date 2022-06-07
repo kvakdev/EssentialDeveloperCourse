@@ -12,9 +12,11 @@ import CoreData
 public class CoreDataFeedStore: FeedStore {
     
     private let container: NSPersistentContainer
+    private let backgroundContext: NSManagedObjectContext
     
     public init(bundle: Bundle = .main) throws {
         try self.container = NSPersistentContainer.load(with: "FeedStore", in: bundle)
+        backgroundContext = self.container.newBackgroundContext()
     }
     
     public func deleteCachedFeed(completion: @escaping TransactionCompletion) {
@@ -62,4 +64,18 @@ extension NSManagedObjectModel {
             .url(forResource: modelName, withExtension: "momd")
             .flatMap { NSManagedObjectModel(contentsOf: $0) }
     }
+}
+
+
+private class ManagedFeedCache: NSManagedObject {
+    @NSManaged var timestamp: Date
+    @NSManaged var feed: NSOrderedSet
+}
+
+private class ManagedFeedImage: NSManagedObject {
+    @NSManaged var id: UUID
+    @NSManaged var imageDescription: String?
+    @NSManaged var location: String?
+    @NSManaged var url: URL
+    @NSManaged var cache: ManagedFeedCache
 }
