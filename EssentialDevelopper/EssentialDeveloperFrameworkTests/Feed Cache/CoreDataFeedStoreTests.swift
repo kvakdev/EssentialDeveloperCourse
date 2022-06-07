@@ -9,20 +9,6 @@
 import XCTest
 import EssentialDeveloperFramework
 
-class CoreDataFeedStore: FeedStore {
-    func deleteCachedFeed(completion: @escaping TransactionCompletion) {
-        
-    }
-    
-    func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
-        
-    }
-    
-    func retrieve(_ completion: @escaping RetrieveCompletion) {
-        completion(.empty)
-    }
-}
-
 class CoreDataFeedStoreTests: XCTestCase, FeedStoreSpecs {
     func test_insert_deliversErrorIfAny() {
         
