@@ -103,6 +103,20 @@ class CodableFeedStoreTests: XCTestCase {
         expect(sut: sut, toRetreiveTwice: .success(feed: [feed], timestamp: inputTimestamp))
     }
     
+    func test_inserting_overridesPreviousCache() {
+        let sut = makeSUT()
+        let firstFeed = uniqueFeed().local
+        let firstTimestamp = Date().adding(seconds: -1)
+        let secondFeed = uniqueFeed().local
+        let secondTimestamp = Date()
+        
+        insert(sut: sut, feed: [firstFeed], timestamp: firstTimestamp)
+        expect(sut: sut, toRetreive: .success(feed: [firstFeed], timestamp: firstTimestamp))
+        
+        insert(sut: sut, feed: [secondFeed], timestamp: secondTimestamp)
+        expect(sut: sut, toRetreive: .success(feed: [secondFeed], timestamp: secondTimestamp))
+    }
+    
     func test_retreivingCorruptData_returnsFailure() throws {
         let corruptData = Data("anyString".utf8)
         let storeURL = testSpecificStoreURL()

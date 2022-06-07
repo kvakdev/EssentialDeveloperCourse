@@ -200,7 +200,7 @@ Given the customer doesn't have connectivity
 - Insert
     - to non-empty cache overrides old cache
     ✅ to empty cache writes new cache
-    - completes with failure
+    ✅ completes with failure _C
     
 - Delete
     - empty cache
