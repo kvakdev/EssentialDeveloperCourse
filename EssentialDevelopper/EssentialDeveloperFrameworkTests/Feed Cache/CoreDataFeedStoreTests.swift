@@ -24,7 +24,7 @@ class CoreDataFeedStoreTests: XCTestCase, CombinedFeedStoreSpecs {
     }
     
     func test_deleteError_hasNoSideEffects() {
-        
+        assertDeleteErrorHasNoSideEffects(makeSUT())
     }
     
     func test_retreivingCorruptData_returnsFailure() {
