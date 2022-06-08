@@ -38,14 +38,12 @@ public final class LocalFeedLoader {
             guard let self = self else { return }
             
             switch result {
-            case .success(let feed, let timestamp):
-                if FeedCachePolicy.validate(timestamp, against: self.currentDate()) {
-                    completion(.success(feed.toModel()))
+            case .success(let feedCache):
+                if let cache = feedCache, FeedCachePolicy.validate(cache.timestamp, against: self.currentDate()) {
+                    completion(.success(cache.feed.toModel()))
                 } else {
                     completion(.success([]))
                 }
-            case .empty:
-                completion(.success([]))
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -57,12 +55,11 @@ public final class LocalFeedLoader {
             guard let self = self else { return }
             
             switch result {
-            case .success(_, let timestamp):
-                if !FeedCachePolicy.validate(timestamp, against: self.currentDate()) {
+            case .success(let feedCache):
+                guard let cache = feedCache else { return }
+                if !FeedCachePolicy.validate(cache.timestamp, against: self.currentDate()) {
                     self.store.deleteCachedFeed(completion: { _ in  })
                 }
-            case .empty:
-                break
             case .failure:
                 self.store.deleteCachedFeed(completion: { _ in })
             }

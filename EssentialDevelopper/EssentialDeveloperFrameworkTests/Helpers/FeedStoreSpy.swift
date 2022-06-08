@@ -50,7 +50,7 @@ public class FeedStoreSpy: FeedStore {
     }
     
     func completeRetrieveWith(_ feed: [LocalFeedImage], timestamp: Date, at index: Int = 0) {
-        retrieveCompletions[index](.success(feed: feed, timestamp: timestamp))
+        retrieveCompletions[index](.success((feed: feed, timestamp: timestamp)))
     }
     
     func successfulyCompleteDeletion(at index: Int = 0) {
