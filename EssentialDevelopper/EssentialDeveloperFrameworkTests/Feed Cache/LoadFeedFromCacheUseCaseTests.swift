@@ -119,7 +119,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let store = FeedStoreSpy()
         let date = Date()
         var sut: LocalFeedLoader? = LocalFeedLoader(store, timestamp: { date })
-        var receivedResults: [FeedLoaderResult] = []
+        var receivedResults: [FeedLoader.Result] = []
         sut?.load({ result in
             receivedResults.append(result)
         })
@@ -127,7 +127,7 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         sut = nil
         store.completeRetrieveWith([uniqueFeed().local], timestamp: date)
         
-        XCTAssertEqual(receivedResults, [])
+        XCTAssertTrue(receivedResults.isEmpty)
     }
     
     private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.LoadResult, after action: () -> Void, file: StaticString = #file, line: UInt = #line) {

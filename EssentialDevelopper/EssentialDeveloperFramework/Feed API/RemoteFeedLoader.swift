@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class RemoteFeedLoader: FeedLoaderProtocol {
+public final class RemoteFeedLoader: FeedLoader {
     
     private let url: URL
     private let client: HTTPClient
@@ -18,7 +18,7 @@ public final class RemoteFeedLoader: FeedLoaderProtocol {
         case invalidData
     }
     
-    public typealias Result = FeedLoaderResult
+    public typealias Result = FeedLoader.Result
         
     public init(url: URL, client: HTTPClient) {
         self.client = client

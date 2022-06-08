@@ -10,7 +10,7 @@ import Foundation
 
 public final class LocalFeedLoader {
     public typealias SaveResult = Error?
-    public typealias LoadResult = FeedLoaderResult
+    public typealias LoadResult = FeedLoader.Result
     
     private let store: FeedStore
     private let currentDate: () -> Date
