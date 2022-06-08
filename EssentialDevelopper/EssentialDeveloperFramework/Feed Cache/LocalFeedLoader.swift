@@ -9,7 +9,7 @@
 import Foundation
 
 public final class LocalFeedLoader {
-    public typealias SaveResult = Error?
+    public typealias SaveResult = Result<Void, Error>
     public typealias LoadResult = FeedLoader.Result
     
     private let store: FeedStore
@@ -22,13 +22,14 @@ public final class LocalFeedLoader {
     }
     
     public func save(_ feedImages: [FeedImage], completion: @escaping (SaveResult) -> Void) {
-        store.deleteCachedFeed() { [weak self] error in
+        store.deleteCachedFeed() { [weak self] result in
             guard let self = self else { return }
             
-            if let deletionError = error {
-                completion(deletionError)
-            } else {
+            switch result {
+            case .success:
                 self.cache(feedImages, completion: completion)
+            case .failure:
+                completion(result)
             }
         }
     }

@@ -12,7 +12,8 @@ public typealias RetrieveResult = Result<CachedFeed?, Error>
 public typealias CachedFeed = (feed: [LocalFeedImage], timestamp: Date)
 
 public protocol FeedStore {
-    typealias TransactionCompletion = (Error?) -> Void
+    typealias TransactioResult = Result<Void, Error>
+    typealias TransactionCompletion = (TransactioResult) -> Void
     typealias RetrieveCompletion = (RetrieveResult) -> Void
     
     func deleteCachedFeed(completion: @escaping TransactionCompletion)

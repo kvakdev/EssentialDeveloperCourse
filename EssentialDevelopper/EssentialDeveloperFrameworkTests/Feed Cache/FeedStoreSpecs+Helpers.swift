@@ -48,30 +48,30 @@ extension FeedStoreSpecs where Self: XCTestCase {
     }
     
     @discardableResult
-    func deleteCache(sut: FeedStore) -> Error? {
+    func deleteCache(sut: FeedStore) -> FeedStore.TransactioResult? {
         let exp = expectation(description: "wait for delete to complete")
-        var receivedError: Error?
+        var result: FeedStore.TransactioResult?
         
-        sut.deleteCachedFeed { error in
-            receivedError = error
+        sut.deleteCachedFeed { deletionResult in
+            result = deletionResult
             exp.fulfill()
         }
         
         wait(for: [exp], timeout: 1.0)
-        return receivedError
+        return result
     }
     
     @discardableResult
-    func insert(sut: FeedStore, feed: [LocalFeedImage], timestamp: Date) -> Error? {
+    func insert(sut: FeedStore, feed: [LocalFeedImage], timestamp: Date) -> FeedStore.TransactioResult? {
         let exp = expectation(description: "wait for retreive to complete")
-        var receivedError: Error?
-        sut.insert(feed, timestamp: timestamp) { error in
-            receivedError = error
+        var insertionResult: FeedStore.TransactioResult?
+        sut.insert(feed, timestamp: timestamp) { result in
+            insertionResult = result
             exp.fulfill()
         }
         
         wait(for: [exp], timeout: 1)
-        return receivedError
+        return insertionResult
     }
     
     func expect(sut: FeedStore, toRetreive expectedResult: RetrieveResult, file: StaticString = #file, line: UInt = #line) {

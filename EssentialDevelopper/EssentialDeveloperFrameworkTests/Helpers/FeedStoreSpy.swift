@@ -38,11 +38,11 @@ public class FeedStoreSpy: FeedStore {
     }
     
     func completeDeletionWith(_ error: Error, at index: Int = 0) {
-        deletionCompletions[index](error)
+        deletionCompletions[index](.failure(error))
     }
     
     func completeInsertionWith(_ error: Error, at index: Int = 0) {
-        insertionCompletions[index](error)
+        insertionCompletions[index](.failure(error))
     }
     
     func completeRetrieveWith(_ error: Error, at index: Int = 0) {
@@ -54,10 +54,10 @@ public class FeedStoreSpy: FeedStore {
     }
     
     func successfulyCompleteDeletion(at index: Int = 0) {
-        deletionCompletions[index](nil)
+        deletionCompletions[index](.success(()))
     }
     
     func successfulyCompleteInsertion(at index: Int = 0) {
-        insertionCompletions[index](nil)
+        insertionCompletions[index](.success(()))
     }
 }

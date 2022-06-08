@@ -19,7 +19,7 @@ class CacheFeedUseCaseTests: XCTestCase {
 
     func test_saveSucceeds_uponSuccessfulInsertion() {
         let (sut, store) = makeSUT()
-        expect(sut: sut, toCompleteWith: nil) {
+        expect(sut: sut, toCompleteWith: .success(())) {
             store.successfulyCompleteDeletion()
             store.successfulyCompleteInsertion()
         }
@@ -29,7 +29,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let deletionError = NSError(domain: "deletionError", code: 0)
 
-        expect(sut: sut, toCompleteWith: deletionError) {
+        expect(sut: sut, toCompleteWith: .failure(deletionError)) {
             store.completeDeletionWith(deletionError)
         }
     }
@@ -38,7 +38,7 @@ class CacheFeedUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let insertionError = NSError(domain: "insertionError", code: 0)
         
-        expect(sut: sut, toCompleteWith: insertionError) {
+        expect(sut: sut, toCompleteWith: .failure(insertionError)) {
             store.successfulyCompleteDeletion()
             store.completeInsertionWith(insertionError)
         }
