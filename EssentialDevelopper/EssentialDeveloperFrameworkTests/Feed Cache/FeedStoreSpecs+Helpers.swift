@@ -1,6 +1,6 @@
 //
 //  FeedStoreSpecs+Helpers.swift
-//  EssentialDeveloperFrameworkTests
+//  EssentialFeedTests
 //
 //  Created by Andre Kvashuk on 6/7/22.
 //  Copyright © 2022 Andre Kvashuk. All rights reserved.
@@ -8,7 +8,7 @@
 
 import Foundation
 import XCTest
-import EssentialDeveloperFramework
+import EssentialFeed
 
 extension FeedStoreSpecs where Self: XCTestCase {
     

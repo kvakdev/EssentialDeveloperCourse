@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import EssentialDeveloperFramework
+import EssentialFeed
 
 class FeedApiEndToEndTests: XCTestCase {
     

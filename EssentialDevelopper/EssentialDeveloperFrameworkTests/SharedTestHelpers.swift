@@ -1,6 +1,6 @@
 //
 //  SharedTestHelpers.swift
-//  EssentialDeveloperFrameworkTests
+//  EssentialFeedTests
 //
 //  Created by Andre Kvashuk on 6/5/22.
 //  Copyright © 2022 Andre Kvashuk. All rights reserved.

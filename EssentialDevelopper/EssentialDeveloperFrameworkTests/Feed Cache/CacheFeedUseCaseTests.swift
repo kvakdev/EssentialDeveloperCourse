@@ -1,13 +1,13 @@
 //
 //  CacheFeedUseCaseTests.swift
-//  EssentialDeveloperFrameworkTests
+//  EssentialFeedTests
 //
 //  Created by Andre Kvashuk on 6/5/22.
 //  Copyright © 2022 Andre Kvashuk. All rights reserved.
 //
 
 import XCTest
-import EssentialDeveloperFramework
+import EssentialFeed
 
 class CacheFeedUseCaseTests: XCTestCase {
     

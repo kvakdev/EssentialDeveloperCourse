@@ -1,13 +1,13 @@
 //
 //  CacheFeedUseCaseHelpers.swift
-//  EssentialDeveloperFrameworkTests
+//  EssentialFeedTests
 //
 //  Created by Andre Kvashuk on 6/5/22.
 //  Copyright © 2022 Andre Kvashuk. All rights reserved.
 //
 
 import Foundation
-import EssentialDeveloperFramework
+import EssentialFeed
 
 
 func uniqueFeed() -> (local: LocalFeedImage, model: FeedImage) {

@@ -1,12 +1,12 @@
 //
 //  SerialFeedStore.swift
-//  EssentialDeveloperFrameworkTests
+//  EssentialFeedTests
 //
 //  Created by Andre Kvashuk on 6/7/22.
 //  Copyright © 2022 Andre Kvashuk. All rights reserved.
 //
 
-import EssentialDeveloperFramework
+import EssentialFeed
 import XCTest
 
 extension SerialFeedStore where Self: XCTestCase {
