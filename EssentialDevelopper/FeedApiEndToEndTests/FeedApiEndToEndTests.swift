@@ -27,12 +27,12 @@ class FeedApiEndToEndTests: XCTestCase {
         }
     }
     
-    func loadFeed(file: StaticString = #file, line: UInt = #line) -> FeedLoaderResult {
+    func loadFeed(file: StaticString = #file, line: UInt = #line) -> FeedLoader.Result {
         let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
         let feedURL = URL(string: "https://essentialdeveloper.com/feed-case-study/test-api/feed")!
         let sut = RemoteFeedLoader(url: feedURL, client: client)
         let exp = expectation(description: "waiting for load to complete")
-        var receivedResult: FeedLoaderResult!
+        var receivedResult: FeedLoader.Result!
         
         sut.load { result in
             receivedResult = result
