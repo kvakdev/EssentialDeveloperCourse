@@ -13,6 +13,8 @@ class TableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "My Feed"
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
