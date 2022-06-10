@@ -35,18 +35,26 @@ class LoaderSpy: FeedLoader {
 
 class FeedViewControllerTests: XCTestCase {
     func test_load_isNotIvokedOnInit() {
-        let loader = LoaderSpy()
-        _ = FeedViewController(loader: loader)
+        let (_, loader) = makeSUT()
         
         XCTAssertEqual(loader.loadCount, 0)
     }
     
     func test_load_isInvokedOnViewDidLoad() {
-        let loader = LoaderSpy()
-        let sut = FeedViewController(loader: loader)
+        let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
         
         XCTAssertEqual(loader.loadCount, 1)
+    }
+    
+    func makeSUT() -> (FeedViewController, LoaderSpy) {
+        let loader = LoaderSpy()
+        let sut = FeedViewController(loader: loader)
+        
+        trackMemoryLeaks(sut)
+        trackMemoryLeaks(loader)
+        
+        return (sut, loader)
     }
 }
