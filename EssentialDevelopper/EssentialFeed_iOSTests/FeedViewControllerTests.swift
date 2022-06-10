@@ -9,36 +9,7 @@
 import XCTest
 import UIKit
 import EssentialFeed
-
-class FeedViewController: UITableViewController {
-    private var loader: FeedLoader?
-    
-    convenience init(loader: FeedLoader) {
-        self.init()
-        self.loader = loader
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        setupRefresh()
-        load()
-    }
-    
-    func setupRefresh() {
-        self.refreshControl = UIRefreshControl()
-        self.refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
-    }
-    
-    @objc
-    func load() {
-        self.refreshControl?.beginRefreshing()
-        
-        self.loader?.load() { [weak self] _ in
-            self?.refreshControl?.endRefreshing()
-        }
-    }
-}
+import EssentialFeed_iOS
 
 class LoaderSpy: FeedLoader {
     var completions = [(FeedLoader.Result) -> ()]()
