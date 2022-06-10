@@ -7,27 +7,45 @@
 //
 
 import XCTest
-import EssentialFeed
+import UIKit
 
-class FeedViewController {
-    init(_ loader: LoaderSpy) {
-        
+class FeedViewController: UIViewController {
+    private var loader: LoaderSpy?
+    
+    convenience init(loader: LoaderSpy) {
+        self.init()
+        self.loader = loader
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        loader?.load()
     }
 }
 
 class LoaderSpy {
     var loadCount: Int = 0
+    
+    func load() {
+        loadCount += 1
+    }
 }
 
 class FeedViewControllerTests: XCTestCase {
     func test_load_isNotIvokedOnInit() {
         let loader = LoaderSpy()
-        let sut = FeedViewController(loader)
+        _ = FeedViewController(loader: loader)
         
         XCTAssertEqual(loader.loadCount, 0)
+    }
+    
+    func test_load_isInvokedOnViewDidLoad() {
+        let loader = LoaderSpy()
+        let sut = FeedViewController(loader: loader)
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(loader.loadCount, 1)
     }
 }
