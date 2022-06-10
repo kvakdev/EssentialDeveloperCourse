@@ -28,11 +28,12 @@ class FeedViewController: UITableViewController {
     func setupRefresh() {
         self.refreshControl = UIRefreshControl()
         self.refreshControl?.addTarget(self, action: #selector(load), for: .valueChanged)
-        self.refreshControl?.beginRefreshing()
     }
     
     @objc
     func load() {
+        self.refreshControl?.beginRefreshing()
+        
         self.loader?.load() { [weak self] _ in
             self?.refreshControl?.endRefreshing()
         }
@@ -56,51 +57,38 @@ class LoaderSpy: FeedLoader {
 }
 
 class FeedViewControllerTests: XCTestCase {
-    func test_load_isNotIvokedOnInit() {
-        let (_, loader) = makeSUT()
+    func test_load_isCalledOnLoadAllEvents() {
+        let (sut, loader) = makeSUT()
         
-        XCTAssertEqual(loader.loadCount, 0)
+        XCTAssertEqual(loader.loadCount, 0, "expected no load when viewController is initialized")
+        
+        sut.loadViewIfNeeded()
+        
+        XCTAssertEqual(loader.loadCount, 1, "expected first load on viewDidLoad")
+        
+        sut.simulaterUserInitiatedLoad()
+        XCTAssertEqual(loader.loadCount, 2, "expected second load on user initiated update")
+        
+        sut.simulaterUserInitiatedLoad()
+        XCTAssertEqual(loader.loadCount, 3, "expected third load on user initiated update")
     }
     
-    func test_load_isInvokedOnViewDidLoad() {
+    func test_loadingIndicator_isLoadingOnAllLoadEventsAndStopsWhenCompletes() {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
-        
-        XCTAssertEqual(loader.loadCount, 1)
-    }
-    
-    func test_pullToRefresh_loadsFeed() {
-        let (sut, loader) = makeSUT()
-        sut.loadViewIfNeeded()
-        
-        sut.simulaterUserInitiatedLoad()
-        XCTAssertEqual(loader.loadCount, 2)
-        
-        sut.simulaterUserInitiatedLoad()
-        XCTAssertEqual(loader.loadCount, 3)
-    }
-    
-    func test_loadingIndicator_isLoading() {
-        let (sut, _) = makeSUT()
-        sut.loadViewIfNeeded()
-        
         XCTAssertTrue(sut.isShowingLoadingIndicator)
-    }
-    
-    func test_loadingIndicator_isLoadingOnUserInitiatedLoad() {
-        let (sut, _) = makeSUT()
         
         sut.simulaterUserInitiatedLoad()
-        
         XCTAssertTrue(sut.isShowingLoadingIndicator)
-    }
-    
-    func test_loadingIndicators_hidesAfterFirstLoadCompletes() {
-        let (sut, loader) = makeSUT()
-        sut.loadViewIfNeeded()
+        
         loader.complete()
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
         
+        sut.simulaterUserInitiatedLoad()
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        
+        loader.complete()
         XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
