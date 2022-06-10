@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
+   LastUpgradeVersion = "1330"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-               BuildableName = "EssentialDeveloperFramework.framework"
-               BlueprintName = "EssentialDeveloperFramework"
+               BlueprintIdentifier = "93D1D3562852504300CCFCEE"
+               BuildableName = "EssentialFeed_iOS.framework"
+               BlueprintName = "EssentialFeed_iOS"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -26,36 +26,15 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      enableThreadSanitizer = "YES"
-      codeCoverageEnabled = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialDeveloperFramework.framework"
-            BlueprintName = "EssentialDeveloperFramework"
-            ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F4BA2BEE2269E66F0015EABC"
-               BuildableName = "EssentialDeveloperFrameworkTests.xctest"
-               BlueprintName = "EssentialDeveloperFrameworkTests"
-               ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F4BA2C092269EE690015EABC"
-               BuildableName = "FeedApiEndToEndTests.xctest"
-               BlueprintName = "FeedApiEndToEndTests"
+               BlueprintIdentifier = "93D1D35F2852504400CCFCEE"
+               BuildableName = "EssentialFeed_iOSTests.xctest"
+               BlueprintName = "EssentialFeed_iOSTests"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -71,15 +50,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialDeveloperFramework.framework"
-            BlueprintName = "EssentialDeveloperFramework"
-            ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -90,9 +60,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialDeveloperFramework.framework"
-            BlueprintName = "EssentialDeveloperFramework"
+            BlueprintIdentifier = "93D1D3562852504300CCFCEE"
+            BuildableName = "EssentialFeed_iOS.framework"
+            BlueprintName = "EssentialFeed_iOS"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
