@@ -1,7 +1,4 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/xcode,swift
-# Edit at https://www.toptal.com/developers/gitignore?templates=xcode,swift
-
 ### Swift ###
 # Xcode
 #
@@ -13,6 +10,8 @@ xcuserdata/
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
 *.xccheckout
+
+Prototype/Prototype/Prototype.xcodeproj/project.xcworkspace/xcuserdata/andrekvashuk.xcuserdatad/UserInterfaceState.xcuserstate
 
 ## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
 build/
@@ -26,6 +25,7 @@ DerivedData/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
+*.xcuserstate
 
 ## Obj-C/Swift specific
 *.hmap
@@ -60,5 +60,3 @@ playground.xcworkspace
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
-
-# End of https://www.toptal.com/developers/gitignore/api/xcode,swift
