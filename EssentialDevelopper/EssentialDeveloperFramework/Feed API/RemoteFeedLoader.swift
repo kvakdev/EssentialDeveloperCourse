@@ -30,7 +30,7 @@ public final class RemoteFeedLoader: FeedLoader {
             guard self != nil else { return }
             
             switch result {
-            case .success(let response, let data):
+            case .success((let response, let data)):
                 do {
                     let result = try FeedImageMapper.map(response, data: data)
                     completion(.success(result.toModels()))

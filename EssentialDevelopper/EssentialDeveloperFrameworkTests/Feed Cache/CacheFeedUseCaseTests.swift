@@ -91,17 +91,22 @@ class CacheFeedUseCaseTests: XCTestCase {
     
     private func expect(sut: LocalFeedLoader, toCompleteWith expectedResult: LocalFeedLoader.SaveResult, when action: () -> Void, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "waiting for save to complete")
-        var receivedResult: LocalFeedLoader.SaveResult?
         
         sut.save([uniqueFeedImage()]) { result in
-            receivedResult = result
+            switch (result, expectedResult) {
+            case (.success, .success):
+                break
+            case (.failure(let receivedError), .failure(let expectedError)):
+                XCTAssertEqual((receivedError as NSError).code, (expectedError as NSError).code, file: file, line: line)
+                XCTAssertEqual((receivedError as NSError).domain, (expectedError as NSError).domain, file: file, line: line)
+            default:
+                XCTFail("expected \(expectedResult), got \(result) instead", file: file, line: line)
+            }
+        
             exp.fulfill()
         }
         action()
         wait(for: [exp], timeout: 1.0)
-        
-        XCTAssertEqual((receivedResult as? NSError)?.code, (expectedResult as? NSError)?.code, file: file, line: line)
-        XCTAssertEqual((receivedResult as? NSError)?.domain, (expectedResult as? NSError)?.domain, file: file, line: line)
     }
     
     private func makeSUT(timestamp: @escaping () -> Date = Date.init) -> (sut: LocalFeedLoader, store: FeedStoreSpy) {
