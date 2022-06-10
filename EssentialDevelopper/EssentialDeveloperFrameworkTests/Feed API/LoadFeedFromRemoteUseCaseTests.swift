@@ -7,9 +7,9 @@
 //
 
 import XCTest
-import EssentialDeveloperFramework
+import EssentialFeed
 
-class RemoteFeedLoaderTests: XCTestCase {
+class LoadFeedFromRemoteUseCaseTests: XCTestCase {
     
     func test_init() {
         let (_, client) = makeSUT()
@@ -77,14 +77,14 @@ class RemoteFeedLoaderTests: XCTestCase {
     func test_load_deliversFeedItemsOnValidJSONObject() {
         let (sut, client) = makeSUT()
         
-        let item1 = makeItem()
-        let item2 = makeItem()
+        let image1 = makeImage()
+        let image2 = makeImage()
         
-        let items = [item1.item, item2.item]
+        let imageFeed = [image1.image, image2.image]
         
-        let itemsJSON = ["items": [item1.json, item2.json]]
+        let itemsJSON = ["items": [image1.json, image2.json]]
         
-        expect(sut: sut, toCompleteWith: success(items), when: {
+        expect(sut: sut, toCompleteWith: .success(imageFeed), when: {
             let json = try! JSONSerialization.data(withJSONObject: itemsJSON)
             client.completeWith(statusCode: 200, data: json)
         })
@@ -115,7 +115,7 @@ class RemoteFeedLoaderTests: XCTestCase {
             case let (.success(items), .success(expectedItems)):
                 XCTAssertEqual(items, expectedItems, file: file, line: line)
             default:
-                XCTFail("expected \(expectedResult), but received \(receivedResult)")
+                XCTFail("expected \(expectedResult), but received \(receivedResult)", file: file, line: line)
             }
             
             exp.fulfill()
@@ -144,7 +144,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         return (sut, client)
     }
     
-    func makeItem(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (item: FeedImage, json: [String: Any]) {
+    func makeImage(id: UUID = UUID(), description: String? = nil, location: String? = nil, image: URL = anyURL()) -> (image: FeedImage, json: [String: Any]) {
         let feedImage = FeedImage(id: id, description: description, location: location, imageUrl: image)
         
         let json = dictFrom(feedImage: feedImage)
@@ -156,7 +156,7 @@ class RemoteFeedLoaderTests: XCTestCase {
         
         return [
             "id"            : feedImage.id.uuidString,
-            "image"         : feedImage.imageURL.absoluteString,
+            "image"         : feedImage.url.absoluteString,
             "location"      : feedImage.location,
             "description"   : feedImage.description
             ]
@@ -168,13 +168,13 @@ class RemoteFeedLoaderTests: XCTestCase {
     }
     
     class HTTPClientSpy: HTTPClient {
-        var messages = [(url: URL, completion:(HTTPClientResult) -> ())]()
+        var messages = [(url: URL, completion:(HTTPClient.Result) -> ())]()
         
         var requestedURLs: [URL] {
             return messages.map { $0.url }
         }
         
-        func get(from url: URL, completion: @escaping (HTTPClientResult) -> ()) {
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> ()) {
             messages.append((url, completion))
         }
         
@@ -189,13 +189,7 @@ class RemoteFeedLoaderTests: XCTestCase {
                 httpVersion: nil,
                 headerFields: nil)!
             
-            self.messages[index].completion(.success(httpResponse, data))
+            self.messages[index].completion(.success((httpResponse, data)))
         }
     }
 }
-
-//MARK: Helpers
-func anyURL() -> URL {
-    return URL(string: "http://any-url.com")!
-}
-

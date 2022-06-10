@@ -8,11 +8,9 @@
 
 import Foundation
 
-public enum FeedLoaderResult {
-    case success([FeedImage])
-    case failure(Error)
-}
 
-public protocol FeedLoaderProtocol {
-    func load(completion: @escaping (FeedLoaderResult) -> ())
+public protocol FeedLoader {
+    typealias Result = Swift.Result<[FeedImage], Error>
+    
+    func load(completion: @escaping (Result) -> ())
 }

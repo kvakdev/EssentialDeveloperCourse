@@ -7,7 +7,7 @@
 //
 
 import XCTest
-import EssentialDeveloperFramework
+import EssentialFeed
 
 
 class URLSessionHTTPClientTests: XCTestCase {
@@ -108,7 +108,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let result = resultFor(data: data, response: response, error: error, file: file, line: line)
         
         switch result {
-        case .success(let receivedResponse, let receivedData):
+        case .success((let receivedResponse, let receivedData)):
             return (receivedResponse, receivedData)
         default:
             XCTFail("expected result, got \(result) instead")
@@ -116,10 +116,10 @@ class URLSessionHTTPClientTests: XCTestCase {
         return nil
     }
     
-    func resultFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> HTTPClientResult {
+    func resultFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> HTTPClient.Result {
         URLProtocolStub.stub(data: data, response: response, error: error)
         let exp = expectation(description: "waiting for load to end with error")
-        var receivedResult: HTTPClientResult!
+        var receivedResult: HTTPClient.Result!
         
         makeSUT(file: file, line: line).get(from: anyURL()) { result in
             receivedResult = result

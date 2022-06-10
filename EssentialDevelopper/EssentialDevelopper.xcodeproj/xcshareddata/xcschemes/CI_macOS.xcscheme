@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
-   version = "1.7">
+   LastUpgradeVersion = "1330"
+   version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -15,8 +15,22 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-               BuildableName = "EssentialDeveloperFramework.framework"
-               BlueprintName = "EssentialDeveloperFramework"
+               BuildableName = "EssentialFeed_macOS.framework"
+               BlueprintName = "EssentialFeed"
+               ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "93D1D36E285270D600CCFCEE"
+               BuildableName = "EssentialFeed_iOS copy.framework"
+               BlueprintName = "EssentialFeed_macOS"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,20 +41,30 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
+      enableThreadSanitizer = "YES"
+      codeCoverageEnabled = "YES"
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialDeveloperFramework.framework"
-            BlueprintName = "EssentialDeveloperFramework"
+            BuildableName = "EssentialFeed_macOS.framework"
+            BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <CodeCoverageTargets>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
+            BuildableName = "EssentialFeed_macOS.framework"
+            BlueprintName = "EssentialFeed"
+            ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
+         </BuildableReference>
+      </CodeCoverageTargets>
       <Testables>
          <TestableReference
-            skipped = "NO"
-            testExecutionOrdering = "random">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F4BA2BEE2269E66F0015EABC"
@@ -48,10 +72,27 @@
                BlueprintName = "EssentialDeveloperFrameworkTests"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
-            <LocationScenarioReference
-               identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
-               referenceType = "1">
-            </LocationScenarioReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F4BA2C092269EE690015EABC"
+               BuildableName = "FeedApiEndToEndTests.xctest"
+               BlueprintName = "FeedApiEndToEndTests"
+               ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            testExecutionOrdering = "random">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "93BAE38A284F95AF0042B7E1"
+               BuildableName = "FeedCacheIntegrationTests.xctest"
+               BlueprintName = "FeedCacheIntegrationTests"
+               ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
+            </BuildableReference>
          </TestableReference>
       </Testables>
    </TestAction>
@@ -69,8 +110,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialDeveloperFramework.framework"
-            BlueprintName = "EssentialDeveloperFramework"
+            BuildableName = "EssentialFeed_macOS.framework"
+            BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -85,8 +126,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialDeveloperFramework.framework"
-            BlueprintName = "EssentialDeveloperFramework"
+            BuildableName = "EssentialFeed_macOS.framework"
+            BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

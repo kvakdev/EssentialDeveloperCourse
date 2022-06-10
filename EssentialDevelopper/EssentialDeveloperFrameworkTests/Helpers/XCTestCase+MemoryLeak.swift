@@ -1,6 +1,6 @@
 //
 //  XCTestCase+MemoryLeak.swift
-//  EssentialDeveloperFrameworkTests
+//  EssentialFeedTests
 //
 //  Created by Andre Kvashuk on 4/19/19.
 //  Copyright © 2019 Andre Kvashuk. All rights reserved.
