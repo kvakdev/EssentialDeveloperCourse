@@ -85,7 +85,7 @@ class FeedViewControllerTests: XCTestCase {
         let (sut, _) = makeSUT()
         sut.loadViewIfNeeded()
         
-        XCTAssertEqual(sut.isShowingLoadingIndicator, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
     }
     
     func test_loadingIndicator_isLoadingOnUserInitiatedLoad() {
@@ -93,7 +93,7 @@ class FeedViewControllerTests: XCTestCase {
         
         sut.simulaterUserInitiatedLoad()
         
-        XCTAssertEqual(sut.isShowingLoadingIndicator, true)
+        XCTAssertTrue(sut.isShowingLoadingIndicator)
     }
     
     func test_loadingIndicators_hidesAfterFirstLoadCompletes() {
@@ -101,7 +101,7 @@ class FeedViewControllerTests: XCTestCase {
         sut.loadViewIfNeeded()
         loader.complete()
         
-        XCTAssertEqual(sut.isShowingLoadingIndicator, false)
+        XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
