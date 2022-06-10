@@ -40,12 +40,13 @@ class FeedViewController: UITableViewController {
 }
 
 class LoaderSpy: FeedLoader {
-    var loadCount: Int = 0
-    
     var completions = [(FeedLoader.Result) -> ()]()
+
+    var loadCount: Int {
+        completions.count
+    }
     
     func load(completion: @escaping (FeedLoader.Result) -> ()) {
-        loadCount += 1
         completions.append(completion)
     }
     
