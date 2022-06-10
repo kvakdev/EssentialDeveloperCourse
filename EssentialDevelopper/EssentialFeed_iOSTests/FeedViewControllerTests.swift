@@ -74,10 +74,10 @@ class FeedViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         sut.loadViewIfNeeded()
         
-        sut.refreshControl?.simulatePullToRefresh()
+        sut.simulaterUserInitiatedLoad()
         XCTAssertEqual(loader.loadCount, 2)
         
-        sut.refreshControl?.simulatePullToRefresh()
+        sut.simulaterUserInitiatedLoad()
         XCTAssertEqual(loader.loadCount, 3)
     }
     
@@ -88,10 +88,10 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
     }
     
-    func test_loadingIndicator_isLoadingOnPullToRefresh() {
+    func test_loadingIndicator_isLoadingOnUserInitiatedLoad() {
         let (sut, _) = makeSUT()
         
-        sut.refreshControl?.simulatePullToRefresh()
+        sut.simulaterUserInitiatedLoad()
         
         XCTAssertEqual(sut.refreshControl?.isRefreshing, true)
     }
@@ -112,6 +112,12 @@ class FeedViewControllerTests: XCTestCase {
         trackMemoryLeaks(loader)
         
         return (sut, loader)
+    }
+}
+
+extension FeedViewController {
+    func simulaterUserInitiatedLoad() {
+        self.refreshControl?.simulatePullToRefresh()
     }
 }
 
