@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-               BuildableName = "EssentialFeed_macOS.framework"
+               BuildableName = "EssentialFeed.framework"
                BlueprintName = "EssentialFeed"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
@@ -29,7 +29,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "93D1D36E285270D600CCFCEE"
-               BuildableName = "EssentialFeed_iOS copy.framework"
+               BuildableName = "EssentialFeed_macOS.framework"
                BlueprintName = "EssentialFeed_macOS"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialFeed_macOS.framework"
+            BuildableName = "EssentialFeed.framework"
             BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
@@ -83,7 +83,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialFeed_macOS.framework"
+            BuildableName = "EssentialFeed.framework"
             BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
@@ -99,7 +99,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F4BA2BE62269E66F0015EABC"
-            BuildableName = "EssentialFeed_macOS.framework"
+            BuildableName = "EssentialFeed.framework"
             BlueprintName = "EssentialFeed"
             ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
          </BuildableReference>
