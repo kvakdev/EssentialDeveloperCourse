@@ -256,18 +256,34 @@ class FeedViewControllerTests: XCTestCase {
     }
     
     func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
-         let (sut, loader) = makeSUT()
-
-         sut.loadViewIfNeeded()
-         loader.complete(with: [makeImage()], index: 0)
-
-         let view = sut.simulateViewIsVisible(at: 0)
-         XCTAssertEqual(view?.showsRetryAction, false, "Expected no retry action while loading image")
-
-         let invalidImageData = Data("invalid image data".utf8)
-         loader.completeImageLoadWithSuccess(invalidImageData)
-         XCTAssertEqual(view?.showsRetryAction, true, "Expected retry action once image loading completes with invalid image data")
-     }
+        let (sut, loader) = makeSUT()
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [makeImage()], index: 0)
+        
+        let view = sut.simulateViewIsVisible(at: 0)
+        XCTAssertEqual(view?.showsRetryAction, false, "Expected no retry action while loading image")
+        
+        let invalidImageData = Data("invalid image data".utf8)
+        loader.completeImageLoadWithSuccess(invalidImageData)
+        XCTAssertEqual(view?.showsRetryAction, true, "Expected retry action once image loading completes with invalid image data")
+    }
+    
+    func test_imageIsPrefetched_whenViewIsNearVisible() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0, image1], index: 0)
+        
+        XCTAssertEqual(loader.loadedURLs, [])
+        sut.simulateNearVisible(at: 0)
+        XCTAssertEqual(loader.loadedURLs, [image0.url])
+        
+        sut.simulateNearVisible(at: 1)
+        XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url])
+    }
     
     private func makeImage(_ url: URL = URL(string: "http://any-url.com/0")!) -> FeedImage {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
@@ -339,6 +355,18 @@ extension FeedViewController {
         let delegate = self.tableView.delegate
         let indexPath = IndexPath(row: index, section: feedSection)
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+    }
+    
+    func simulateNearVisible(at index: Int) {
+        let indexPath = IndexPath(row: index, section: feedSection)
+        let ds = tableView.prefetchDataSource!
+        ds.tableView(tableView, prefetchRowsAt: [indexPath])
+    }
+    
+    func simulateViewNoLongerNearVisible(at index: Int) {
+        let indexPath = IndexPath(row: index, section: feedSection)
+        let ds = tableView.prefetchDataSource!
+        ds.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
     }
 }
 
