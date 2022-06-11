@@ -25,6 +25,10 @@ class LoaderSpy: FeedLoader {
     func complete(with feed: [FeedImage] = [], index: Int = 0) {
         completions[index](.success(feed))
     }
+    
+    func completeWithError(index: Int = 0) {
+        completions[index](.failure(NSError(domain: "Loader spy error", code: 0)))
+    }
 }
 
 class FeedViewControllerTests: XCTestCase {
@@ -82,20 +86,38 @@ class FeedViewControllerTests: XCTestCase {
         assert(sut: sut, renders: feed)
     }
     
-    private func assert(sut: FeedViewController, renders feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
-        XCTAssertEqual(sut.modelsCount, feed.count)
+    func test_error_doesNotAlterCurrentState() {
+        let (sut, loader) = makeSUT()
+        let image0 = FeedImage(id: UUID(), description: "description", location: nil, imageUrl: URL(string: "http://any-url.com")!)
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0], index: 0)
+        assert(sut: sut, renders: [image0])
         
-        feed.enumerated().forEach {
-            assertViewAtIndex(in: sut, at: $0, isFilledWith: $1, file: file, line: line)
+        sut.simulaterUserInitiatedLoad()
+        loader.completeWithError(index: 1)
+        
+        assert(sut: sut, renders: [image0])
+    }
+    
+    private func assert(sut: FeedViewController, renders feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+        XCTAssertEqual(sut.numberOfRenderedImageViews, feed.count, file: file, line: line)
+        
+        feed.enumerated().forEach { index, image in
+            assertViewAtIndex(in: sut, at: index, renders: image, file: file, line: line)
         }
     }
     
-    private func assertViewAtIndex(in sut: FeedViewController, at index: Int, isFilledWith image: FeedImage, file: StaticString = #file, line: UInt = #line) {
-        let view = sut.viewForIndex(index) as? FeedImageCell
+    private func assertViewAtIndex(in sut: FeedViewController, at index: Int, renders image: FeedImage, file: StaticString = #file, line: UInt = #line) {
+        let view = sut.viewForIndex(index)
         
-        XCTAssertEqual(view?.locationText, image.location, file: file, line: line)
-        XCTAssertEqual(view?.descriptionText, image.description, file: file, line: line)
-        XCTAssertEqual(view?.isShowingLocation, image.location != nil, file: file, line: line)
+        guard let view = view  as? FeedImageCell else {
+            XCTFail("expected \(FeedImageCell.self) got \(String(describing: view)) instead")
+            return
+        }
+        
+        XCTAssertEqual(view.locationText, image.location, file: file, line: line)
+        XCTAssertEqual(view.descriptionText, image.description, file: file, line: line)
+        XCTAssertEqual(view.isShowingLocation, image.location != nil, file: file, line: line)
     }
     
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
@@ -118,8 +140,8 @@ extension FeedViewController {
         self.refreshControl?.isRefreshing == true
     }
     
-    var modelsCount: Int {
-        return tableView.numberOfRows(inSection: 0)
+    var numberOfRenderedImageViews: Int {
+        return tableView.numberOfRows(inSection: feedSection)
     }
     
     func viewForIndex(_ index: Int) -> UITableViewCell? {
