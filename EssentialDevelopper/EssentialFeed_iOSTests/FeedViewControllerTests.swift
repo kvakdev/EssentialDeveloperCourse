@@ -57,8 +57,13 @@ class LoaderSpy: FeedLoader, FeedImageLoader {
         cancelledUrls.append(url)
     }
     
-    func completeImageLoad(with result: Result<Data, Error>, index: Int = 0) {
-        imageLoadCompletions[index].completion(result)
+    func completeImageLoadWithSuccess(_ data: Data = Data(), index: Int = 0) {
+        imageLoadCompletions[index].completion(.success(data))
+    }
+    
+    func completeImageLoadWithFailure(index: Int = 0) {
+        let error = NSError(domain: "an error", code: 0)
+        imageLoadCompletions[index].completion(.failure(error))
     }
 }
 
@@ -173,12 +178,11 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(view0?.isShowingImageLoadingIndicator, true)
         XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true)
         
-        let data = Data()
-        loader.completeImageLoad(with: .success(data), index: 0)
+        loader.completeImageLoadWithSuccess()
         XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false)
         XCTAssertEqual(view1?.isShowingImageLoadingIndicator, true)
         
-        loader.completeImageLoad(with: .failure(NSError(domain: "an error", code: 0)), index: 1)
+        loader.completeImageLoadWithFailure(index: 1)
         XCTAssertEqual(view0?.isShowingImageLoadingIndicator, false)
         XCTAssertEqual(view1?.isShowingImageLoadingIndicator, false)
     }
