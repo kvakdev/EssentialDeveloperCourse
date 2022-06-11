@@ -14,6 +14,7 @@ import EssentialFeed_iOS
 class LoaderSpy: FeedLoader, FeedImageLoader {
     var completions = [(FeedLoader.Result) -> ()]()
     var loadedURLs: [URL] = []
+    var cancelledUrls: [URL] = []
     
     var loadCount: Int {
         completions.count
@@ -33,6 +34,10 @@ class LoaderSpy: FeedLoader, FeedImageLoader {
     
     func loadImage(with url: URL) {
         loadedURLs.append(url)
+    }
+    
+    func cancelImageLoad(with url: URL) {
+        cancelledUrls.append(url)
     }
 }
 
@@ -79,6 +84,8 @@ class FeedViewControllerTests: XCTestCase {
         let image1 = FeedImage(id: UUID(), description: nil, location: nil, imageUrl: URL(string: "http://any-url.com/1")!)
         let image2 = FeedImage(id: UUID(), description: "description2", location: "location2", imageUrl: URL(string: "http://any-url.com/2")!)
         let image3 = FeedImage(id: UUID(), description: nil, location: "location3", imageUrl: URL(string: "http://any-url.com/3")!)
+        let feed = [image0, image1, image2, image3]
+        
         //triangulate with 0 items, 1 item and multiple items
         assert(sut: sut, renders: [])
         sut.loadViewIfNeeded()
@@ -86,7 +93,6 @@ class FeedViewControllerTests: XCTestCase {
         assert(sut: sut, renders: [image0])
         
         sut.simulaterUserInitiatedLoad()
-        let feed = [image0, image1, image2, image3]
         loader.complete(with: feed, index: 1)
         assert(sut: sut, renders: feed)
     }
@@ -118,6 +124,19 @@ class FeedViewControllerTests: XCTestCase {
         
         sut.simulateNearVisibleForView(at: 1)
         XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url])
+    }
+    
+    func test_loadImageRequest_cancelsAfterViewisNotVisibleAnymore() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
+        sut.loadViewIfNeeded()
+        
+        loader.complete(with: [image0, image1], index: 0)
+        XCTAssertEqual(loader.loadedURLs, [])
+        
+        sut.simulateViewNotVisible(at: 0)
+        XCTAssertEqual(loader.cancelledUrls, [image0.url])
     }
     
     private func makeImage(_ url: URL) -> FeedImage {
@@ -180,8 +199,16 @@ extension FeedViewController {
         return 0
     }
     
-    func simulateNearVisibleForView(at index: Int) {
-        _ = viewForIndex(index)
+    @discardableResult
+    func simulateNearVisibleForView(at index: Int) -> FeedImageCell? {
+        return viewForIndex(index) as? FeedImageCell
+    }
+    
+    func simulateViewNotVisible(at index: Int) {
+        let cell = simulateNearVisibleForView(at: index)!
+        let delegate = self.tableView.delegate
+        let indexPath = IndexPath(row: index, section: feedSection)
+        delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
     }
 }
 
