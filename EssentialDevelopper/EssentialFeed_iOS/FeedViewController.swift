@@ -15,6 +15,7 @@ public class FeedImageCell: UITableViewCell {
     public var locationContainer = UIView()
     public var imageContainer = UIView()
     public var feedImageView = UIImageView()
+    public var retryButton = UIButton()
 }
 
 public protocol FeedImageDataLoaderTask {
@@ -73,6 +74,7 @@ public class FeedViewController: UITableViewController {
         let cell = FeedImageCell()
         let cellModel = tableModel[indexPath.row]
         
+        cell.retryButton.isHidden = true
         cell.feedImageView.image = nil
         cell.locationContainer.isHidden = cellModel.location == nil
         cell.descriptionLabel.text = cellModel.description
@@ -80,7 +82,9 @@ public class FeedViewController: UITableViewController {
         cell.imageContainer.startShimmering()
         tasks[indexPath] = imageLoader?.loadImage(with: cellModel.url) { result in
             let data = try? result.get()
-            cell.feedImageView.image = data.map(UIImage.init) ?? nil
+            let image = data.map(UIImage.init) ?? nil
+            cell.feedImageView.image = image
+            cell.retryButton.isHidden = image != nil
             cell.imageContainer.stopShimmering()
         }
         
