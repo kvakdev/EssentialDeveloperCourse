@@ -13,7 +13,7 @@ import EssentialFeed_iOS
 
 class LoaderSpy: FeedLoader {
     var completions = [(FeedLoader.Result) -> ()]()
-
+    
     var loadCount: Int {
         completions.count
     }
@@ -65,15 +65,37 @@ class FeedViewControllerTests: XCTestCase {
     
     func test_view_rendersFeedImagesOnTheScreen() {
         let (sut, loader) = makeSUT()
+        
         let image0 = FeedImage(id: UUID(), description: "description", location: nil, imageUrl: URL(string: "http://any-url.com")!)
-        XCTAssertEqual(sut.modelsCount, 0)
+        let image1 = FeedImage(id: UUID(), description: nil, location: nil, imageUrl: URL(string: "http://any-url.com/1")!)
+        let image2 = FeedImage(id: UUID(), description: "description2", location: "location2", imageUrl: URL(string: "http://any-url.com/2")!)
+        let image3 = FeedImage(id: UUID(), description: nil, location: "location3", imageUrl: URL(string: "http://any-url.com/3")!)
+        //triangulate with 0 items, 1 item and multiple items
+        assert(sut: sut, renders: [])
         sut.loadViewIfNeeded()
         loader.complete(with: [image0], index: 0)
-        XCTAssertEqual(sut.modelsCount, 1)
-        let view0 = sut.viewForIndex(0)
-        XCTAssertEqual(view0?.locationText, image0.location)
-        XCTAssertEqual(view0?.descriptionText, image0.description)
-                       XCTAssertEqual(view0?.isShowingLocation, image0.location != nil)
+        assert(sut: sut, renders: [image0])
+        
+        sut.simulaterUserInitiatedLoad()
+        let feed = [image0, image1, image2, image3]
+        loader.complete(with: feed, index: 1)
+        assert(sut: sut, renders: feed)
+    }
+    
+    private func assert(sut: FeedViewController, renders feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
+        XCTAssertEqual(sut.modelsCount, feed.count)
+        
+        feed.enumerated().forEach {
+            assertViewAtIndex(in: sut, at: $0, isFilledWith: $1, file: file, line: line)
+        }
+    }
+    
+    private func assertViewAtIndex(in sut: FeedViewController, at index: Int, isFilledWith image: FeedImage, file: StaticString = #file, line: UInt = #line) {
+        let view = sut.viewForIndex(index) as? FeedImageCell
+        
+        XCTAssertEqual(view?.locationText, image.location, file: file, line: line)
+        XCTAssertEqual(view?.descriptionText, image.description, file: file, line: line)
+        XCTAssertEqual(view?.isShowingLocation, image.location != nil, file: file, line: line)
     }
     
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
@@ -97,12 +119,14 @@ extension FeedViewController {
     }
     
     var modelsCount: Int {
-        return tableModel?.count ?? 0
+        return tableView.numberOfRows(inSection: 0)
     }
     
-    func viewForIndex(_ index: Int) -> FeedImageCell? {
+    func viewForIndex(_ index: Int) -> UITableViewCell? {
         let indexPath = IndexPath(row: index, section: feedSection)
-        return tableView.cellForRow(at: indexPath) as? FeedImageCell
+        let ds = tableView.dataSource
+        
+        return ds?.tableView(tableView, cellForRowAt: indexPath)
     }
     
     var feedSection: Int {
