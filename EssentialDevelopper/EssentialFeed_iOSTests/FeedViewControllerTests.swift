@@ -20,6 +20,18 @@ class LoaderSpy: FeedLoader, FeedImageLoader {
         completions.count
     }
     
+    private class FeedImageLoaderTaskSpy: FeedImageDataLoaderTask {
+        let completion: () -> Void
+        
+        init(cancelCompletion: @escaping () -> Void) {
+            self.completion = cancelCompletion
+        }
+        
+        func cancel() {
+            completion()
+        }
+    }
+    
     func load(completion: @escaping (FeedLoader.Result) -> ()) {
         completions.append(completion)
     }
@@ -32,8 +44,9 @@ class LoaderSpy: FeedLoader, FeedImageLoader {
         completions[index](.failure(NSError(domain: "Loader spy error", code: 0)))
     }
     
-    func loadImage(with url: URL) {
+    func loadImage(with url: URL) -> FeedImageDataLoaderTask {
         loadedURLs.append(url)
+        return FeedImageLoaderTaskSpy(cancelCompletion: { [weak self] in self?.cancelImageLoad(with: url) })
     }
     
     func cancelImageLoad(with url: URL) {

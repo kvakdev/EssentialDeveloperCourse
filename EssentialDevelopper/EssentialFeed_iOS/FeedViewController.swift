@@ -15,14 +15,18 @@ public class FeedImageCell: UITableViewCell {
     public var locationContainer = UIView()
 }
 
+public protocol FeedImageDataLoaderTask {
+    func cancel()
+}
+
 public protocol FeedImageLoader {
-    func loadImage(with url: URL)
-    func cancelImageLoad(with url: URL)
+    func loadImage(with url: URL) -> FeedImageDataLoaderTask
 }
 
 public class FeedViewController: UITableViewController {
     private var loader: FeedLoader?
     private var imageLoader: FeedImageLoader?
+    private var tasks: [IndexPath: FeedImageDataLoaderTask] = [:]
     
     public var tableModel: [FeedImage] = []
     
@@ -68,14 +72,13 @@ public class FeedViewController: UITableViewController {
         cell.locationContainer.isHidden = cellModel.location == nil
         cell.descriptionLabel.text = cellModel.description
         cell.locationLabel.text = cellModel.location
-        imageLoader?.loadImage(with: cellModel.url)
+        tasks[indexPath] = imageLoader?.loadImage(with: cellModel.url)
         
         return cell
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let cellModel = tableModel[indexPath.row]
-        imageLoader?.cancelImageLoad(with: cellModel.url)
+        tasks[indexPath]?.cancel()
     }
 }
 
