@@ -13,6 +13,7 @@ public class FeedImageCell: UITableViewCell {
     public var locationLabel = UILabel()
     public var descriptionLabel = UILabel()
     public var locationContainer = UIView()
+    public var imageContainer = UIView()
 }
 
 public protocol FeedImageDataLoaderTask {
@@ -20,7 +21,9 @@ public protocol FeedImageDataLoaderTask {
 }
 
 public protocol FeedImageLoader {
-    func loadImage(with url: URL) -> FeedImageDataLoaderTask
+    typealias ImageLoadResult = Result<Data, Error>
+    
+    func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask
 }
 
 public class FeedViewController: UITableViewController {
@@ -72,13 +75,17 @@ public class FeedViewController: UITableViewController {
         cell.locationContainer.isHidden = cellModel.location == nil
         cell.descriptionLabel.text = cellModel.description
         cell.locationLabel.text = cellModel.location
-        tasks[indexPath] = imageLoader?.loadImage(with: cellModel.url)
+        cell.imageContainer.startShimmering()
+        tasks[indexPath] = imageLoader?.loadImage(with: cellModel.url) { result in
+            cell.imageContainer.stopShimmering()
+        }
         
         return cell
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         tasks[indexPath]?.cancel()
+        tasks[indexPath] = nil
     }
 }
 
