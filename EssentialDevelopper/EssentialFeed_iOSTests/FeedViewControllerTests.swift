@@ -106,14 +106,18 @@ class FeedViewControllerTests: XCTestCase {
     
     func test_loadImage_isTriggeredWhenViewIsNearVisible() {
         let (sut, loader) = makeSUT()
-        let image = makeImage(URL(string: "http://any-url.com/1")!)
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
         sut.loadViewIfNeeded()
         
-        loader.complete(with: [image], index: 0)
-        XCTAssertEqual(loader.loadedURLs.count, 0)
+        loader.complete(with: [image0, image1], index: 0)
+        XCTAssertEqual(loader.loadedURLs, [])
         
         sut.simulateNearVisibleForView(at: 0)
-        XCTAssertEqual(loader.loadedURLs.count, 1)
+        XCTAssertEqual(loader.loadedURLs, [image0.url])
+        
+        sut.simulateNearVisibleForView(at: 1)
+        XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url])
     }
     
     private func makeImage(_ url: URL) -> FeedImage {
@@ -177,10 +181,7 @@ extension FeedViewController {
     }
     
     func simulateNearVisibleForView(at index: Int) {
-        let indexPath = IndexPath(row: index, section: feedSection)
-        let cell = viewForIndex(index)
-        let delegate = self.tableView.delegate
-        delegate?.tableView?(tableView, willDisplay: cell, forRowAt: indexPath)
+        _ = viewForIndex(index)
     }
 }
 

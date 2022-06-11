@@ -67,15 +67,9 @@ public class FeedViewController: UITableViewController {
         cell.locationContainer.isHidden = cellModel.location == nil
         cell.descriptionLabel.text = cellModel.description
         cell.locationLabel.text = cellModel.location
+        imageLoader?.loadImage(with: cellModel.url)
         
         return cell
-    }
-    
-    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let cellViewModel = self.tableModel[indexPath.row]
-        let url = cellViewModel.url
-        
-        imageLoader?.loadImage(with: url)
     }
 }
 
