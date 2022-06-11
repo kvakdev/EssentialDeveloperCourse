@@ -187,6 +187,30 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.isShowingImageLoadingIndicator, false)
     }
     
+    func test_imageViews_renderImagesOnSuccessfulLoad() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
+        let loadedImageData0 = UIImage.with(.red).pngData()!
+        let loadedImageData1 = UIImage.with(.blue).pngData()!
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0, image1], index: 0)
+        
+        let view0 = sut.simulateViewIsVisible(at: 0)
+        let view1 = sut.simulateViewIsVisible(at: 1)
+        XCTAssertEqual(view1?.renderedImage, nil)
+        XCTAssertEqual(view1?.renderedImage, nil)
+        
+        loader.completeImageLoadWithSuccess(loadedImageData0, index: 0)
+        XCTAssertEqual(view0?.renderedImage, loadedImageData0)
+        XCTAssertEqual(view1?.renderedImage, nil)
+        
+        loader.completeImageLoadWithSuccess(loadedImageData1, index: 1)
+        XCTAssertEqual(view0?.renderedImage, loadedImageData0)
+        XCTAssertEqual(view1?.renderedImage, loadedImageData1)
+    }
+    
     private func makeImage(_ url: URL) -> FeedImage {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
     }
@@ -276,6 +300,10 @@ extension FeedImageCell {
     var isShowingImageLoadingIndicator: Bool {
         return imageContainer.isShimmering
     }
+    
+    var renderedImage: Data? {
+        return feedImageView.image?.pngData()
+    }
 }
 
 extension UIRefreshControl {
@@ -285,5 +313,18 @@ extension UIRefreshControl {
                 (target as NSObject).perform(Selector($0))
             }
         }
+    }
+}
+
+extension UIImage {
+    static func with(_ color: UIColor) -> UIImage {
+        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
+        UIGraphicsBeginImageContext(rect.size)
+        let context = UIGraphicsGetCurrentContext()!
+        context.setFillColor(color.cgColor)
+        context.fill(rect)
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image!
     }
 }
