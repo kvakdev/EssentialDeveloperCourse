@@ -9,6 +9,12 @@
 import UIKit
 import EssentialFeed
 
+public class FeedImageCell: UITableViewCell {
+    public var locationLabel = UILabel()
+    public var descriptionLabel = UILabel()
+    public var locationContainer = UIView()
+}
+
 public class FeedViewController: UITableViewController {
     private var loader: FeedLoader?
     public var tableModel: [FeedImage]?
@@ -36,7 +42,23 @@ public class FeedViewController: UITableViewController {
         
         self.loader?.load() { [weak self] result in
             self?.tableModel = (try? result.get()) ?? []
+            self?.tableView.reloadData()
             self?.refreshControl?.endRefreshing()
         }
+    }
+    
+    public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return tableModel?.count ?? 0
+    }
+    
+    public override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = FeedImageCell()
+        let cellModel = tableModel?[indexPath.row]
+        
+        cell.locationContainer.isHidden = cellModel?.location == nil
+        cell.descriptionLabel.text = cellModel?.description
+        cell.locationLabel.text = cellModel?.location
+        
+        return cell
     }
 }

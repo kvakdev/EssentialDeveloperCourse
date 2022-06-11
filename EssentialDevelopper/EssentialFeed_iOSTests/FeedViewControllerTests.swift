@@ -70,6 +70,10 @@ class FeedViewControllerTests: XCTestCase {
         sut.loadViewIfNeeded()
         loader.complete(with: [image0], index: 0)
         XCTAssertEqual(sut.modelsCount, 1)
+        let view0 = sut.viewForIndex(0)
+        XCTAssertEqual(view0?.locationText, image0.location)
+        XCTAssertEqual(view0?.descriptionText, image0.description)
+                       XCTAssertEqual(view0?.isShowingLocation, image0.location != nil)
     }
     
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
@@ -94,6 +98,29 @@ extension FeedViewController {
     
     var modelsCount: Int {
         return tableModel?.count ?? 0
+    }
+    
+    func viewForIndex(_ index: Int) -> FeedImageCell? {
+        let indexPath = IndexPath(row: index, section: feedSection)
+        return tableView.cellForRow(at: indexPath) as? FeedImageCell
+    }
+    
+    var feedSection: Int {
+        return 0
+    }
+}
+
+extension FeedImageCell {
+    var descriptionText: String? {
+        descriptionLabel.text
+    }
+    
+    var locationText: String? {
+        locationLabel.text
+    }
+    
+    var isShowingLocation: Bool {
+        !locationContainer.isHidden
     }
 }
 
