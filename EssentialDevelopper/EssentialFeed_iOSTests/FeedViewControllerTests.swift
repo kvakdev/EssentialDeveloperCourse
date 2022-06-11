@@ -285,6 +285,23 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url])
     }
     
+    func test_imagePrefetchingIsCancelled_whenViewIsNotNearVisibleAnyMore() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0, image1], index: 0)
+        
+        XCTAssertEqual(loader.cancelledUrls, [])
+        
+        sut.simulateViewNoLongerNearVisible(at: 0)
+        XCTAssertEqual(loader.cancelledUrls, [image0.url])
+        
+        sut.simulateViewNoLongerNearVisible(at: 1)
+        XCTAssertEqual(loader.cancelledUrls, [image0.url, image1.url])
+    }
+    
     private func makeImage(_ url: URL = URL(string: "http://any-url.com/0")!) -> FeedImage {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
     }
@@ -364,6 +381,8 @@ extension FeedViewController {
     }
     
     func simulateViewNoLongerNearVisible(at index: Int) {
+        simulateNearVisible(at: index)
+        
         let indexPath = IndexPath(row: index, section: feedSection)
         let ds = tableView.prefetchDataSource!
         ds.tableView?(tableView, cancelPrefetchingForRowsAt: [indexPath])
