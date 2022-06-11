@@ -11,6 +11,7 @@ import EssentialFeed
 
 public class FeedViewController: UITableViewController {
     private var loader: FeedLoader?
+    public var tableModel: [FeedImage]?
     
     public convenience init(loader: FeedLoader) {
         self.init()
@@ -33,7 +34,8 @@ public class FeedViewController: UITableViewController {
     func load() {
         self.refreshControl?.beginRefreshing()
         
-        self.loader?.load() { [weak self] _ in
+        self.loader?.load() { [weak self] result in
+            self?.tableModel = (try? result.get()) ?? []
             self?.refreshControl?.endRefreshing()
         }
     }

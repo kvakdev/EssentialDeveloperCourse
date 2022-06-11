@@ -22,8 +22,8 @@ class LoaderSpy: FeedLoader {
         completions.append(completion)
     }
     
-    func complete(index: Int = 0) {
-        completions[index](.failure(NSError()))
+    func complete(with feed: [FeedImage] = [], index: Int = 0) {
+        completions[index](.success(feed))
     }
 }
 
@@ -63,6 +63,15 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertFalse(sut.isShowingLoadingIndicator)
     }
     
+    func test_view_rendersFeedImagesOnTheScreen() {
+        let (sut, loader) = makeSUT()
+        let image0 = FeedImage(id: UUID(), description: "description", location: nil, imageUrl: URL(string: "http://any-url.com")!)
+        XCTAssertEqual(sut.modelsCount, 0)
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0], index: 0)
+        XCTAssertEqual(sut.modelsCount, 1)
+    }
+    
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
         let loader = LoaderSpy()
         let sut = FeedViewController(loader: loader)
@@ -81,6 +90,10 @@ extension FeedViewController {
     
     var isShowingLoadingIndicator: Bool {
         self.refreshControl?.isRefreshing == true
+    }
+    
+    var modelsCount: Int {
+        return tableModel?.count ?? 0
     }
 }
 
