@@ -224,20 +224,34 @@ class FeedViewControllerTests: XCTestCase {
         let view0 = sut.simulateViewIsVisible(at: 0)
         let view1 = sut.simulateViewIsVisible(at: 1)
         
+        XCTAssertEqual(view0?.showsRetryAction, false, "Expected no retry action for first view while loading first image")
+        XCTAssertEqual(view1?.showsRetryAction, false, "Expected no retry action for first view while loading second image")
         loader.completeImageLoadWithSuccess(loadedImageData0, index: 0)
-        XCTAssertEqual(view0?.showsRetryAction, false)
-        XCTAssertEqual(view1?.showsRetryAction, false)
-        
         loader.completeImageLoadWithFailure(index: 1)
-        XCTAssertEqual(view0?.showsRetryAction, false)
-        XCTAssertEqual(view1?.showsRetryAction, true)
+        
+        XCTAssertEqual(view0?.showsRetryAction, false, "Expected no retry action for first view after loading image successfuly")
+        XCTAssertEqual(view1?.showsRetryAction, true, "Expected retry action for second view after failure to load second image")
         
         loader.completeImageLoadWithSuccess(loadedImageData1, index: 1)
-        XCTAssertEqual(view0?.showsRetryAction, false)
-        XCTAssertEqual(view1?.showsRetryAction, false)
+        XCTAssertEqual(view0?.showsRetryAction, false,"Expected no retry action for first view after loading image successfuly")
+        XCTAssertEqual(view1?.showsRetryAction, false, "Expected no retry action for second view after loading image successfuly")
     }
     
-    private func makeImage(_ url: URL) -> FeedImage {
+    func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
+         let (sut, loader) = makeSUT()
+
+         sut.loadViewIfNeeded()
+         loader.complete(with: [makeImage()], index: 0)
+
+         let view = sut.simulateViewIsVisible(at: 0)
+         XCTAssertEqual(view?.showsRetryAction, false, "Expected no retry action while loading image")
+
+         let invalidImageData = Data("invalid image data".utf8)
+         loader.completeImageLoadWithSuccess(invalidImageData)
+         XCTAssertEqual(view?.showsRetryAction, true, "Expected retry action once image loading completes with invalid image data")
+     }
+    
+    private func makeImage(_ url: URL = URL(string: "http://any-url.com/0")!) -> FeedImage {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
     }
     
