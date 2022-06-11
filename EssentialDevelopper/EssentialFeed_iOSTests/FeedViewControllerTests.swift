@@ -52,19 +52,19 @@ class FeedViewControllerTests: XCTestCase {
         let (sut, loader) = makeSUT()
         
         sut.loadViewIfNeeded()
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loader to load when load is in progress")
         
         sut.simulaterUserInitiatedLoad()
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loader to load when load is in progress")
         
-        loader.complete()
-        XCTAssertFalse(sut.isShowingLoadingIndicator)
+        loader.complete(with: [], index: 0)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected no loader to load when load completed")
         
         sut.simulaterUserInitiatedLoad()
-        XCTAssertTrue(sut.isShowingLoadingIndicator)
+        XCTAssertTrue(sut.isShowingLoadingIndicator, "Expected loader to load when load is in progress")
         
         loader.completeWithError(index: 1)
-        XCTAssertFalse(sut.isShowingLoadingIndicator)
+        XCTAssertFalse(sut.isShowingLoadingIndicator, "Expected loader to hide when load completes with an error")
     }
     
     func test_view_rendersFeedImagesOnTheScreen() {
