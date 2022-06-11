@@ -15,13 +15,20 @@ public class FeedImageCell: UITableViewCell {
     public var locationContainer = UIView()
 }
 
+public protocol FeedImageLoader {
+    func loadImage(with url: URL)
+}
+
 public class FeedViewController: UITableViewController {
     private var loader: FeedLoader?
+    private var imageLoader: FeedImageLoader?
+    
     public var tableModel: [FeedImage] = []
     
-    public convenience init(loader: FeedLoader) {
+    public convenience init(loader: FeedLoader, imageLoader: FeedImageLoader) {
         self.init()
         self.loader = loader
+        self.imageLoader = imageLoader
     }
     
     public override func viewDidLoad() {
@@ -63,4 +70,12 @@ public class FeedViewController: UITableViewController {
         
         return cell
     }
+    
+    public override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        let cellViewModel = self.tableModel[indexPath.row]
+        let url = cellViewModel.url
+        
+        imageLoader?.loadImage(with: url)
+    }
 }
+

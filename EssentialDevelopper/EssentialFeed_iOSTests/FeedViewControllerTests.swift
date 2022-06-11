@@ -11,8 +11,9 @@ import UIKit
 import EssentialFeed
 import EssentialFeed_iOS
 
-class LoaderSpy: FeedLoader {
+class LoaderSpy: FeedLoader, FeedImageLoader {
     var completions = [(FeedLoader.Result) -> ()]()
+    var loadedURLs: [URL] = []
     
     var loadCount: Int {
         completions.count
@@ -28,6 +29,10 @@ class LoaderSpy: FeedLoader {
     
     func completeWithError(index: Int = 0) {
         completions[index](.failure(NSError(domain: "Loader spy error", code: 0)))
+    }
+    
+    func loadImage(with url: URL) {
+        loadedURLs.append(url)
     }
 }
 
@@ -99,6 +104,22 @@ class FeedViewControllerTests: XCTestCase {
         assert(sut: sut, renders: [image0])
     }
     
+    func test_loadImage_isTriggeredWhenViewIsNearVisible() {
+        let (sut, loader) = makeSUT()
+        let image = makeImage(URL(string: "http://any-url.com/1")!)
+        sut.loadViewIfNeeded()
+        
+        loader.complete(with: [image], index: 0)
+        XCTAssertEqual(loader.loadedURLs.count, 0)
+        
+        sut.simulateNearVisibleForView(at: 0)
+        XCTAssertEqual(loader.loadedURLs.count, 1)
+    }
+    
+    private func makeImage(_ url: URL) -> FeedImage {
+        FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
+    }
+    
     private func assert(sut: FeedViewController, renders feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         XCTAssertEqual(sut.numberOfRenderedImageViews, feed.count, file: file, line: line)
         
@@ -122,7 +143,7 @@ class FeedViewControllerTests: XCTestCase {
     
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedViewController(loader: loader)
+        let sut = FeedViewController(loader: loader, imageLoader: loader)
         
         trackMemoryLeaks(sut)
         trackMemoryLeaks(loader)
@@ -144,15 +165,22 @@ extension FeedViewController {
         return tableView.numberOfRows(inSection: feedSection)
     }
     
-    func viewForIndex(_ index: Int) -> UITableViewCell? {
+    func viewForIndex(_ index: Int) -> UITableViewCell {
         let indexPath = IndexPath(row: index, section: feedSection)
-        let ds = tableView.dataSource
+        let ds = tableView.dataSource!
         
-        return ds?.tableView(tableView, cellForRowAt: indexPath)
+        return ds.tableView(tableView, cellForRowAt: indexPath)
     }
     
     var feedSection: Int {
         return 0
+    }
+    
+    func simulateNearVisibleForView(at index: Int) {
+        let indexPath = IndexPath(row: index, section: feedSection)
+        let cell = viewForIndex(index)
+        let delegate = self.tableView.delegate
+        delegate?.tableView?(tableView, willDisplay: cell, forRowAt: indexPath)
     }
 }
 
