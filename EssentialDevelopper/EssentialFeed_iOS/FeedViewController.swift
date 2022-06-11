@@ -15,7 +15,20 @@ public class FeedImageCell: UITableViewCell {
     public var locationContainer = UIView()
     public var imageContainer = UIView()
     public var feedImageView = UIImageView()
-    public var retryButton = UIButton()
+    
+    public lazy var retryButton: UIButton = {
+        let button = UIButton()
+        button.addTarget(self, action: #selector(retryAction), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    var onRetry: (() -> Void)?
+    
+    @objc
+    func retryAction() {
+        self.onRetry?()
+    }
 }
 
 public protocol FeedImageDataLoaderTask {
@@ -80,13 +93,19 @@ public class FeedViewController: UITableViewController {
         cell.descriptionLabel.text = cellModel.description
         cell.locationLabel.text = cellModel.location
         cell.imageContainer.startShimmering()
-        tasks[indexPath] = imageLoader?.loadImage(with: cellModel.url) { result in
-            let data = try? result.get()
-            let image = data.map(UIImage.init) ?? nil
-            cell.feedImageView.image = image
-            cell.retryButton.isHidden = image != nil
-            cell.imageContainer.stopShimmering()
+        
+        let loadImage: () -> Void = { [weak self] in
+            self?.tasks[indexPath] = self?.imageLoader?.loadImage(with: cellModel.url) { result in
+                let data = try? result.get()
+                let image = data.map(UIImage.init) ?? nil
+                cell.feedImageView.image = image
+                cell.retryButton.isHidden = image != nil
+                cell.imageContainer.stopShimmering()
+            }
         }
+        
+        loadImage()
+        cell.onRetry = loadImage
         
         return cell
     }

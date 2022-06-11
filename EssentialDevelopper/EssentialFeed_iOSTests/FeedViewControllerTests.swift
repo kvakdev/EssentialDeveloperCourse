@@ -237,6 +237,24 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(view1?.showsRetryAction, false, "Expected no retry action for second view after loading image successfuly")
     }
     
+    func test_onRetry_triggersImageLoading() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0, image1], index: 0)
+        
+        let view0 = sut.simulateViewIsVisible(at: 0)
+        let view1 = sut.simulateViewIsVisible(at: 1)
+        XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url])
+        loader.completeImageLoadWithFailure(index: 0)
+        view0?.simulateRetryTap()
+        XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url, image0.url])
+        view1?.simulateRetryTap()
+        XCTAssertEqual(loader.loadedURLs, [image0.url, image1.url, image0.url, image1.url])
+    }
+    
     func test_feedImageViewRetryButton_isVisibleOnInvalidImageData() {
          let (sut, loader) = makeSUT()
 
@@ -347,6 +365,20 @@ extension FeedImageCell {
     
     var showsRetryAction: Bool {
         return retryButton.isHidden == false
+    }
+    
+    func simulateRetryTap() {
+        self.retryButton.simulateTap()
+    }
+}
+
+extension UIButton {
+    func simulateTap() {
+        allTargets.forEach { target in
+            actions(forTarget: target, forControlEvent: .touchUpInside)?.forEach {
+                (target as NSObject).perform(Selector($0))
+            }
+        }
     }
 }
 
