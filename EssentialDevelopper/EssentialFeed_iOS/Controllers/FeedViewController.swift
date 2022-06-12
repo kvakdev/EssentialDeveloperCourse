@@ -9,37 +9,7 @@
 import UIKit
 import EssentialFeed
 
-public class FeedImageCell: UITableViewCell {
-    public var locationLabel = UILabel()
-    public var descriptionLabel = UILabel()
-    public var locationContainer = UIView()
-    public var imageContainer = UIView()
-    public var feedImageView = UIImageView()
-    
-    public lazy var retryButton: UIButton = {
-        let button = UIButton()
-        button.addTarget(self, action: #selector(retryAction), for: .touchUpInside)
-        
-        return button
-    }()
-    
-    var onRetry: (() -> Void)?
-    
-    @objc
-    func retryAction() {
-        self.onRetry?()
-    }
-}
 
-public protocol FeedImageDataLoaderTask {
-    func cancel()
-}
-
-public protocol FeedImageLoader {
-    typealias ImageLoadResult = Result<Data, Error>
-    
-    func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask
-}
 
 public class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     private var loader: FeedLoader?
