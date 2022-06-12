@@ -59,14 +59,9 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupTableView()
         self.refreshControl = refreshController?.view
-        refreshController?.load()
-    }
-    
-    func setupTableView() {
-        
         self.tableView.prefetchDataSource = self
+        refreshController?.load()
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
