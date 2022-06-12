@@ -9,31 +9,55 @@
 import UIKit
 import EssentialFeed
 
-class RefreshController: NSObject {
+class RefreshViewModel {
     let loader: FeedLoader
-    let onRefresh: ([FeedImage]) -> Void
+    var onIsLoadingChange: ((Bool) -> Void)?
+    var onFeedLoad: (([FeedImage]) -> Void)?
     
-    init(loader: FeedLoader, onRefresh: @escaping ([FeedImage]) -> Void) {
+    init(loader: FeedLoader, onFeedLoad: @escaping ([FeedImage]) -> Void) {
         self.loader = loader
-        self.onRefresh = onRefresh
+        self.onFeedLoad = onFeedLoad
     }
     
-    lazy var view: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(load), for: .valueChanged)
-        
-        return refreshControl
-    }()
-    
     @objc
-    func load() {
-        self.view.beginRefreshing()
+    func loadFeed() {
+        onIsLoadingChange?(true)
         
         self.loader.load() { [weak self] result in
             if let feed = try? result.get() {
-                self?.onRefresh(feed)
+                self?.onFeedLoad?(feed)
             }
-            self?.view.endRefreshing()
+            self?.onIsLoadingChange?(false)
         }
+    }
+}
+
+class RefreshController: NSObject {
+    let viewModel: RefreshViewModel
+    
+    init(viewModel: RefreshViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    lazy var view: UIRefreshControl = binded(UIRefreshControl())
+    
+    func binded(_ view: UIRefreshControl) -> UIRefreshControl {
+        let view = UIRefreshControl()
+        
+        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        
+        viewModel.onIsLoadingChange = { isLoading in
+            if isLoading {
+                view.beginRefreshing()
+            } else {
+                view.endRefreshing()
+            }
+        }
+        
+        return view
+    }
+    
+    @objc func refresh() {
+        viewModel.loadFeed()
     }
 }

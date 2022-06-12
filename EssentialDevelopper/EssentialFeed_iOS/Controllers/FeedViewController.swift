@@ -21,7 +21,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         
         self.refreshControl = refreshController?.view
         self.tableView.prefetchDataSource = self
-        refreshController?.load()
+        refreshController?.refresh()
     }
 
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
