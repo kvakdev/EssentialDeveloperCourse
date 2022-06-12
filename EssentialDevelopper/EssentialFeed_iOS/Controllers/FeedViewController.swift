@@ -85,18 +85,9 @@ class FeedImageCellController {
 }
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
-    private var refreshController: RefreshController?
+    var refreshController: RefreshController?
     var tableModel: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
-    }
-    
-    public convenience init(loader: FeedLoader, imageLoader: FeedImageLoader) {
-        self.init()
-        self.refreshController = RefreshController(loader: loader, onRefresh: { [weak self] feed in
-            self?.tableModel = feed.map {
-                FeedImageCellController(model: $0, imageLoader: imageLoader)
-            }
-        })
     }
     
     public override func viewDidLoad() {

@@ -258,7 +258,7 @@ extension FeedViewControllerTests {
     
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedViewController(loader: loader, imageLoader: loader)
+        let sut = FeedUIComposer.makeFeedViewController(loader: loader, imageLoader: loader)
         
         trackMemoryLeaks(sut)
         trackMemoryLeaks(loader)
