@@ -44,6 +44,7 @@
 		93D1D3852855BCAE00CCFCEE /* FeedImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D3842855BCAE00CCFCEE /* FeedImageCell.swift */; };
 		93D1D38B2855EEE400CCFCEE /* FeedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */; };
 		93D1D38E2855EFD000CCFCEE /* UIImage+FromColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38D2855EFD000CCFCEE /* UIImage+FromColor.swift */; };
+		93D1D3902855F09C00CCFCEE /* UIButton+SimulateTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38F2855F09C00CCFCEE /* UIButton+SimulateTap.swift */; };
 		F4BA2BF02269E66F0015EABC /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BA2BE72269E66F0015EABC /* EssentialFeed.framework */; };
 		F4BA2BFE2269E7850015EABC /* LoadFeedFromRemoteUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF189226477A400359F40 /* LoadFeedFromRemoteUseCaseTests.swift */; };
 		F4BA2BFF2269E7850015EABC /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BD0226702E80015EABC /* URLSessionHTTPClientTests.swift */; };
@@ -124,6 +125,7 @@
 		93D1D3842855BCAE00CCFCEE /* FeedImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageCell.swift; sourceTree = "<group>"; };
 		93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageLoader.swift; sourceTree = "<group>"; };
 		93D1D38D2855EFD000CCFCEE /* UIImage+FromColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+FromColor.swift"; sourceTree = "<group>"; };
+		93D1D38F2855F09C00CCFCEE /* UIButton+SimulateTap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+SimulateTap.swift"; sourceTree = "<group>"; };
 		F40FF15D226475ED00359F40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F40FF15F226475ED00359F40 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F40FF161226475EF00359F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 			isa = PBXGroup;
 			children = (
 				93D1D38D2855EFD000CCFCEE /* UIImage+FromColor.swift */,
+				93D1D38F2855F09C00CCFCEE /* UIButton+SimulateTap.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -714,6 +717,7 @@
 				93D1D38E2855EFD000CCFCEE /* UIImage+FromColor.swift in Sources */,
 				93D1D37D2853C50D00CCFCEE /* XCTestCase+MemoryLeak.swift in Sources */,
 				93D1D37A2853664A00CCFCEE /* FeedViewControllerTests.swift in Sources */,
+				93D1D3902855F09C00CCFCEE /* UIButton+SimulateTap.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

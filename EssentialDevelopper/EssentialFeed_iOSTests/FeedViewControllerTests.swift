@@ -419,20 +419,16 @@ extension FeedImageCell {
     }
 }
 
-extension UIButton {
-    func simulateTap() {
-        allTargets.forEach { target in
-            actions(forTarget: target, forControlEvent: .touchUpInside)?.forEach {
-                (target as NSObject).perform(Selector($0))
-            }
-        }
+extension UIRefreshControl {
+    func simulatePullToRefresh() {
+        simulate(event: .valueChanged)
     }
 }
 
-extension UIRefreshControl {
-    func simulatePullToRefresh() {
+extension UIControl {
+    func simulate(event: UIControl.Event) {
         allTargets.forEach { target in
-            actions(forTarget: target, forControlEvent: .valueChanged)?.forEach {
+            actions(forTarget: target, forControlEvent: event)?.forEach {
                 (target as NSObject).perform(Selector($0))
             }
         }
