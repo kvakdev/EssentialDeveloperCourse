@@ -9,36 +9,6 @@
 import UIKit
 import EssentialFeed
 
-//self?.tableModel = feed
-//self?.tableView.reloadData()
-class RefreshController: NSObject {
-    let loader: FeedLoader
-    let onRefresh: ([FeedImage]) -> Void
-    
-    init(loader: FeedLoader, onRefresh: @escaping ([FeedImage]) -> Void) {
-        self.loader = loader
-        self.onRefresh = onRefresh
-    }
-    
-    lazy var view: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(load), for: .valueChanged)
-        
-        return refreshControl
-    }()
-    
-    @objc
-    func load() {
-        self.view.beginRefreshing()
-        
-        self.loader.load() { [weak self] result in
-            if let feed = try? result.get() {
-                self?.onRefresh(feed)
-            }
-            self?.view.endRefreshing()
-        }
-    }
-}
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
     var refreshController: RefreshController?
