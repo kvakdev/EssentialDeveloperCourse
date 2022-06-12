@@ -12,6 +12,7 @@ import EssentialFeed
 import EssentialFeed_iOS
 
 class FeedViewControllerTests: XCTestCase {
+    
     func test_load_isCalledOnLoadAllEvents() {
         let (sut, loader) = makeSUT()
         
@@ -245,6 +246,11 @@ class FeedViewControllerTests: XCTestCase {
         sut.simulateViewNoLongerNearVisible(at: 1)
         XCTAssertEqual(loader.cancelledUrls, [image0.url, image1.url])
     }
+    
+}
+
+// MARK: - TestHelpers
+extension FeedViewControllerTests {
     
     private func makeImage(_ url: URL = URL(string: "http://any-url.com/0")!) -> FeedImage {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
