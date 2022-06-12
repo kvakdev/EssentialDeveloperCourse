@@ -256,27 +256,6 @@ extension FeedViewControllerTests {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
     }
     
-    private func assert(sut: FeedViewController, renders feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
-        XCTAssertEqual(sut.numberOfRenderedImageViews, feed.count, file: file, line: line)
-        
-        feed.enumerated().forEach { index, image in
-            assertViewAtIndex(in: sut, at: index, renders: image, file: file, line: line)
-        }
-    }
-    
-    private func assertViewAtIndex(in sut: FeedViewController, at index: Int, renders image: FeedImage, file: StaticString = #file, line: UInt = #line) {
-        let view = sut.viewForIndex(index)
-        
-        guard let view = view  as? FeedImageCell else {
-            XCTFail("expected \(FeedImageCell.self) got \(String(describing: view)) instead")
-            return
-        }
-        
-        XCTAssertEqual(view.locationText, image.location, file: file, line: line)
-        XCTAssertEqual(view.descriptionText, image.description, file: file, line: line)
-        XCTAssertEqual(view.isShowingLocation, image.location != nil, file: file, line: line)
-    }
-    
     private func makeSUT() -> (FeedViewController, LoaderSpy) {
         let loader = LoaderSpy()
         let sut = FeedViewController(loader: loader, imageLoader: loader)
