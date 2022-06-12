@@ -7,30 +7,6 @@
 //
 
 import UIKit
-import EssentialFeed
-
-class RefreshViewModel {
-    let loader: FeedLoader
-    var onIsLoadingChange: ((Bool) -> Void)?
-    var onFeedLoad: (([FeedImage]) -> Void)?
-    
-    init(loader: FeedLoader, onFeedLoad: @escaping ([FeedImage]) -> Void) {
-        self.loader = loader
-        self.onFeedLoad = onFeedLoad
-    }
-    
-    @objc
-    func loadFeed() {
-        onIsLoadingChange?(true)
-        
-        self.loader.load() { [weak self] result in
-            if let feed = try? result.get() {
-                self?.onFeedLoad?(feed)
-            }
-            self?.onIsLoadingChange?(false)
-        }
-    }
-}
 
 class RefreshController: NSObject {
     let viewModel: RefreshViewModel
