@@ -85,20 +85,17 @@ class FeedImageCellController {
 }
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
-    private var imageLoader: FeedImageLoader?
-    private var tasks: [IndexPath: FeedImageDataLoaderTask] = [:]
     private var refreshController: RefreshController?
-    public var tableModel: [FeedImage] = [] {
+    var tableModel: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
     
-    private var cellControllers: [IndexPath: FeedImageCellController] = [:]
-    
     public convenience init(loader: FeedLoader, imageLoader: FeedImageLoader) {
         self.init()
-        self.imageLoader = imageLoader
         self.refreshController = RefreshController(loader: loader, onRefresh: { [weak self] feed in
-            self?.tableModel = feed
+            self?.tableModel = feed.map {
+                FeedImageCellController(model: $0, imageLoader: imageLoader)
+            }
         })
     }
     
@@ -119,7 +116,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cellControllers[indexPath]?.cancelTask()
+        cellController(at: indexPath).cancelTask()
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -129,19 +126,13 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     private func cellController(at indexPath: IndexPath) -> FeedImageCellController {
-        let model = tableModel[indexPath.row]
-        let cellController = FeedImageCellController(model: model, imageLoader: self.imageLoader!)
-        
-        self.cellControllers[indexPath] = cellController
+        let cellController = tableModel[indexPath.row]
         
         return cellController
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        
-        indexPaths.forEach {
-            self.cellControllers[$0]?.cancelTask()
-        }
+        indexPaths.forEach { cellController(at: $0).cancelTask() }
     }
 }
 
