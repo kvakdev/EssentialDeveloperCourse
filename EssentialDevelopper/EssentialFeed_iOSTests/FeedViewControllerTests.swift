@@ -11,62 +11,6 @@ import UIKit
 import EssentialFeed
 import EssentialFeed_iOS
 
-class LoaderSpy: FeedLoader, FeedImageLoader {
-    var completions = [(FeedLoader.Result) -> ()]()
-    var imageLoadCompletions = [(url: URL, completion: (ImageLoadResult) -> ())]()
-    var loadedURLs: [URL] {
-        imageLoadCompletions.map { $0.url }
-    }
-    var cancelledUrls: [URL] = []
-    
-    var loadCount: Int {
-        completions.count
-    }
-    
-    private class FeedImageLoaderTaskSpy: FeedImageDataLoaderTask {
-        let completion: () -> Void
-        
-        init(cancelCompletion: @escaping () -> Void) {
-            self.completion = cancelCompletion
-        }
-        
-        func cancel() {
-            completion()
-        }
-    }
-    
-    func load(completion: @escaping (FeedLoader.Result) -> ()) {
-        completions.append(completion)
-    }
-    
-    func complete(with feed: [FeedImage] = [], index: Int = 0) {
-        completions[index](.success(feed))
-    }
-    
-    func completeWithError(index: Int = 0) {
-        completions[index](.failure(NSError(domain: "Loader spy error", code: 0)))
-    }
-    
-    func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
-        imageLoadCompletions.append((url: url, completion: completion))
-        
-        return FeedImageLoaderTaskSpy(cancelCompletion: { [weak self] in self?.cancelImageLoad(with: url) })
-    }
-    
-    func cancelImageLoad(with url: URL) {
-        cancelledUrls.append(url)
-    }
-    
-    func completeImageLoadWithSuccess(_ data: Data = Data(), index: Int = 0) {
-        imageLoadCompletions[index].completion(.success(data))
-    }
-    
-    func completeImageLoadWithFailure(index: Int = 0) {
-        let error = NSError(domain: "an error", code: 0)
-        imageLoadCompletions[index].completion(.failure(error))
-    }
-}
-
 class FeedViewControllerTests: XCTestCase {
     func test_load_isCalledOnLoadAllEvents() {
         let (sut, loader) = makeSUT()
@@ -335,35 +279,5 @@ class FeedViewControllerTests: XCTestCase {
         trackMemoryLeaks(loader)
         
         return (sut, loader)
-    }
-}
-
-extension FeedImageCell {
-    var descriptionText: String? {
-        descriptionLabel.text
-    }
-    
-    var locationText: String? {
-        locationLabel.text
-    }
-    
-    var isShowingLocation: Bool {
-        !locationContainer.isHidden
-    }
-    
-    var isShowingImageLoadingIndicator: Bool {
-        return imageContainer.isShimmering
-    }
-    
-    var renderedImage: Data? {
-        return feedImageView.image?.pngData()
-    }
-    
-    var showsRetryAction: Bool {
-        return retryButton.isHidden == false
-    }
-    
-    func simulateRetryTap() {
-        self.retryButton.simulateTap()
     }
 }
