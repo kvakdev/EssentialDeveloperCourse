@@ -9,8 +9,8 @@
 import UIKit
 
 class RefreshController: NSObject {
-    var presenter: FeedPresenter?
-
+    private let loadFeed: () -> Void
+    
     lazy var view: UIRefreshControl = {
         let view = UIRefreshControl()
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
@@ -18,8 +18,12 @@ class RefreshController: NSObject {
         return view
     }()
     
+    init(loadFeed: @escaping () -> Void) {
+        self.loadFeed = loadFeed
+    }
+    
     @objc func refresh() {
-        presenter?.loadFeed()
+        loadFeed()
     }
 }
 

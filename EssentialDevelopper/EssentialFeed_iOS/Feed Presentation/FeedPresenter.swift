@@ -27,23 +27,21 @@ protocol LoaderView {
 
 final class FeedPresenter {
     let loader: FeedLoader
-    let view: FeedView
-    let loaderView: LoaderView
+    var view: FeedView?
+    var loaderView: LoaderView?
     
-    init(loader: FeedLoader, view: FeedView, loaderView: LoaderView) {
+    init(loader: FeedLoader) {
         self.loader = loader
-        self.view = view
-        self.loaderView = loaderView
     }
     
     func loadFeed() {
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true))
+        self.loaderView?.display(uiModel: FeedLoaderUIModel(isLoading: true))
         
         self.loader.load() { [weak self] result in
             if let feed = try? result.get() {
-                self?.view.display(model: FeedUIModel(feed: feed))
+                self?.view?.display(model: FeedUIModel(feed: feed))
             }
-            self?.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false))
+            self?.loaderView?.display(uiModel: FeedLoaderUIModel(isLoading: false))
         }
     }
 }
