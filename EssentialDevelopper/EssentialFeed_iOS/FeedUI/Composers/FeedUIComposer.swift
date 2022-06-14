@@ -16,11 +16,13 @@ public class FeedUIComposer {
     public static func makeFeedViewController(loader: FeedLoader, imageLoader: FeedImageLoader) -> FeedViewController {
         
         let feedViewController = FeedViewController()
-        let onFeedLoad = adaptFeedToFeedViewController(vc: feedViewController, loader: imageLoader)
-        let refreshViewModel = RefreshViewModel(loader: loader, onFeedLoad: onFeedLoad)
-        let refreshController = RefreshController(viewModel: refreshViewModel)
+        
+        let refreshController = RefreshController()
+        let adapter = FeedViewControllerAdapter(feedViewController: feedViewController, imageLoader: imageLoader)
+        let presenter = FeedPresenter(loader: loader, view: adapter, loaderView: VirtualWeakRefProxy(refreshController))
         
         feedViewController.refreshController = refreshController
+        refreshController.presenter = presenter
         
         return feedViewController
     }
@@ -32,5 +34,42 @@ public class FeedUIComposer {
                 return FeedImageCellController(viewModel: vm)
             }
         }
+    }
+}
+
+class FeedViewControllerAdapter: FeedView {
+    weak var feedViewController: FeedViewController?
+    let imageLoader: FeedImageLoader
+    
+    func display(feed: [FeedImage]) {
+        feedViewController?.tableModel = feed.map {
+            let vm = FeedImageCellViewModel(model: $0, imageLoader: imageLoader, transformer: UIImage.init)
+            return FeedImageCellController(viewModel: vm)
+        }
+    }
+    
+    init(feedViewController: FeedViewController, imageLoader: FeedImageLoader) {
+        self.feedViewController = feedViewController
+        self.imageLoader = imageLoader
+    }
+}
+
+class VirtualWeakRefProxy<T: AnyObject> {
+    weak var object: T?
+    
+    init(_ object: T) {
+        self.object = object
+    }
+}
+
+extension VirtualWeakRefProxy: FeedView where T: FeedView {
+    func display(feed: [FeedImage]) {
+        object?.display(feed: feed)
+    }
+}
+
+extension VirtualWeakRefProxy: LoaderView where T: LoaderView {
+    func setLoader(visible: Bool) {
+        self.object?.setLoader(visible: visible)
     }
 }

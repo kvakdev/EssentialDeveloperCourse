@@ -256,12 +256,12 @@ extension FeedViewControllerTests {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)
     }
     
-    private func makeSUT() -> (FeedViewController, LoaderSpy) {
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (FeedViewController, LoaderSpy) {
         let loader = LoaderSpy()
         let sut = FeedUIComposer.makeFeedViewController(loader: loader, imageLoader: loader)
         
-        trackMemoryLeaks(sut)
-        trackMemoryLeaks(loader)
+        trackMemoryLeaks(sut, file: file, line: line)
+        trackMemoryLeaks(loader, file: file, line: line)
         
         return (sut, loader)
     }

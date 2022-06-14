@@ -9,31 +9,26 @@
 import UIKit
 
 class RefreshController: NSObject {
-    let viewModel: RefreshViewModel
-    
-    init(viewModel: RefreshViewModel) {
-        self.viewModel = viewModel
-    }
-    
-    lazy var view: UIRefreshControl = binded(UIRefreshControl())
-    
-    func binded(_ view: UIRefreshControl) -> UIRefreshControl {
+    var presenter: FeedPresenter?
+
+    lazy var view: UIRefreshControl = {
         let view = UIRefreshControl()
-        
         view.addTarget(self, action: #selector(refresh), for: .valueChanged)
         
-        viewModel.onIsLoadingChange = { isLoading in
-            if isLoading {
-                view.beginRefreshing()
-            } else {
-                view.endRefreshing()
-            }
-        }
-        
         return view
-    }
+    }()
     
     @objc func refresh() {
-        viewModel.loadFeed()
+        presenter?.loadFeed()
+    }
+}
+
+extension RefreshController: LoaderView {
+    func setLoader(visible: Bool) {
+        if visible {
+            view.beginRefreshing()
+        } else {
+            view.endRefreshing()
+        }
     }
 }
