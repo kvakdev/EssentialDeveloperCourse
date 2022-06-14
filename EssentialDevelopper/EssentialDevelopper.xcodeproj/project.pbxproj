@@ -282,10 +282,9 @@
 		93D1D3582852504300CCFCEE /* EssentialFeed_iOS */ = {
 			isa = PBXGroup;
 			children = (
-				93D1D39E28560AF300CCFCEE /* Composers */,
-				93D1D3892855EED300CCFCEE /* Models */,
-				93D1D3872855EE8200CCFCEE /* Views */,
-				93D1D3862855EE7C00CCFCEE /* Controllers */,
+				93D1D3A9285870F400CCFCEE /* Feed Image Loader */,
+				93D1D3892855EED300CCFCEE /* Feed Presentation */,
+				93D1D3AA2858712100CCFCEE /* FeedUI */,
 				93D1D35A2852504300CCFCEE /* EssentialFeed_iOS.docc */,
 			);
 			path = EssentialFeed_iOS;
@@ -320,14 +319,13 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		93D1D3892855EED300CCFCEE /* Models */ = {
+		93D1D3892855EED300CCFCEE /* Feed Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */,
 				93D1D3A528561FC000CCFCEE /* RefreshViewModel.swift */,
 				93D1D3A728575F5100CCFCEE /* FeeImageCellViewModel.swift */,
 			);
-			path = Models;
+			path = "Feed Presentation";
 			sourceTree = "<group>";
 		};
 		93D1D38C2855EFB200CCFCEE /* Helpers */ = {
@@ -350,6 +348,24 @@
 				93D1D39F28560B1600CCFCEE /* FeedUIComposer.swift */,
 			);
 			path = Composers;
+			sourceTree = "<group>";
+		};
+		93D1D3A9285870F400CCFCEE /* Feed Image Loader */ = {
+			isa = PBXGroup;
+			children = (
+				93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */,
+			);
+			path = "Feed Image Loader";
+			sourceTree = "<group>";
+		};
+		93D1D3AA2858712100CCFCEE /* FeedUI */ = {
+			isa = PBXGroup;
+			children = (
+				93D1D39E28560AF300CCFCEE /* Composers */,
+				93D1D3872855EE8200CCFCEE /* Views */,
+				93D1D3862855EE7C00CCFCEE /* Controllers */,
+			);
+			path = FeedUI;
 			sourceTree = "<group>";
 		};
 		F40FF151226475ED00359F40 = {
