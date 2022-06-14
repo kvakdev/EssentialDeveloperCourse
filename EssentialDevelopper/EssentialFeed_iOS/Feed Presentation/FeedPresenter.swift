@@ -7,17 +7,22 @@
 //
 
 import Foundation
-
-
-import Foundation
 import EssentialFeed
 
+struct FeedUIModel {
+    let feed: [FeedImage]
+}
+
 protocol FeedView {
-    func display(feed: [FeedImage])
+    func display(model: FeedUIModel)
+}
+
+struct FeedLoaderUIModel {
+    let isLoading: Bool
 }
 
 protocol LoaderView {
-    func setLoader(visible: Bool)
+    func display(uiModel: FeedLoaderUIModel)
 }
 
 final class FeedPresenter {
@@ -32,13 +37,13 @@ final class FeedPresenter {
     }
     
     func loadFeed() {
-        self.loaderView.setLoader(visible: true)
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true))
         
         self.loader.load() { [weak self] result in
             if let feed = try? result.get() {
-                self?.view.display(feed: feed)
+                self?.view.display(model: FeedUIModel(feed: feed))
             }
-            self?.loaderView.setLoader(visible: false)
+            self?.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false))
         }
     }
 }

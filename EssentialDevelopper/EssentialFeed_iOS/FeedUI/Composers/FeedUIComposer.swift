@@ -41,12 +41,13 @@ class FeedViewControllerAdapter: FeedView {
     weak var feedViewController: FeedViewController?
     let imageLoader: FeedImageLoader
     
-    func display(feed: [FeedImage]) {
-        feedViewController?.tableModel = feed.map {
+    func display(model: FeedUIModel) {
+        feedViewController?.tableModel = model.feed.map {
             let vm = FeedImageCellViewModel(model: $0, imageLoader: imageLoader, transformer: UIImage.init)
             return FeedImageCellController(viewModel: vm)
         }
     }
+
     
     init(feedViewController: FeedViewController, imageLoader: FeedImageLoader) {
         self.feedViewController = feedViewController
@@ -63,13 +64,13 @@ class VirtualWeakRefProxy<T: AnyObject> {
 }
 
 extension VirtualWeakRefProxy: FeedView where T: FeedView {
-    func display(feed: [FeedImage]) {
-        object?.display(feed: feed)
+    func display(model: FeedUIModel) {
+        object?.display(model: model)
     }
 }
 
 extension VirtualWeakRefProxy: LoaderView where T: LoaderView {
-    func setLoader(visible: Bool) {
-        self.object?.setLoader(visible: visible)
+    func display(uiModel: FeedLoaderUIModel) {
+        object?.display(uiModel: uiModel)
     }
 }

@@ -24,8 +24,8 @@ class RefreshController: NSObject {
 }
 
 extension RefreshController: LoaderView {
-    func setLoader(visible: Bool) {
-        if visible {
+    func display(uiModel: FeedLoaderUIModel) {
+        if uiModel.isLoading {
             view.beginRefreshing()
         } else {
             view.endRefreshing()
