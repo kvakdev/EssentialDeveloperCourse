@@ -8,8 +8,12 @@
 
 import UIKit
 
+protocol RefreshControllerDelegate {
+    func didRequestFeedLoad()
+}
+
 class RefreshController: NSObject {
-    private var loadFeed: () -> Void
+    private let delegate: RefreshControllerDelegate
     
     lazy var view: UIRefreshControl = {
         let view = UIRefreshControl()
@@ -18,12 +22,12 @@ class RefreshController: NSObject {
         return view
     }()
     
-    init(loadFeed: @escaping () -> Void) {
-        self.loadFeed = loadFeed
+    init(delegate: RefreshControllerDelegate) {
+        self.delegate = delegate
     }
     
     @objc func refresh() {
-        loadFeed()
+        self.delegate.didRequestFeedLoad()
     }
 }
 
