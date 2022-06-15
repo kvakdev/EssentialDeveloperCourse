@@ -57,12 +57,17 @@ class FeedViewAdapter: FeedView {
     
     func display(model: FeedUIModel) {
         feedViewController?.tableModel = model.feed.map {
-            let vm = FeedImageCellViewModel(model: $0, imageLoader: imageLoader, transformer: UIImage.init)
-            return FeedImageCellController(viewModel: vm)
+            let feedImageAdapter = FeedImageCompositionAdapter<VirtualWeakRefProxy<FeedImageCellController>, UIImage>(imageLoader: imageLoader, model: $0)
+            let controller = FeedImageCellController(delegate: feedImageAdapter)
+            let view = VirtualWeakRefProxy(controller)
+            let presenter = FeedImageCellPresenter(view: view, transformer: UIImage.init)
+            
+            feedImageAdapter.presenter = presenter
+            
+            return controller
         }
     }
 
-    
     init(feedViewController: FeedViewController, imageLoader: FeedImageLoader) {
         self.feedViewController = feedViewController
         self.imageLoader = imageLoader
@@ -87,4 +92,46 @@ extension VirtualWeakRefProxy: LoaderView where T: LoaderView {
     func display(uiModel: FeedLoaderUIModel) {
         object?.display(uiModel: uiModel)
     }
+}
+
+extension VirtualWeakRefProxy: FeedImageView where T: FeedImageView {
+    func display(model: FeedImageUIModel<T.Image>) {
+        object?.display(model: model)
+    }
+}
+
+class FeedImageCompositionAdapter<View: FeedImageView, Image>: FeedImageCellControllerDelegate where View.Image == Image {
+    
+    private let imageLoader: FeedImageLoader
+    private let model: FeedImage
+
+    private var task: FeedImageDataLoaderTask?
+    
+    var presenter: FeedImageCellPresenter<View, Image>?
+    
+    init(imageLoader: FeedImageLoader, model: FeedImage) {
+        self.imageLoader = imageLoader
+        self.model = model
+    }
+    
+    func didRequestToLoadImage() {
+        presenter?.didStartLoading(for: model)
+        
+        self.task = self.imageLoader.loadImage(with: self.model.url) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let data):
+                self.presenter?.didCompleteLoading(data: data, for: self.model)
+            case .failure(let error):
+                self.presenter?.didFailLoading(error: error, for: self.model)
+            }
+        }
+    }
+    func didCancelTask() {
+        task?.cancel()
+        task = nil
+    }
+    
+    deinit { didCancelTask() }
 }

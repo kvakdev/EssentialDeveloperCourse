@@ -8,38 +8,39 @@
 
 import UIKit
 
-class FeedImageCellController {
-    let viewModel: FeedImageCellViewModel<UIImage>
+protocol FeedImageCellControllerDelegate {
+    func didRequestToLoadImage()
+    func didCancelTask()
+}
+
+class FeedImageCellController: FeedImageView {
+    let cell = FeedImageCell()
+    let delegate: FeedImageCellControllerDelegate
     
-    init(viewModel: FeedImageCellViewModel<UIImage>) {
-        self.viewModel = viewModel
+    init(delegate: FeedImageCellControllerDelegate) {
+        self.delegate = delegate
+    }
+    
+    func display(model: FeedImageUIModel<UIImage>) {
+        cell.retryButton.isHidden = !model.isRetryVisible
+        cell.feedImageView.image = model.image
+        cell.locationContainer.isHidden = model.isLocationHidden
+        cell.descriptionLabel.text = model.description
+        cell.locationLabel.text = model.location
+        cell.imageContainer.isShimmering = model.isLoading
+        cell.onRetry = delegate.didRequestToLoadImage
     }
     
     func makeView() -> FeedImageCell {
-        let cell = FeedImageCell()
-        
-        cell.retryButton.isHidden = true
-        cell.feedImageView.image = nil
-        cell.locationContainer.isHidden = viewModel.isLocationHidden
-        cell.descriptionLabel.text = viewModel.description
-        cell.locationLabel.text = viewModel.location
-        
-        viewModel.onImageLoad = { image in
-            cell.feedImageView.image = image
-         }
-        viewModel.onRetryStateChange = { visible in
-            cell.retryButton.isHidden = !visible
-        }
-        viewModel.onIsLoadingStateChange = { isLoading in
-            cell.imageContainer.isShimmering = isLoading
-        }
-        cell.onRetry = { [weak self] in self?.viewModel.loadImage() }
-        viewModel.loadImage()
-        
+        delegate.didRequestToLoadImage()
         return cell
     }
     
+    func preload() {
+        delegate.didRequestToLoadImage()
+    }
+    
     func cancelTask() {
-        viewModel.cancelTask()
+        delegate.didCancelTask()
     }
 }
