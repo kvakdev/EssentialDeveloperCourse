@@ -32,7 +32,8 @@ class FeedImageCellController: FeedImageView {
     }
     
     func makeView() -> FeedImageCell {
-        delegate.didRequestToLoadImage()
+        preload()
+        
         return cell
     }
     

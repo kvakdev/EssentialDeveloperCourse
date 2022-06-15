@@ -27,8 +27,6 @@ public class FeedUIComposer {
     }
 }
 
-
-
 class FeedPresentationAdapter: RefreshControllerDelegate {
     let loader: FeedLoader
     var delegate: FeedLoadDelegate?
