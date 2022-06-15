@@ -13,30 +13,21 @@ protocol RefreshControllerDelegate {
 }
 
 class RefreshController: NSObject {
-    private let delegate: RefreshControllerDelegate
+    var delegate: RefreshControllerDelegate?
     
-    lazy var view: UIRefreshControl = {
-        let view = UIRefreshControl()
-        view.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        
-        return view
-    }()
+    @IBOutlet var view: UIRefreshControl?
     
-    init(delegate: RefreshControllerDelegate) {
-        self.delegate = delegate
-    }
-    
-    @objc func refresh() {
-        self.delegate.didRequestFeedLoad()
+    @IBAction func refresh() {
+        self.delegate?.didRequestFeedLoad()
     }
 }
 
 extension RefreshController: LoaderView {
     func display(uiModel: FeedLoaderUIModel) {
         if uiModel.isLoading {
-            view.beginRefreshing()
+            view?.beginRefreshing()
         } else {
-            view.endRefreshing()
+            view?.endRefreshing()
         }
     }
 }
