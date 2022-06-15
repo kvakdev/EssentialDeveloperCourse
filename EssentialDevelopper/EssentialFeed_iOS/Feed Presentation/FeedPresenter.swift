@@ -25,23 +25,31 @@ protocol LoaderView {
     func display(uiModel: FeedLoaderUIModel)
 }
 
-final class FeedPresenter {
-    let loader: FeedLoader
-    var view: FeedView?
-    var loaderView: LoaderView?
+protocol FeedLoadDelegate {
+    func didStartLoadingFeed()
+    func didCompleteLoading(with feed: [FeedImage])
+    func didCompleteLoadingWith(error: Error)
+}
+
+final class FeedPresenter: FeedLoadDelegate {
+    let view: FeedView
+    let loaderView: LoaderView
     
-    init(loader: FeedLoader) {
-        self.loader = loader
+    init(view: FeedView, loaderView: LoaderView) {
+        self.view = view
+        self.loaderView = loaderView
     }
     
-    func loadFeed() {
-        self.loaderView?.display(uiModel: FeedLoaderUIModel(isLoading: true))
-        
-        self.loader.load() { [weak self] result in
-            if let feed = try? result.get() {
-                self?.view?.display(model: FeedUIModel(feed: feed))
-            }
-            self?.loaderView?.display(uiModel: FeedLoaderUIModel(isLoading: false))
-        }
+    func didStartLoadingFeed() {
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true))
+    }
+    
+    func didCompleteLoading(with feed: [FeedImage]) {
+        self.view.display(model: FeedUIModel(feed: feed))
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false))
+    }
+    
+    func didCompleteLoadingWith(error: Error) {
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false))
     }
 }

@@ -9,7 +9,7 @@
 import UIKit
 
 class RefreshController: NSObject {
-    private let loadFeed: () -> Void
+    private var loadFeed: () -> Void
     
     lazy var view: UIRefreshControl = {
         let view = UIRefreshControl()
