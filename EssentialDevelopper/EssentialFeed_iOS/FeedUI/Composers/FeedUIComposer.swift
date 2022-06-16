@@ -15,10 +15,11 @@ public class FeedUIComposer {
     
     public static func makeFeedViewController(loader: FeedLoader, imageLoader: FeedImageLoader) -> FeedViewController {
         
-        let presentationAdapter = FeedPresentationAdapter(loader: loader)
+        let decotedMainThreadFeedloader = MainThreadDispatchDecorator(decoratee: loader)
+        let presentationAdapter = FeedPresentationAdapter(loader: decotedMainThreadFeedloader)
         let feedViewController = makeFeedViewController(delegate: presentationAdapter, title: FeedPresenter.title)
         
-        let adapter = FeedViewAdapter(feedViewController: feedViewController, imageLoader: imageLoader)
+        let adapter = FeedViewAdapter(feedViewController: feedViewController, imageLoader: MainThreadDispatchDecorator(decoratee: imageLoader))
         let presenter = FeedPresenter(view: adapter, loaderView: VirtualWeakRefProxy(feedViewController))
         
         presentationAdapter.delegate = presenter
@@ -36,6 +37,40 @@ public class FeedUIComposer {
         return feedViewController
     }
 }
+
+class MainThreadDispatchDecorator<T> {
+    private let decoratee: T
+    
+    init(decoratee: T) {
+        self.decoratee = decoratee
+    }
+    
+    func dispatch(_ completion: @escaping () -> Void) {
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async { completion() }
+            return
+        }
+        
+        completion()
+    }
+}
+
+extension MainThreadDispatchDecorator: FeedLoader where T == FeedLoader {
+    func load(completion: @escaping (Result<[FeedImage], Error>) -> ()) {
+        decoratee.load { [weak self] result in
+            self?.dispatch { completion(result) }
+        }
+    }
+}
+
+extension MainThreadDispatchDecorator: FeedImageLoader where T == FeedImageLoader {
+    func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
+        decoratee.loadImage(with: url) { [weak self] result in
+            self?.dispatch { completion(result) }
+        }
+    }
+}
+
 
 class FeedPresentationAdapter: FeedViewControllerDelegate {
     let loader: FeedLoader

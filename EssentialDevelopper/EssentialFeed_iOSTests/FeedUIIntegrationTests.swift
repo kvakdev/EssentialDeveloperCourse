@@ -13,6 +13,39 @@ import EssentialFeed_iOS
 
 class FeedUIIntegrationTests: XCTestCase {
     
+    func test_loadFeed_isInvokedOnTheMainThread() {
+        let (sut, loader) = makeSUT()
+        let image = makeImage()
+        let exp = expectation(description: "wait for load to complete")
+        
+        sut.loadViewIfNeeded()
+        
+        DispatchQueue.global().async {
+            loader.complete(with: [image], index: 0)
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_loadFeedImage_isInvokedOnTheMainThread() {
+        let (sut, loader) = makeSUT()
+        let image = makeImage()
+        let exp = expectation(description: "wait for load to complete")
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image], index: 0)
+        
+        sut.simulateViewIsVisible(at: 0)
+        DispatchQueue.global().async {
+            loader.completeImageLoadWithSuccess()
+            exp.fulfill()
+        }
+        
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     func test_title_isLocalized() {
         let (sut, _) = makeSUT()
         
@@ -62,7 +95,7 @@ class FeedUIIntegrationTests: XCTestCase {
         return bundles.reduce([]) { acc, localBundle in
             guard
                 let stringsFilePath = localBundle.bundle.path(forResource: table, ofType: "strings"),
-                  let dict = NSDictionary(contentsOfFile: stringsFilePath),
+                let dict = NSDictionary(contentsOfFile: stringsFilePath),
                 let allKeys =  dict.allKeys as? [String] else {
                 XCTFail("Unable to find \(table).strings for \(localBundle.localization) bundle")
                 return acc
