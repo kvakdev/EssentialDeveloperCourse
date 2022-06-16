@@ -23,7 +23,7 @@ class FeedImageCellController: FeedImageView {
     
     func display(model: FeedImageUIModel<UIImage>) {
         cell?.retryButton.isHidden = !model.isRetryVisible
-        cell?.feedImageView.image = model.image
+        cell?.feedImageView.setImageAnimated(model.image)
         cell?.locationContainer.isHidden = model.isLocationHidden
         cell?.descriptionLabel.text = model.description
         cell?.locationLabel.text = model.location
