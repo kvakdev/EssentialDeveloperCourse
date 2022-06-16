@@ -57,6 +57,7 @@
 		93D1D3AC285871D600CCFCEE /* FeedPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D3AB285871D600CCFCEE /* FeedPresenter.swift */; };
 		93D1D3B0285A080F00CCFCEE /* Feed.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93D1D3AF285A080E00CCFCEE /* Feed.storyboard */; };
 		93D1D3B2285B121B00CCFCEE /* UIImageView+FadeIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D3B1285B121B00CCFCEE /* UIImageView+FadeIn.swift */; };
+		93D1D3B4285B1A8800CCFCEE /* Feed.strings in Resources */ = {isa = PBXBuildFile; fileRef = 93D1D3B3285B1A8800CCFCEE /* Feed.strings */; };
 		F4BA2BF02269E66F0015EABC /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4BA2BE72269E66F0015EABC /* EssentialFeed.framework */; };
 		F4BA2BFE2269E7850015EABC /* LoadFeedFromRemoteUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F40FF189226477A400359F40 /* LoadFeedFromRemoteUseCaseTests.swift */; };
 		F4BA2BFF2269E7850015EABC /* URLSessionHTTPClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BA2BD0226702E80015EABC /* URLSessionHTTPClientTests.swift */; };
@@ -150,6 +151,7 @@
 		93D1D3AB285871D600CCFCEE /* FeedPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedPresenter.swift; sourceTree = "<group>"; };
 		93D1D3AF285A080E00CCFCEE /* Feed.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Feed.storyboard; sourceTree = "<group>"; };
 		93D1D3B1285B121B00CCFCEE /* UIImageView+FadeIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+FadeIn.swift"; sourceTree = "<group>"; };
+		93D1D3B3285B1A8800CCFCEE /* Feed.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Feed.strings; sourceTree = "<group>"; };
 		F40FF15D226475ED00359F40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F40FF15F226475ED00359F40 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F40FF161226475EF00359F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 			children = (
 				93D1D3A728575F5100CCFCEE /* FeedImageCellPresenter.swift */,
 				93D1D3AB285871D600CCFCEE /* FeedPresenter.swift */,
+				93D1D3B3285B1A8800CCFCEE /* Feed.strings */,
 			);
 			path = "Feed Presentation";
 			sourceTree = "<group>";
@@ -705,6 +708,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93D1D3B4285B1A8800CCFCEE /* Feed.strings in Resources */,
 				93D1D3B0285A080F00CCFCEE /* Feed.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

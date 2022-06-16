@@ -31,7 +31,7 @@ protocol FeedLoadDelegate {
     func didCompleteLoadingWith(error: Error)
 }
 
-final class FeedPresenter: FeedLoadDelegate {
+public final class FeedPresenter: FeedLoadDelegate {
     let view: FeedView
     let loaderView: LoaderView
     

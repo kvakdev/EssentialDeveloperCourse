@@ -14,9 +14,12 @@ import EssentialFeed_iOS
 class FeedViewControllerTests: XCTestCase {
     
     func test_title_isLocalized() {
-        let (sut, loader) = makeSUT()
+        let (sut, _) = makeSUT()
         
-        XCTAssertEqual(sut.title, "My Feed")
+        let bundle = Bundle(for: FeedPresenter.self)
+        let localizedTitle = NSLocalizedString("FEED_TITLE_VIEW", tableName: "Feed", bundle: bundle, value: "default value...", comment: "title of the feed screen")
+        
+        XCTAssertEqual(sut.title, localizedTitle)
     }
     
     func test_load_isCalledOnLoadAllEvents() {
