@@ -247,6 +247,17 @@ class FeedViewControllerTests: XCTestCase {
         XCTAssertEqual(loader.cancelledUrls, [image0.url, image1.url])
     }
     
+    func test_feedImageCell_isNotConfiguredAfterDissapearing() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage()
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0], index: 0)
+        let cell = sut.simulateViewNotVisible(at: 0)
+        loader.completeImageLoadWithSuccess(UIImage.with(.red).pngData()!, index: 0)
+        
+        XCTAssertNil(cell.renderedImage, "Expected image to be nil after cell goes off screen")
+    }
+    
 }
 
 // MARK: - TestHelpers

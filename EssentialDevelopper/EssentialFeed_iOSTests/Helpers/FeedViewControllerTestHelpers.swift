@@ -37,12 +37,14 @@ extension FeedViewController {
     func simulateViewIsVisible(at index: Int) -> FeedImageCell? {
         return viewForIndex(index) as? FeedImageCell
     }
-    
-    func simulateViewNotVisible(at index: Int) {
+    @discardableResult
+    func simulateViewNotVisible(at index: Int) -> FeedImageCell {
         let cell = simulateViewIsVisible(at: index)!
         let delegate = self.tableView.delegate
         let indexPath = IndexPath(row: index, section: feedSection)
         delegate?.tableView?(tableView, didEndDisplaying: cell, forRowAt: indexPath)
+        
+        return cell
     }
     
     func simulateNearVisible(at index: Int) {
