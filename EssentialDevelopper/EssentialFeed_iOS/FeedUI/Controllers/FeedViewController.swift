@@ -8,19 +8,35 @@
 
 import UIKit
 
+protocol FeedViewControllerDelegate {
+    func didRequestFeedLoad()
+}
 
-public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching {
-    @IBOutlet var refreshController: RefreshController?
+public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching, LoaderView {
+    var delegate: FeedViewControllerDelegate?
+
     var tableModel: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
-    
+ 
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        refreshController?.refresh()
+        refresh()
     }
-
+    
+    @IBAction func refresh() {
+        self.delegate?.didRequestFeedLoad()
+    }
+    
+    func display(uiModel: FeedLoaderUIModel) {
+        if uiModel.isLoading {
+            refreshControl?.beginRefreshing()
+        } else {
+            refreshControl?.endRefreshing()
+        }
+    }
+    
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableModel.count
     }
