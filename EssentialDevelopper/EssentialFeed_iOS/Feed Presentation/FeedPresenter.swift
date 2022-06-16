@@ -40,6 +40,14 @@ public final class FeedPresenter: FeedLoadDelegate {
         self.loaderView = loaderView
     }
     
+    static var title: String {
+        NSLocalizedString("FEED_TITLE_VIEW",
+                          tableName: "Feed",
+                          bundle: Bundle(for: FeedPresenter.self),
+                          value: "",
+                          comment: "Title for feed screen")
+    }
+    
     func didStartLoadingFeed() {
         self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true))
     }
