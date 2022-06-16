@@ -13,6 +13,12 @@ import EssentialFeed_iOS
 
 class FeedViewControllerTests: XCTestCase {
     
+    func test_title_isLocalized() {
+        let (sut, loader) = makeSUT()
+        
+        XCTAssertEqual(sut.title, "My Feed")
+    }
+    
     func test_load_isCalledOnLoadAllEvents() {
         let (sut, loader) = makeSUT()
         
