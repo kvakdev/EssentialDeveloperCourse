@@ -14,7 +14,7 @@ protocol FeedImageCellControllerDelegate {
 }
 
 class FeedImageCellController: FeedImageView {
-    let cell = FeedImageCell()
+    var cell: FeedImageCell?
     let delegate: FeedImageCellControllerDelegate
     
     init(delegate: FeedImageCellControllerDelegate) {
@@ -22,19 +22,20 @@ class FeedImageCellController: FeedImageView {
     }
     
     func display(model: FeedImageUIModel<UIImage>) {
-        cell.retryButton.isHidden = !model.isRetryVisible
-        cell.feedImageView.image = model.image
-        cell.locationContainer.isHidden = model.isLocationHidden
-        cell.descriptionLabel.text = model.description
-        cell.locationLabel.text = model.location
-        cell.imageContainer.isShimmering = model.isLoading
-        cell.onRetry = delegate.didRequestToLoadImage
+        cell?.retryButton.isHidden = !model.isRetryVisible
+        cell?.feedImageView.image = model.image
+        cell?.locationContainer.isHidden = model.isLocationHidden
+        cell?.descriptionLabel.text = model.description
+        cell?.locationLabel.text = model.location
+        cell?.imageContainer.isShimmering = model.isLoading
+        cell?.onRetry = delegate.didRequestToLoadImage
     }
     
-    func makeView() -> FeedImageCell {
+    func makeView(tableView: UITableView) -> FeedImageCell {
+        self.cell = tableView.dequeueReusableCell()
         preload()
         
-        return cell
+        return cell!
     }
     
     func preload() {
@@ -43,5 +44,11 @@ class FeedImageCellController: FeedImageView {
     
     func cancelTask() {
         delegate.didCancelTask()
+    }
+}
+
+extension UITableView {
+    func dequeueReusableCell<T>(id: String = String(describing: type(of: T.self))) -> T where T: UITableViewCell {
+        return dequeueReusableCell(withIdentifier: id) as! T
     }
 }

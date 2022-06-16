@@ -9,11 +9,11 @@
 import UIKit
 
 public class FeedImageCell: UITableViewCell {
-    public var locationLabel = UILabel()
-    public var descriptionLabel = UILabel()
-    public var locationContainer = UIView()
-    public var imageContainer = UIView()
-    public var feedImageView = UIImageView()
+    @IBOutlet public var locationLabel: UILabel!
+    @IBOutlet public var descriptionLabel: UILabel!
+    @IBOutlet public var locationContainer: UIView!
+    @IBOutlet public var imageContainer: UIView!
+    @IBOutlet public var feedImageView: UIImageView!
     
     public lazy var retryButton: UIButton = {
         let button = UIButton()
