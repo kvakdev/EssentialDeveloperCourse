@@ -11,14 +11,16 @@ import UIKit
 import EssentialFeed
 import EssentialFeed_iOS
 
-class FeedViewControllerTests: XCTestCase {
+class FeedUIIntegrationTests: XCTestCase {
     
     func test_title_isLocalized() {
         let (sut, _) = makeSUT()
         
         let bundle = Bundle(for: FeedPresenter.self)
-        let localizedTitle = NSLocalizedString("FEED_TITLE_VIEW", tableName: "Feed", bundle: bundle, value: "default value...", comment: "title of the feed screen")
+        let key = "FEED_TITLE_VIEW"
+        let localizedTitle = NSLocalizedString(key, tableName: "Feed", bundle: bundle, value: "default value...", comment: "title of the feed screen")
         
+        XCTAssertNotEqual(key, localizedTitle)
         XCTAssertEqual(sut.title, localizedTitle)
     }
     
@@ -270,7 +272,7 @@ class FeedViewControllerTests: XCTestCase {
 }
 
 // MARK: - TestHelpers
-extension FeedViewControllerTests {
+extension FeedUIIntegrationTests {
     
     private func makeImage(_ url: URL = URL(string: "http://any-url.com/0")!) -> FeedImage {
         FeedImage(id: UUID(), description: "description", location: nil, imageUrl: url)

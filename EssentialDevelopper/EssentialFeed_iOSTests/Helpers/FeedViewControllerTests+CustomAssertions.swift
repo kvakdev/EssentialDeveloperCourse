@@ -11,7 +11,7 @@ import EssentialFeed
 import EssentialFeed_iOS
 import XCTest
 
-extension FeedViewControllerTests {
+extension FeedUIIntegrationTests {
     
     func assert(sut: FeedViewController, renders feed: [FeedImage], file: StaticString = #file, line: UInt = #line) {
         XCTAssertEqual(sut.numberOfRenderedImageViews, feed.count, file: file, line: line)
