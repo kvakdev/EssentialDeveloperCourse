@@ -14,7 +14,7 @@ class FeedViewAdapter: FeedView {
     weak var feedViewController: FeedViewController?
     let imageLoader: FeedImageLoader
     
-    func display(model: FeedUIModel) {
+    func display(model: FeedViewModel) {
         feedViewController?.tableModel = model.feed.map {
             let feedImageAdapter = FeedImageCompositionAdapter<VirtualWeakRefProxy<FeedImageCellController>, UIImage>(imageLoader: imageLoader, model: $0)
             let controller = FeedImageCellController(delegate: feedImageAdapter)

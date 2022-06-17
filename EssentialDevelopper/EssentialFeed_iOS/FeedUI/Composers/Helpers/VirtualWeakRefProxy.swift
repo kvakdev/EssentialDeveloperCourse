@@ -18,13 +18,13 @@ class VirtualWeakRefProxy<T: AnyObject> {
 }
 
 extension VirtualWeakRefProxy: FeedView where T: FeedView {
-    func display(model: FeedUIModel) {
+    func display(model: FeedViewModel) {
         object?.display(model: model)
     }
 }
 
 extension VirtualWeakRefProxy: LoaderView where T: LoaderView {
-    func display(uiModel: FeedLoaderUIModel) {
+    func display(uiModel: FeedLoaderViewModel) {
         object?.display(uiModel: uiModel)
     }
 }
