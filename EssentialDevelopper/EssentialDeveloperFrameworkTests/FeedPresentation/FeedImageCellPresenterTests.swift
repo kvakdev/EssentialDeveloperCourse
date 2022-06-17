@@ -10,60 +10,6 @@ import XCTest
 import EssentialFeed
 
 
-struct FeedImageUIModel<Image> {
-    var description: String?
-    var location: String?
-    var isLocationHidden: Bool
-    var isLoading: Bool
-    var image: Image?
-    var isRetryVisible: Bool
-}
-
-protocol FeedImageView {
-    associatedtype Image
-    func display(model: FeedImageUIModel<Image>)
-}
-
-class FeedImageCellPresenter<View: FeedImageView, Image> where View.Image == Image {
-    
-    private let view: View
-    private let transformer: (Data) -> Image?
-    
-    
-    init(view: View, transformer: @escaping (Data) -> Image?) {
-        self.view = view
-        self.transformer = transformer
-    }
-    
-    func didStartLoading(for model: FeedImage) {
-        view.display(model: FeedImageUIModel(description: model.description,
-                                             location: model.location,
-                                             isLocationHidden: model.location == nil,
-                                             isLoading: true,
-                                             image: nil,
-                                             isRetryVisible: false))
-    }
-    
-    
-    func didCompleteLoading(data: Data, for model: FeedImage) {
-        guard let image = transformer(data) else {
-            view.display(model: FeedImageUIModel(description: model.description,
-                                                 location: model.location,
-                                                 isLocationHidden: model.location == nil,
-                                                 isLoading: false,
-                                                 image: nil,
-                                                 isRetryVisible: true))
-            return
-        }
-        
-        view.display(model: FeedImageUIModel(description: model.description,
-                                             location: model.location,
-                                             isLocationHidden: model.location == nil,
-                                             isLoading: false,
-                                             image: image,
-                                             isRetryVisible: false))
-    }
-}
 
 class FeedImageCellPresenterTests: XCTestCase {
     
@@ -75,9 +21,8 @@ class FeedImageCellPresenterTests: XCTestCase {
     func test_didStartLoading_setDataAsPerFeedImage() {
         let (sut, view) = makeSUT()
         let image = uniqueFeedImage()
-        sut.didStartLoading(for: image)
         
-        let receivedModel = view.imageViewModels.last!
+        sut.didStartLoading(for: image)
         
         expect(view: view,
                for: image,
@@ -90,6 +35,7 @@ class FeedImageCellPresenterTests: XCTestCase {
         let (sut, view) = makeSUT()
         let image = uniqueFeedImage()
         let dummyImageData = "Test"
+        
         sut.didCompleteLoading(data: dummyImageData.data(using: .utf8)!, for: image)
         
         expect(view: view,
@@ -103,8 +49,22 @@ class FeedImageCellPresenterTests: XCTestCase {
         let (sut, view) = makeSUT()
         let image = uniqueFeedImage()
         let corruptedData = "SomeString".data(using: .unicode)!
+        
         sut.didCompleteLoading(data: corruptedData,
                                for: image)
+        
+        expect(view: view,
+               for: image,
+               isLoading: false,
+               isRetry: true,
+               imageData: nil)
+    }
+    
+    func test_failedLoad_hidesLoaderAndShowRetryButton() {
+        let (sut, view) = makeSUT()
+        let image = uniqueFeedImage()
+
+        sut.didFailLoading(error: anyNSError(), for: image)
         
         expect(view: view,
                for: image,
@@ -137,9 +97,9 @@ class FeedImageCellPresenterTests: XCTestCase {
     private class ViewSpy: FeedImageView {
         typealias Image = String
         
-        var imageViewModels: [FeedImageUIModel<String>] = []
+        var imageViewModels: [FeedImageViewModel<String>] = []
         
-        func display(model: FeedImageUIModel<String>) {
+        func display(model: FeedImageViewModel<String>) {
             imageViewModels.append(model)
         }
     }
