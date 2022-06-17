@@ -47,7 +47,7 @@ public class FeedPresenter {
 }
 
 public extension FeedPresenter {
-    public static var title: String {
+    static var title: String {
         NSLocalizedString("FEED_TITLE_VIEW",
                           tableName: "Feed",
                           bundle: Bundle(for: FeedPresenter.self),
