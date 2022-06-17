@@ -49,6 +49,14 @@ class FeedPresenter {
                           value: "",
                           comment: "error after feed loading")
     
+    static var title: String {
+        NSLocalizedString("FEED_TITLE_VIEW",
+                          tableName: "Feed",
+                          bundle: Bundle(for: FeedPresenter.self),
+                          value: "",
+                          comment: "Title for feed screen")
+    }
+    
     init(view: FeedView, loaderView: LoaderView) {
         self.view = view
         self.loaderView = loaderView
@@ -101,7 +109,24 @@ class FeedPresenterTests: XCTestCase {
         
         XCTAssertEqual(view.messages, [
             .display(isLoading: false),
-            .display(error: localizedError)])
+            .display(error: localized("FEED_LOADING_ERROR"))])
+    }
+    
+    func test_title_isLocalized() {
+        XCTAssertEqual(FeedPresenter.title, localized("FEED_TITLE_VIEW"))
+    }
+    
+    private func localized(_ key: String, bundle: Bundle = Bundle(for: FeedPresenter.self), in table: String = "Feed", comment: String = "") -> String {
+        let value = NSLocalizedString(key,
+                                      tableName: table,
+                                      bundle: bundle,
+                                      value: "",
+                                      comment: comment)
+        if value == key {
+            XCTFail("Missing value for key \(key)")
+        }
+        
+        return value
     }
     
     private let localizedError: String =

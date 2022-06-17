@@ -1,0 +1,11 @@
+/* 
+  Feed.strings
+  EssentialDevelopper
+
+  Created by Andre Kvashuk on 6/17/22.
+  Copyright © 2022 Andre Kvashuk. All rights reserved.
+*/
+
+
+"FEED_TITLE_VIEW" = "My Feed";
+"FEED_LOADING_ERROR" = "Couldn't connect to server";
