@@ -13,7 +13,7 @@ protocol FeedViewControllerDelegate {
     func didRequestFeedLoad()
 }
 
-public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching, LoaderView {
+public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching, LoaderView, ErrorView {
     var delegate: FeedViewControllerDelegate?
 
     var tableModel: [FeedImageCellController] = [] {
@@ -36,7 +36,10 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         } else {
             refreshControl?.endRefreshing()
         }
-        tableView.handleFeedLoadingError(uiModel.errorMessage)
+    }
+    
+    public func display(model: FeedErrorViewModel) {
+        tableView.handleFeedLoadingError(model.message)
     }
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

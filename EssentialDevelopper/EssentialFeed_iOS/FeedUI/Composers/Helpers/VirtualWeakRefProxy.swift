@@ -29,8 +29,14 @@ extension VirtualWeakRefProxy: LoaderView where T: LoaderView {
     }
 }
 
+extension VirtualWeakRefProxy: ErrorView where T: ErrorView {
+    func display(model: FeedErrorViewModel) {
+        object?.display(model: model)
+    }
+}
+
 extension VirtualWeakRefProxy: FeedImageView where T: FeedImageView {
-    func display(model: FeedImageUIModel<T.Image>) {
+    func display(model: FeedImageViewModel<T.Image>) {
         object?.display(model: model)
     }
 }

@@ -8,12 +8,6 @@
 
 import Foundation
 
-public protocol FeedImageView {
-    associatedtype Image
-    func display(model: FeedImageViewModel<Image>)
-}
-
-
 public class FeedImageCellPresenter<View: FeedImageView, Image> where View.Image == Image {
     
     private let view: View

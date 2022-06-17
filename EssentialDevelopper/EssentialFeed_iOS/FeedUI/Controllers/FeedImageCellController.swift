@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import EssentialFeed
 
 protocol FeedImageCellControllerDelegate {
     func didRequestToLoadImage()
@@ -21,7 +22,7 @@ class FeedImageCellController: FeedImageView {
         self.delegate = delegate
     }
     
-    func display(model: FeedImageUIModel<UIImage>) {
+    func display(model: FeedImageViewModel<UIImage>) {
         cell?.retryButton.isHidden = !model.isRetryVisible
         cell?.feedImageView.setImageAnimated(model.image)
         cell?.locationContainer.isHidden = model.isLocationHidden
