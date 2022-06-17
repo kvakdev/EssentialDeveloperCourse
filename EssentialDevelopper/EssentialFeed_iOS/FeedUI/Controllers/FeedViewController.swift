@@ -35,12 +35,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         } else {
             refreshControl?.endRefreshing()
         }
-        if let error = uiModel.errorMessage {
-            let headerView = FeedErrorHeaderView(errorMessage: error)
-            tableView.tableHeaderView = headerView
-        } else {
-            tableView.tableHeaderView = nil
-        }
+        tableView.handleFeedLoadingError(uiModel.errorMessage)
     }
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -72,3 +67,13 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
 }
 
+extension UITableView {
+    func handleFeedLoadingError(_ message: String?) {
+        if let error = message {
+            let headerView = FeedErrorHeaderView(errorMessage: error)
+            tableHeaderView = headerView
+        } else {
+            tableHeaderView = nil
+        }
+    }
+}
