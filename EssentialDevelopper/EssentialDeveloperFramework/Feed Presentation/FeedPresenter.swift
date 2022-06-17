@@ -9,9 +9,7 @@
 import Foundation
 
 
-public struct FeedUIModel {
-    public let feed: [FeedImage]
-}
+
 
 
 
