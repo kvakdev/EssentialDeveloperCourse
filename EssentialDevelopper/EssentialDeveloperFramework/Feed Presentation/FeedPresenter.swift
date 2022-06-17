@@ -8,11 +8,6 @@
 
 import Foundation
 
-
-
-
-
-
 public protocol LoaderView {
     func display(uiModel: FeedLoaderUIModel)
 }
@@ -32,14 +27,6 @@ public class FeedPresenter {
                           value: "",
                           comment: "error after feed loading")
     
-    public static var title: String {
-        NSLocalizedString("FEED_TITLE_VIEW",
-                          tableName: "Feed",
-                          bundle: Bundle(for: FeedPresenter.self),
-                          value: "",
-                          comment: "Title for feed screen")
-    }
-    
     public init(view: FeedView, loaderView: LoaderView) {
         self.view = view
         self.loaderView = loaderView
@@ -56,5 +43,15 @@ public class FeedPresenter {
     
     public func didCompleteLoadingWith(error: Error) {
         self.loaderView.display(uiModel: .loadingError(feedLoadingError))
+    }
+}
+
+public extension FeedPresenter {
+    public static var title: String {
+        NSLocalizedString("FEED_TITLE_VIEW",
+                          tableName: "Feed",
+                          bundle: Bundle(for: FeedPresenter.self),
+                          value: "",
+                          comment: "Title for feed screen")
     }
 }
