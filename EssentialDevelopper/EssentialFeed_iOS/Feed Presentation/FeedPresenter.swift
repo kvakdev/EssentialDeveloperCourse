@@ -11,6 +11,7 @@ import EssentialFeed
 
 struct FeedUIModel {
     let feed: [FeedImage]
+  
 }
 
 protocol FeedView {
@@ -20,6 +21,14 @@ protocol FeedView {
 struct FeedLoaderUIModel {
     let isLoading: Bool
     let errorMessage: String?
+    
+    static var noError: FeedLoaderUIModel {
+        FeedLoaderUIModel(isLoading: false, errorMessage: nil)
+    }
+    
+    static func loadingError(_ message: String) -> FeedLoaderUIModel {
+        FeedLoaderUIModel(isLoading: false, errorMessage: message)
+    }
 }
 
 protocol LoaderView {
@@ -49,13 +58,12 @@ public final class FeedPresenter: FeedLoadDelegate {
                           comment: "Title for feed screen")
     }
     
-    static var feedLoadingError: String {
+    private let feedLoadingError: String =
         NSLocalizedString("FEED_LOADING_ERROR",
                           tableName: "Feed",
                           bundle: Bundle(for: FeedPresenter.self),
                           value: "",
                           comment: "error after feed loading")
-    }
     
     func didStartLoadingFeed() {
         self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true, errorMessage: nil))
@@ -63,10 +71,10 @@ public final class FeedPresenter: FeedLoadDelegate {
     
     func didCompleteLoading(with feed: [FeedImage]) {
         self.view.display(model: FeedUIModel(feed: feed))
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false, errorMessage: nil))
+        self.loaderView.display(uiModel: .noError)
     }
     
     func didCompleteLoadingWith(error: Error) {
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false, errorMessage: Self.feedLoadingError))
+        self.loaderView.display(uiModel: .loadingError(feedLoadingError))
     }
 }
