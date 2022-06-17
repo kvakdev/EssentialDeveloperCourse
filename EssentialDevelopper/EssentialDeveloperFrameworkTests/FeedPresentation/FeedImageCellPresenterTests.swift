@@ -79,12 +79,11 @@ class FeedImageCellPresenterTests: XCTestCase {
         
         let receivedModel = view.imageViewModels.last!
         
-        XCTAssertEqual(view.imageViewModels.count, 1)
-        XCTAssertEqual(receivedModel.description, image.description)
-        XCTAssertEqual(receivedModel.location, image.location)
-        XCTAssertEqual(receivedModel.isLocationHidden, image.location == nil)
-        XCTAssertEqual(receivedModel.isLoading, true)
-        XCTAssertEqual(receivedModel.isRetryVisible, false)
+        expect(view: view,
+               for: image,
+               isLoading: true,
+               isRetry: false,
+               imageData: nil)
     }
     
     func test_didCompleteLoadingWithData_hideLoadingAndRetry() {
@@ -93,30 +92,36 @@ class FeedImageCellPresenterTests: XCTestCase {
         let dummyImageData = "Test"
         sut.didCompleteLoading(data: dummyImageData.data(using: .utf8)!, for: image)
         
-        let receivedModel = view.imageViewModels.last!
-        XCTAssertEqual(view.imageViewModels.count, 1)
-        XCTAssertEqual(receivedModel.description, image.description)
-        XCTAssertEqual(receivedModel.location, image.location)
-        XCTAssertEqual(receivedModel.isLocationHidden, image.location == nil)
-        XCTAssertEqual(receivedModel.isLoading, false)
-        XCTAssertEqual(receivedModel.isRetryVisible, false)
-        XCTAssertEqual(receivedModel.image, dummyImageData)
+        expect(view: view,
+               for: image,
+               isLoading: false,
+               isRetry: false,
+               imageData: dummyImageData)
     }
     
     func test_corruptData_hidesLoadingAndShowsRetry() {
         let (sut, view) = makeSUT()
         let image = uniqueFeedImage()
-        let data = "SomeString".data(using: .unicode)!
-        sut.didCompleteLoading(data: data, for: image)
+        let corruptedData = "SomeString".data(using: .unicode)!
+        sut.didCompleteLoading(data: corruptedData,
+                               for: image)
         
+        expect(view: view,
+               for: image,
+               isLoading: false,
+               isRetry: true,
+               imageData: nil)
+    }
+    
+    private func expect(view: ViewSpy, for image: FeedImage, isLoading: Bool, isRetry: Bool, imageData: String?, file: StaticString = #file, line: UInt = #line) {
         let receivedModel = view.imageViewModels.last!
-        XCTAssertEqual(view.imageViewModels.count, 1)
-        XCTAssertEqual(receivedModel.description, image.description)
-        XCTAssertEqual(receivedModel.location, image.location)
-        XCTAssertEqual(receivedModel.isLocationHidden, image.location == nil)
-        XCTAssertFalse(receivedModel.isLoading)
-        XCTAssertTrue(receivedModel.isRetryVisible)
-        XCTAssertNil(receivedModel.image)
+        XCTAssertEqual(view.imageViewModels.count, 1, file: file, line: line)
+        XCTAssertEqual(receivedModel.description, image.description, file: file, line: line)
+        XCTAssertEqual(receivedModel.location, image.location, file: file, line: line)
+        XCTAssertEqual(receivedModel.isLocationHidden, image.location == nil, file: file, line: line)
+        XCTAssertEqual(receivedModel.isLoading, isLoading, file: file, line: line)
+        XCTAssertEqual(receivedModel.isRetryVisible, isRetry, file: file, line: line)
+        XCTAssertEqual(receivedModel.image, imageData, file: file, line: line)
     }
     
     private func makeSUT() -> (FeedImageCellPresenter<ViewSpy, String>, ViewSpy) {
