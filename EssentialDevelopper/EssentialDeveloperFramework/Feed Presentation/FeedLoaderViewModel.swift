@@ -10,17 +10,12 @@ import Foundation
 
 public struct FeedLoaderViewModel {
     public let isLoading: Bool
-    public let errorMessage: String?
     
     static var loading: FeedLoaderViewModel {
-        FeedLoaderViewModel(isLoading: true, errorMessage: nil)
+        FeedLoaderViewModel(isLoading: true)
     }
     
-    static var noError: FeedLoaderViewModel {
-        FeedLoaderViewModel(isLoading: false, errorMessage: nil)
-    }
-    
-    static func loadingError(_ message: String) -> FeedLoaderViewModel {
-        FeedLoaderViewModel(isLoading: false, errorMessage: message)
+    static var notLoading: FeedLoaderViewModel {
+        FeedLoaderViewModel(isLoading: false)
     }
 }

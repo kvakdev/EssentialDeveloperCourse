@@ -69,7 +69,7 @@ class FeedPresenterTests: XCTestCase {
                           value: "",
                           comment: "error after feed loading")
     
-    private class ViewSpy: LoaderView, FeedView {
+    private class ViewSpy: LoaderView, FeedView, ErrorView {
         
         enum Messages: Equatable {
             case display(isLoading: Bool)
@@ -80,17 +80,20 @@ class FeedPresenterTests: XCTestCase {
         
         func display(uiModel: FeedLoaderViewModel) {
             messages.append(.display(isLoading: uiModel.isLoading))
-            messages.append(.display(error: uiModel.errorMessage))
         }
         
         func display(model: FeedViewModel) {
             messages.append(.display(feed: model.feed))
         }
+        
+        func display(model: FeedErrorViewModel) {
+            messages.append(.display(error: model.message))
+        }
     }
     
     private func makeSUT() -> (FeedPresenter, ViewSpy) {
         let view = ViewSpy()
-        let sut = FeedPresenter(view: view, loaderView: view)
+        let sut = FeedPresenter(view: view, loaderView: view, errorView: view)
         
         trackMemoryLeaks(sut)
         trackMemoryLeaks(view)
