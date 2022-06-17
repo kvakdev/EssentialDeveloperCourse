@@ -24,6 +24,10 @@ struct FeedLoaderUIModel {
     static var noError: FeedLoaderUIModel {
         FeedLoaderUIModel(isLoading: false, errorMessage: nil)
     }
+    
+    static func loadingError(_ message: String) -> FeedLoaderUIModel {
+        FeedLoaderUIModel(isLoading: false, errorMessage: message)
+    }
 }
 
 protocol LoaderView {
@@ -38,6 +42,13 @@ class FeedPresenter {
     let view: FeedView
     let loaderView: LoaderView
     
+    private let feedLoadingError: String =
+        NSLocalizedString("FEED_LOADING_ERROR",
+                          tableName: "Feed",
+                          bundle: Bundle(for: FeedPresenter.self),
+                          value: "",
+                          comment: "error after feed loading")
+    
     init(view: FeedView, loaderView: LoaderView) {
         self.view = view
         self.loaderView = loaderView
@@ -51,7 +62,10 @@ class FeedPresenter {
         self.view.display(model: FeedUIModel(feed: feed))
         self.loaderView.display(uiModel: .noError)
     }
-
+    
+    func didCompleteLoadingWith(error: Error) {
+        self.loaderView.display(uiModel: .loadingError(feedLoadingError))
+    }
 }
 
 class FeedPresenterTests: XCTestCase {
@@ -80,6 +94,22 @@ class FeedPresenterTests: XCTestCase {
             .display(isLoading: false),
             .display(error: nil)])
     }
+    
+    func test_failedLoading_displaysError() {
+        let (sut, view) = makeSUT()
+        sut.didCompleteLoadingWith(error: anyNSError())
+        
+        XCTAssertEqual(view.messages, [
+            .display(isLoading: false),
+            .display(error: localizedError)])
+    }
+    
+    private let localizedError: String =
+        NSLocalizedString("FEED_LOADING_ERROR",
+                          tableName: "Feed",
+                          bundle: Bundle(for: FeedPresenter.self),
+                          value: "",
+                          comment: "error after feed loading")
     
     private class ViewSpy: LoaderView, FeedView {
         
