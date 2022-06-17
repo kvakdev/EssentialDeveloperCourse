@@ -33,6 +33,10 @@ extension FeedViewController {
         return 0
     }
     
+    var errorMessage: String? {
+        return (tableView.tableHeaderView as? FeedErrorHeaderView)?.titleLabel.text
+    }
+    
     @discardableResult
     func simulateViewIsVisible(at index: Int) -> FeedImageCell? {
         return viewForIndex(index) as? FeedImageCell

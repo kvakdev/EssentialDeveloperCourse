@@ -7,4 +7,4 @@
 */
 
 "FEED_TITLE_VIEW" = "Моя стрічка";
-
+"FEED_LOADING_ERROR" = "Немає інтернету";

@@ -7,3 +7,4 @@
 */
 
 "FEED_TITLE_VIEW" = "My Feed";
+"FEED_LOADING_ERROR" = "Couldn't connect to server";

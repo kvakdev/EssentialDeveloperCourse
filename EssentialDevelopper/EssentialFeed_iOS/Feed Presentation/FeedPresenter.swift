@@ -19,6 +19,7 @@ protocol FeedView {
 
 struct FeedLoaderUIModel {
     let isLoading: Bool
+    let errorMessage: String?
 }
 
 protocol LoaderView {
@@ -48,16 +49,24 @@ public final class FeedPresenter: FeedLoadDelegate {
                           comment: "Title for feed screen")
     }
     
+    static var feedLoadingError: String {
+        NSLocalizedString("FEED_LOADING_ERROR",
+                          tableName: "Feed",
+                          bundle: Bundle(for: FeedPresenter.self),
+                          value: "",
+                          comment: "error after feed loading")
+    }
+    
     func didStartLoadingFeed() {
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true))
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true, errorMessage: nil))
     }
     
     func didCompleteLoading(with feed: [FeedImage]) {
         self.view.display(model: FeedUIModel(feed: feed))
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false))
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false, errorMessage: nil))
     }
     
     func didCompleteLoadingWith(error: Error) {
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false))
+        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: false, errorMessage: Self.feedLoadingError))
     }
 }

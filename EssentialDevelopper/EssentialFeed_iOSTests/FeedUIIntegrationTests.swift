@@ -13,6 +13,20 @@ import EssentialFeed_iOS
 
 class FeedUIIntegrationTests: XCTestCase {
     
+    func test_feedLoadError_showsMessageOnFeedViewController() {
+        let (sut, loader) = makeSUT()
+        sut.loadViewIfNeeded()
+        loader.completeWithError()
+        
+        let errorMessage = NSLocalizedString("FEED_LOADING_ERROR",
+                                             tableName: "Feed",
+                                             bundle: Bundle(for: FeedPresenter.self),
+                                             value: "",
+                                             comment: "")
+        
+        XCTAssertEqual(sut.errorMessage, errorMessage)
+    }
+    
     func test_loadFeed_isInvokedOnTheMainThread() {
         let (sut, loader) = makeSUT()
         let image = makeImage()
