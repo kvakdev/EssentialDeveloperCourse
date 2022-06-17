@@ -8,11 +8,28 @@
 
 import XCTest
 
-class FeedPresenter {
-    let view: Any
+struct FeedLoaderUIModel {
+    let isLoading: Bool
+    let errorMessage: String?
     
-    init(view: Any) {
-        self.view = view
+    static var loading: FeedLoaderUIModel {
+        FeedLoaderUIModel(isLoading: true, errorMessage: nil)
+    }
+}
+
+protocol LoaderView {
+    func display(uiModel: FeedLoaderUIModel)
+}
+
+class FeedPresenter {
+    let loaderView: LoaderView
+    
+    init(loaderView: LoaderView) {
+        self.loaderView = loaderView
+    }
+    
+    func didStartLoadingFeed() {
+        self.loaderView.display(uiModel: .loading)
     }
 }
 
@@ -24,13 +41,28 @@ class FeedPresenterTests: XCTestCase {
         XCTAssertTrue(view.messages.isEmpty)
     }
     
-    private class ViewSpy {
-        var messages: [AnyObject] = []
+    func test_didStartLoadingFeed_showLoading() {
+        let (sut, view) = makeSUT()
+        sut.didStartLoadingFeed()
+        
+        XCTAssertEqual(view.messages, [.display(isLoading: true)])
+    }
+    
+    private class ViewSpy: LoaderView {
+        func display(uiModel: FeedLoaderUIModel) {
+            messages.append(.display(isLoading: true))
+        }
+        
+        enum Messages: Equatable {
+            case display(isLoading: Bool)
+        }
+        
+        var messages: [Messages] = []
     }
     
     private func makeSUT() -> (FeedPresenter, ViewSpy) {
         let view = ViewSpy()
-        let sut = FeedPresenter(view: view)
+        let sut = FeedPresenter(loaderView: view)
         
         trackMemoryLeaks(sut)
         trackMemoryLeaks(view)

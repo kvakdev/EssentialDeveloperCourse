@@ -29,6 +29,10 @@ struct FeedLoaderUIModel {
     static func loadingError(_ message: String) -> FeedLoaderUIModel {
         FeedLoaderUIModel(isLoading: false, errorMessage: message)
     }
+    
+    static var loading: FeedLoaderUIModel {
+        FeedLoaderUIModel(isLoading: true, errorMessage: nil)
+    }
 }
 
 protocol LoaderView {
@@ -66,7 +70,7 @@ public final class FeedPresenter: FeedLoadDelegate {
                           comment: "error after feed loading")
     
     func didStartLoadingFeed() {
-        self.loaderView.display(uiModel: FeedLoaderUIModel(isLoading: true, errorMessage: nil))
+        self.loaderView.display(uiModel: .loading)
     }
     
     func didCompleteLoading(with feed: [FeedImage]) {
