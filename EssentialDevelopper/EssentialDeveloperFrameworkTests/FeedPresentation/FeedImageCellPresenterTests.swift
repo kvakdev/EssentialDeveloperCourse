@@ -19,13 +19,19 @@ class FeedImageCellPresenter {
 class FeedImageCellPresenterTests: XCTestCase {
     
     func test_init_doesNotHaveSideEffects() {
-        let view = ViewSpy()
-        let sut = FeedImageCellPresenter(view: view)
-        
+        let (_, view) = makeSUT()
         XCTAssertTrue(view.messages.isEmpty)
     }
     
-    
+    private func makeSUT() -> (FeedImageCellPresenter, ViewSpy) {
+        let view = ViewSpy()
+        let sut = FeedImageCellPresenter(view: view)
+        
+        trackMemoryLeaks(sut)
+        trackMemoryLeaks(view)
+        
+        return (sut, view)
+    }
     
     private class ViewSpy {
         var messages: [Any] = []
