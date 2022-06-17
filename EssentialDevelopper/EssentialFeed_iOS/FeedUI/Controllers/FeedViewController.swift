@@ -66,14 +66,3 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
         indexPaths.forEach { cellController(at: $0).cancelTask() }
     }
 }
-
-extension UITableView {
-    func handleFeedLoadingError(_ message: String?) {
-        if let error = message {
-            let headerView = FeedErrorHeaderView(errorMessage: error)
-            tableHeaderView = headerView
-        } else {
-            tableHeaderView = nil
-        }
-    }
-}
