@@ -78,7 +78,7 @@ class FeedPresenterTests: XCTestCase {
         }
         var messages: [Messages] = []
         
-        func display(uiModel: FeedLoaderUIModel) {
+        func display(uiModel: FeedLoaderViewModel) {
             messages.append(.display(isLoading: uiModel.isLoading))
             messages.append(.display(error: uiModel.errorMessage))
         }

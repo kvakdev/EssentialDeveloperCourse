@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol LoaderView {
-    func display(uiModel: FeedLoaderUIModel)
+    func display(uiModel: FeedLoaderViewModel)
 }
 
 public protocol FeedView {
