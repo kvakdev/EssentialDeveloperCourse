@@ -9,7 +9,7 @@
 import Foundation
 
 
-public protocol FeedLoader: class {
+public protocol FeedLoader: AnyObject {
     typealias Result = Swift.Result<[FeedImage], Error>
     
     func load(completion: @escaping (Result) -> ())

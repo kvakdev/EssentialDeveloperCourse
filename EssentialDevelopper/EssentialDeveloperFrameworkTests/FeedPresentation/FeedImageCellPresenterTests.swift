@@ -10,7 +10,6 @@ import XCTest
 import EssentialFeed
 
 
-
 class FeedImageCellPresenterTests: XCTestCase {
     
     func test_init_doesNotHaveSideEffects() {
@@ -84,12 +83,12 @@ class FeedImageCellPresenterTests: XCTestCase {
         XCTAssertEqual(receivedModel.image, imageData, file: file, line: line)
     }
     
-    private func makeSUT() -> (FeedImageCellPresenter<ViewSpy, String>, ViewSpy) {
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (FeedImageCellPresenter<ViewSpy, String>, ViewSpy) {
         let view = ViewSpy()
         let sut = FeedImageCellPresenter<ViewSpy, String>(view: view, transformer: { data in String(data: data, encoding: .utf8) })
         
-        trackMemoryLeaks(sut)
-        trackMemoryLeaks(view)
+        trackMemoryLeaks(sut, file: file, line: line)
+        trackMemoryLeaks(view, file: file, line: line)
         
         return (sut, view)
     }
