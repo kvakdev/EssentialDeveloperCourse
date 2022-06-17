@@ -83,7 +83,7 @@ class FeedPresenterTests: XCTestCase {
             messages.append(.display(error: uiModel.errorMessage))
         }
         
-        func display(model: FeedUIModel) {
+        func display(model: FeedViewModel) {
             messages.append(.display(feed: model.feed))
         }
     }

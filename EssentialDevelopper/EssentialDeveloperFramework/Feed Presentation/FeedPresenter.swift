@@ -13,7 +13,7 @@ public protocol LoaderView {
 }
 
 public protocol FeedView {
-    func display(model: FeedUIModel)
+    func display(model: FeedViewModel)
 }
 
 public class FeedPresenter {
@@ -37,7 +37,7 @@ public class FeedPresenter {
     }
     
     public func didCompleteLoading(with feed: [FeedImage]) {
-        self.view.display(model: FeedUIModel(feed: feed))
+        self.view.display(model: FeedViewModel(feed: feed))
         self.loaderView.display(uiModel: .noError)
     }
     
