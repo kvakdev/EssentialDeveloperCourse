@@ -45,17 +45,21 @@ class FeedPresenterTests: XCTestCase {
         let (sut, view) = makeSUT()
         sut.didStartLoadingFeed()
         
-        XCTAssertEqual(view.messages, [.display(isLoading: true)])
+        XCTAssertEqual(view.messages, [.display(isLoading: true),
+            .display(error: nil)], "Expected loading and no error when loading starts.")
     }
     
     private class ViewSpy: LoaderView {
-        func display(uiModel: FeedLoaderUIModel) {
-            messages.append(.display(isLoading: true))
-        }
-        
         enum Messages: Equatable {
             case display(isLoading: Bool)
+            case display(error: String?)
         }
+        
+        func display(uiModel: FeedLoaderUIModel) {
+            messages.append(.display(isLoading: uiModel.isLoading))
+            messages.append(.display(error: uiModel.errorMessage))
+        }
+        
         
         var messages: [Messages] = []
     }
