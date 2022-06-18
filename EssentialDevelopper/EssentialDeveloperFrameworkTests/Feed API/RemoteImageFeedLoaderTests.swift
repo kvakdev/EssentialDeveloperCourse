@@ -48,14 +48,17 @@ class RemoteFeedImageLoader: FeedImageLoader {
             case .success((_, let data)):
                 imageLoadTask.complete(with: .success(data))
             case .failure(let error):
-                imageLoadTask.complete(with: .failure(error))
+                imageLoadTask.complete(with: .failure(ImageLoadingError.connection))
             }
         }
         imageLoadTask.wrapped = httpTask
         
         return imageLoadTask
     }
-    
+}
+
+enum ImageLoadingError: Error {
+    case connection
 }
 
 class RemoteImageFeedLoaderTests: XCTestCase {
@@ -93,7 +96,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         _ = sut.loadImage(with: url) { result in
             switch result {
             case .failure(let error):
-                XCTAssertEqual((error as NSError), expectedError)
+                XCTAssertEqual((error as? ImageLoadingError), ImageLoadingError.connection)
             default:
                 XCTFail("Expected error on failure got \(result) instead")
             }
@@ -112,6 +115,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         let task = sut.loadImage(with: url) { result in
             XCTFail("Expected no complete, but it got called instead")
         }
+        
         task.cancel()
         clientSpy.completeWith(expectedError)
     }
