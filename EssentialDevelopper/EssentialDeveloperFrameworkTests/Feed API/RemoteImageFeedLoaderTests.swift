@@ -11,6 +11,10 @@ import EssentialFeed
 
 typealias Closure<T> = (T) -> Void
 
+extension HTTPURLResponse {
+    var isOK: Bool { statusCode == 200 }
+}
+
 struct HTTPTask: HTTPClientTask {
     func cancel() {}
 }
@@ -43,12 +47,13 @@ class RemoteFeedImageLoader: FeedImageLoader {
     func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
         let imageLoadTask = RemoteImageLoadingTask(completion: completion)
         
-        let httpTask = self.client.get(from: url) { result in
+        let httpTask = self.client.get(from: url) { [weak self] result in
+            guard let self = self else { return }
             
             imageLoadTask.complete(with: result
                 .mapError { _ in ImageLoadingError.connection }
                 .flatMap { (response, data) in
-                    let isValidResponse = response.statusCode == 200 && !data.isEmpty
+                    let isValidResponse = response.isOK && !data.isEmpty
                     return isValidResponse ? .success(data) : .failure(ImageLoadingError.invalidData)
             })
         }
@@ -66,15 +71,13 @@ enum ImageLoadingError: Error {
 class RemoteImageFeedLoaderTests: XCTestCase {
     
     func test_init_hasNoSideEffects() {
-        let clientSpy = HTTPClientSpy()
-        let _ = RemoteFeedImageLoader(client: clientSpy)
+        let (_, clientSpy) = makeSUT()
         
         XCTAssertTrue(clientSpy.messages.isEmpty)
     }
     
     func test_cancelTask_deliversNoResult() {
-        let clientSpy = HTTPClientSpy()
-        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let (sut, clientSpy) = makeSUT()
         let url = anyURL()
         let secondURL = URL(string: "http://other-url.com")!
         _ = sut.loadImage(with: url) { result in }
@@ -93,8 +96,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
     }
     
     func test_load_deliversNoErrorOnCancelTask() {
-        let clientSpy = HTTPClientSpy()
-        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let (sut, clientSpy) = makeSUT()
         let url = anyURL()
         let expectedError = anyNSError()
         
@@ -106,7 +108,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         clientSpy.completeWith(expectedError)
     }
     
-    func test_load_deliversErrorOnEmptyData() {
+    func test_load_deliversErrorOnEmptyDataAndValidResponse() {
         let expectedError = ImageLoadingError.invalidData
         let httpResult = HTTPClient.Result.success((anyHTTPURLResponse(), Data()))
         
@@ -114,22 +116,36 @@ class RemoteImageFeedLoaderTests: XCTestCase {
     }
     
     func test_load_deliversErrorOnInvalidStatusCode() {
-        let validData = Data(repeating: 1, count: 1)
-        let invalidResponse = HTTPURLResponse(url: anyURL(), statusCode: 404, httpVersion: nil, headerFields: nil)!
+        let invalidStatusCodes = [199, 201, 404, 500]
         
-        expectToLoad(.failure(ImageLoadingError.invalidData), for: .success((invalidResponse, validData)))
+        invalidStatusCodes.forEach { code in
+            let invalidResponse = HTTPURLResponse(url: anyURL(), statusCode: code, httpVersion: nil, headerFields: nil)!
+            
+            expectToLoad(.failure(ImageLoadingError.invalidData),
+                         for: .success((invalidResponse, anyData())))
+        }
     }
     
     func test_load_deliversDataReceivedInTheResultOfHTTPClient() {
-        let data = Data(repeating: 1, count: 1)
+        let data = anyData()
         let validResponse = anyHTTPURLResponse()
         
         expectToLoad(.success(data), for: .success((validResponse, data)))
     }
     
+    func test_load_deliversNoResultAfterInstanceHasBeenDeallocated() {
+        var (sut, clientSpy): (RemoteFeedImageLoader?, HTTPClientSpy) = makeSUT()
+        
+        _ = sut?.loadImage(with: anyURL(), completion: { _ in
+            XCTFail("Expected no completion after instance deallocation")
+        })
+        
+        sut = nil
+        clientSpy.completeSuccessfully()
+    }
+    
     private func expectToLoad(_ expectedResult: FeedImageLoader.ImageLoadResult, for httpResult: HTTPClient.Result, file: StaticString = #file, line: UInt = #line) {
-        let clientSpy = HTTPClientSpy()
-        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let (sut, clientSpy) = makeSUT()
         let url = anyURL()
         let exp = expectation(description: "wait for load to complete")
         
@@ -147,6 +163,16 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         
         clientSpy.complete(with: httpResult, at: 0)
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    private func makeSUT() -> (RemoteFeedImageLoader, HTTPClientSpy) {
+        let clientSpy = HTTPClientSpy()
+        let sut = RemoteFeedImageLoader(client: clientSpy)
+        
+        trackMemoryLeaks(clientSpy)
+        trackMemoryLeaks(sut)
+        
+        return (sut, clientSpy)
     }
     
     private class HTTPClientSpy: HTTPClient {
