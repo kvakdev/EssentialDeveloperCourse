@@ -37,7 +37,12 @@ class RemoteFeedImageLoader: FeedImageLoader {
     func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
         
         let httpTask = self.client.get(from: url) { result in
-            
+            switch result {
+            case .success(let response, let data):
+                break
+            case .failure(let error):
+                completion(.failure(error))
+            }
         }
         
         return RemoteImageLoadingTask(wrapped: httpTask)
@@ -70,6 +75,26 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         XCTAssertEqual(clientSpy.messages[1].url, secondURL)
     }
     
+    func test_loadFailure_deliversError() {
+        let clientSpy = HTTPClientSpy()
+        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let url = anyURL()
+        let exp = expectation(description: "wait for load to complete")
+        let expectedError = anyNSError()
+        
+        _ = sut.loadImage(with: url) { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual((error as NSError), expectedError)
+            default:
+                XCTFail("Expected error on failure got \(result) instead")
+            }
+            exp.fulfill()
+        }
+        clientSpy.completeWith(expectedError)
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     private class HTTPClientSpy: HTTPClient {
         
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
@@ -85,6 +110,10 @@ class RemoteImageFeedLoaderTests: XCTestCase {
             }
             let message = messages[index]
             message.completion(result)
+        }
+        
+        func completeWith(_ error: Error, at index: Int = 0) {
+            messages[index].completion(.failure(error))
         }
     }
 }
