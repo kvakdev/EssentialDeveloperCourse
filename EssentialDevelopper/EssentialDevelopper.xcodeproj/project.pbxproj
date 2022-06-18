@@ -27,6 +27,7 @@
 		9371F219285D04E5006F533A /* FeedImageCellPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9371F217285D04B3006F533A /* FeedImageCellPresenter.swift */; };
 		9371F21C285D05E2006F533A /* FeedImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9371F21A285D05C6006F533A /* FeedImageViewModel.swift */; };
 		9371F21F285D0628006F533A /* FeedImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9371F21D285D0614006F533A /* FeedImageView.swift */; };
+		9371F220285DEAA1006F533A /* FeedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */; };
 		93BAE330284C889D0042B7E1 /* CacheFeedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAE32F284C889D0042B7E1 /* CacheFeedUseCaseTests.swift */; };
 		93BAE333284CBA490042B7E1 /* LocalFeedLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAE332284CBA490042B7E1 /* LocalFeedLoader.swift */; };
 		93BAE335284CBA700042B7E1 /* FeedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAE334284CBA700042B7E1 /* FeedStore.swift */; };
@@ -62,7 +63,6 @@
 		93D1D381285494ED00CCFCEE /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D37E2853D2A000CCFCEE /* FeedViewController.swift */; };
 		93D1D3832854EAE900CCFCEE /* UIVIew+Shimmering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D3822854EAE900CCFCEE /* UIVIew+Shimmering.swift */; };
 		93D1D3852855BCAE00CCFCEE /* FeedImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D3842855BCAE00CCFCEE /* FeedImageCell.swift */; };
-		93D1D38B2855EEE400CCFCEE /* FeedImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */; };
 		93D1D38E2855EFD000CCFCEE /* UIImage+FromColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38D2855EFD000CCFCEE /* UIImage+FromColor.swift */; };
 		93D1D3902855F09C00CCFCEE /* UIButton+SimulateTap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D38F2855F09C00CCFCEE /* UIButton+SimulateTap.swift */; };
 		93D1D3922855F10B00CCFCEE /* UIRefreshControl+Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D1D3912855F10B00CCFCEE /* UIRefreshControl+Simulation.swift */; };
@@ -388,7 +388,6 @@
 		93D1D3582852504300CCFCEE /* EssentialFeed_iOS */ = {
 			isa = PBXGroup;
 			children = (
-				93D1D3A9285870F400CCFCEE /* Feed Image Loader */,
 				93D1D3892855EED300CCFCEE /* Feed Presentation */,
 				93D1D3AA2858712100CCFCEE /* FeedUI */,
 				93D1D35A2852504300CCFCEE /* EssentialFeed_iOS.docc */,
@@ -459,12 +458,12 @@
 			path = Composers;
 			sourceTree = "<group>";
 		};
-		93D1D3A9285870F400CCFCEE /* Feed Image Loader */ = {
+		93D1D3A9285870F400CCFCEE /* Feed Feature */ = {
 			isa = PBXGroup;
 			children = (
 				93D1D38A2855EEE400CCFCEE /* FeedImageLoader.swift */,
 			);
-			path = "Feed Image Loader";
+			path = "Feed Feature";
 			sourceTree = "<group>";
 		};
 		93D1D3AA2858712100CCFCEE /* FeedUI */ = {
@@ -553,6 +552,7 @@
 		F4BA2BE82269E66F0015EABC /* EssentialDeveloperFramework */ = {
 			isa = PBXGroup;
 			children = (
+				93D1D3A9285870F400CCFCEE /* Feed Feature */,
 				9371F207285C827B006F533A /* Feed Presentation */,
 				93BAE331284CBA250042B7E1 /* Feed Cache */,
 				F4632A8122649C2B00BAF4C8 /* Feed API */,
@@ -881,7 +881,6 @@
 				93D1D3832854EAE900CCFCEE /* UIVIew+Shimmering.swift in Sources */,
 				9371F1F4285B9D05006F533A /* VirtualWeakRefProxy.swift in Sources */,
 				93D1D3B2285B121B00CCFCEE /* UIImageView+FadeIn.swift in Sources */,
-				93D1D38B2855EEE400CCFCEE /* FeedImageLoader.swift in Sources */,
 				93D1D3A228560B5E00CCFCEE /* FeedImageCellController.swift in Sources */,
 				9371F1F6285B9D55006F533A /* FeedImageCompositionAdapter.swift in Sources */,
 				93D1D381285494ED00CCFCEE /* FeedViewController.swift in Sources */,
@@ -944,6 +943,7 @@
 				F4BA2C032269E7E90015EABC /* HTTPClient.swift in Sources */,
 				F4BA2C022269E7E90015EABC /* FeedImage.swift in Sources */,
 				9371F219285D04E5006F533A /* FeedImageCellPresenter.swift in Sources */,
+				9371F220285DEAA1006F533A /* FeedImageLoader.swift in Sources */,
 				93BAE342284DE6660042B7E1 /* FeedCachePolicy.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
