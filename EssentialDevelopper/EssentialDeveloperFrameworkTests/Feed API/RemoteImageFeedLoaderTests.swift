@@ -9,21 +9,27 @@
 import XCTest
 import EssentialFeed
 
+typealias Closure<T> = (T) -> Void
+
 struct HTTPTask: HTTPClientTask {
-    func cancel() {
-    
-    }
+    func cancel() {}
 }
 
-struct RemoteImageLoadingTask: FeedImageDataLoaderTask {
-    let wrapped: HTTPClientTask
+class RemoteImageLoadingTask: FeedImageDataLoaderTask {
+    var wrapped: HTTPClientTask?
+    var completion: Closure<FeedImageLoader.ImageLoadResult>?
     
-    init(wrapped: HTTPClientTask) {
-        self.wrapped = wrapped
+    init(completion: @escaping Closure<FeedImageLoader.ImageLoadResult>) {
+        self.completion = completion
+    }
+    
+    func complete(with result: FeedImageLoader.ImageLoadResult) {
+        completion?(result)
     }
     
     func cancel() {
-        wrapped.cancel()
+        completion = nil
+        wrapped?.cancel()
     }
 }
 
@@ -35,17 +41,19 @@ class RemoteFeedImageLoader: FeedImageLoader {
     }
     
     func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
+        let imageLoadTask = RemoteImageLoadingTask(completion: completion)
         
         let httpTask = self.client.get(from: url) { result in
             switch result {
-            case .success(let response, let data):
-                break
+            case .success((_, let data)):
+                imageLoadTask.complete(with: .success(data))
             case .failure(let error):
-                completion(.failure(error))
+                imageLoadTask.complete(with: .failure(error))
             }
         }
+        imageLoadTask.wrapped = httpTask
         
-        return RemoteImageLoadingTask(wrapped: httpTask)
+        return imageLoadTask
     }
     
 }
@@ -93,6 +101,19 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         }
         clientSpy.completeWith(expectedError)
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func test_load_deliversNoErrorOnCancelTask() {
+        let clientSpy = HTTPClientSpy()
+        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let url = anyURL()
+        let expectedError = anyNSError()
+        
+        let task = sut.loadImage(with: url) { result in
+            XCTFail("Expected no complete, but it got called instead")
+        }
+        task.cancel()
+        clientSpy.completeWith(expectedError)
     }
     
     private class HTTPClientSpy: HTTPClient {
