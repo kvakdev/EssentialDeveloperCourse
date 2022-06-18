@@ -174,8 +174,10 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
             return messages.map { $0.url }
         }
         
-        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> ()) {
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> ()) -> HTTPClientTask {
             messages.append((url, completion))
+            
+            return HTTPTask()
         }
         
         func complete(with error: Error, at index: Int = 0) {

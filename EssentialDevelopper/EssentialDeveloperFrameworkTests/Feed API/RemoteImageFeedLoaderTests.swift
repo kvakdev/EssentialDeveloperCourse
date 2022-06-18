@@ -9,11 +9,26 @@
 import XCTest
 import EssentialFeed
 
-extension DispatchWorkItem: FeedImageDataLoaderTask {}
+struct HTTPTask: HTTPClientTask {
+    func cancel() {
+    
+    }
+}
+
+struct RemoteImageLoadingTask: FeedImageDataLoaderTask {
+    let wrapped: HTTPClientTask
+    
+    init(wrapped: HTTPClientTask) {
+        self.wrapped = wrapped
+    }
+    
+    func cancel() {
+        wrapped.cancel()
+    }
+}
 
 class RemoteFeedImageLoader: FeedImageLoader {
     let client: HTTPClient
-    private var task: DispatchWorkItem?
     
     init(client: HTTPClient) {
         self.client = client
@@ -21,22 +36,13 @@ class RemoteFeedImageLoader: FeedImageLoader {
     
     func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
         
-        let task = DispatchWorkItem {
-            self.client.get(from: url) { result in
-                switch result {
-                case .success((let response, let data)):
-                    guard response.statusCode == 200 else { return }
-                    
-                    completion(.success(data))
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-            }
+        let httpTask = self.client.get(from: url) { result in
+            
         }
-        task.perform()
         
-        return task
+        return RemoteImageLoadingTask(wrapped: httpTask)
     }
+    
 }
 
 class RemoteImageFeedLoaderTests: XCTestCase {
@@ -45,14 +51,40 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         let clientSpy = HTTPClientSpy()
         let _ = RemoteFeedImageLoader(client: clientSpy)
         
-        XCTAssertTrue(clientSpy.completions.isEmpty)
+        XCTAssertTrue(clientSpy.messages.isEmpty)
+    }
+    
+    func test_cancelTask_deliversNoResult() {
+        let clientSpy = HTTPClientSpy()
+        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let url = anyURL()
+        let secondURL = URL(string: "http://other-url.com")!
+        _ = sut.loadImage(with: url) { result in }
+        
+        XCTAssertEqual(clientSpy.messages.count, 1)
+        XCTAssertEqual(clientSpy.messages[0].url, url)
+        
+        _ = sut.loadImage(with: secondURL) { _ in }
+        
+        XCTAssertEqual(clientSpy.messages.count, 2)
+        XCTAssertEqual(clientSpy.messages[1].url, secondURL)
     }
     
     private class HTTPClientSpy: HTTPClient {
-        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
-            
+        
+        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
+            messages.append((url: url, completion: completion))
+            return HTTPTask()
         }
         
-        var completions: [(url: URL, completion: HTTPClient.Result)] = []
+        var messages: [(url: URL, completion: (HTTPClient.Result) -> Void)] = []
+        
+        func completeSuccessfully(at index: Int = 0) {
+            let result = HTTPClient.Result {
+                (anyHTTPURLResponse(), Data())
+            }
+            let message = messages[index]
+            message.completion(result)
+        }
     }
 }
