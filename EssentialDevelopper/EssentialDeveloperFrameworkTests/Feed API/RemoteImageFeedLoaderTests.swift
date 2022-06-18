@@ -45,8 +45,12 @@ class RemoteFeedImageLoader: FeedImageLoader {
         
         let httpTask = self.client.get(from: url) { result in
             switch result {
-            case .success((_, let data)):
-                imageLoadTask.complete(with: .success(data))
+            case .success((let response, let data)):
+                if response.statusCode == 200, !data.isEmpty {
+                    imageLoadTask.complete(with: .success(data))
+                } else {
+                    imageLoadTask.complete(with: .failure(ImageLoadingError.invalidData))
+                }
             case .failure(let error):
                 imageLoadTask.complete(with: .failure(ImageLoadingError.connection))
             }
@@ -58,6 +62,7 @@ class RemoteFeedImageLoader: FeedImageLoader {
 }
 
 enum ImageLoadingError: Error {
+    case invalidData
     case connection
 }
 
@@ -120,6 +125,23 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         clientSpy.completeWith(expectedError)
     }
     
+    func test_load_deliversErrorOnEmptyData() {
+        let clientSpy = HTTPClientSpy()
+        let sut = RemoteFeedImageLoader(client: clientSpy)
+        let url = anyURL()
+        
+        _ = sut.loadImage(with: url) { result in
+            switch result {
+            case .failure(let error):
+                XCTAssertEqual((error as? ImageLoadingError), ImageLoadingError.invalidData)
+            default:
+                XCTFail("Expected error on failure got \(result) instead")
+            }
+        }
+        
+        clientSpy.completeSuccessfully(data: Data(), at: 0)
+    }
+    
     private class HTTPClientSpy: HTTPClient {
         
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
@@ -129,12 +151,8 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         
         var messages: [(url: URL, completion: (HTTPClient.Result) -> Void)] = []
         
-        func completeSuccessfully(at index: Int = 0) {
-            let result = HTTPClient.Result {
-                (anyHTTPURLResponse(), Data())
-            }
-            let message = messages[index]
-            message.completion(result)
+        func completeSuccessfully(data: Data = Data(), response: HTTPURLResponse = anyHTTPURLResponse(), at index: Int = 0) {
+            messages[index].completion(.success((response, data)))
         }
         
         func completeWith(_ error: Error, at index: Int = 0) {
