@@ -9,11 +9,8 @@
 import XCTest
 import EssentialFeed
 
-enum ImageRetreivalError: Error {
-    case noImage
-}
 
-class RetreiveTaskSpy: FeedImageDataLoaderTask {
+class RetreiveTaskSpy: CancellableTask {
     private let cancelClosure: VoidClosure
     
     init(cancelClosure: @escaping VoidClosure) {
@@ -25,63 +22,13 @@ class RetreiveTaskSpy: FeedImageDataLoaderTask {
     }
 }
 
-class LocalImageLoaderTask: FeedImageDataLoaderTask {
-    private var completion: Closure<FeedImageLoader.Result>?
-    
-    var wrapped: FeedImageDataLoaderTask?
-    
-    init(completion: @escaping (FeedImageLoader.Result) -> Void) {
-        self.completion = completion
-    }
-    
-    func complete(with result: FeedImageLoader.Result) {
-        self.completion?(result)
-    }
-    
-    func cancel() {
-        completion = nil
-        wrapped?.cancel()
-    }
-}
-
-class LocalFeedImageLoader: FeedImageLoader {
-    let store: ImageStoreSpy
-    
-    init(store: ImageStoreSpy) {
-        self.store = store
-    }
-    
-    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        
-        let task = LocalImageLoaderTask(completion: completion)
-        
-        let retreiveTask = store.retreiveImageData(from: url) { [weak self] result in
-            guard self != nil else { return }
-            
-            switch result {
-            case .failure(let error):
-                task.complete(with: .failure(error))
-            case .success(let data):
-                guard let data = data else {
-                    return task.complete(with: .failure(ImageRetreivalError.noImage))
-                }
-                task.complete(with: .success(data))
-            }
-        }
-        
-        task.wrapped = retreiveTask
-        
-        return task
-    }
-}
-
-class ImageStoreSpy {
+class ImageStoreSpy: ImageStore {
     var messages: [(url: URL, completion: (Result<Data?, Error>) -> Void)] = []
     
     var cancelledURLs: [URL] = []
     
     @discardableResult
-    func retreiveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> RetreiveTaskSpy {
+    func retreiveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> CancellableTask {
         messages.append((url: url, completion: completion))
         
         return RetreiveTaskSpy(cancelClosure: { [weak self] in self?.cancelledURLs.append(url) })
