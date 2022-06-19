@@ -23,23 +23,38 @@ class RetreiveTaskSpy: CancellableTask {
 }
 
 class ImageStoreSpy: ImageStore {
-    var messages: [(url: URL, completion: (Result<Data?, Error>) -> Void)] = []
+    
+    enum Message {
+        case retreive(url: URL)
+        case insert(url: URL, data: Data)
+    }
+    
+    var retreiveCompletions: [Closure<ImageStore.Result>] = []
+    var insertCompletions: [Closure<ImageStore.InsertResult>] = []
+    var messages: [Message] = []
     
     var cancelledURLs: [URL] = []
+    var requestedURLs: [URL] = []
     
     @discardableResult
     func retreiveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> CancellableTask {
-        messages.append((url: url, completion: completion))
+        messages.append(.retreive(url: url))
+        retreiveCompletions.append(completion)
         
         return RetreiveTaskSpy(cancelClosure: { [weak self] in self?.cancelledURLs.append(url) })
     }
     
+    func insert(image data: Data, for url: URL, completion: @escaping (InsertResult) -> Void) {
+        messages.append(.insert(url: url, data: data))
+        insertCompletions.append(completion)
+    }
+    
     func complete(with error: Error, at index: Int = 0) {
-        self.messages[index].completion(.failure(error))
+        self.retreiveCompletions[index](.failure(error))
     }
     
     func complete(with data: Data? = nil, at index: Int = 0) {
-        self.messages[index].completion(.success(data))
+        self.retreiveCompletions[index](.success(data))
     }
 }
 
