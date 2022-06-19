@@ -17,9 +17,10 @@ public protocol CancellableTask {
 }
 
 public protocol ImageStore {
-    typealias RetrieveResult = Swift.Result<Data?, Error>
+    typealias RetrieveResult = Swift.Result<Data?, Error>  
     typealias InsertResult = Swift.Result<Void, Error>
     
+    @discardableResult
     func retrieveImageData(from url: URL, completion: @escaping (RetrieveResult) -> Void) -> CancellableTask
     func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>)
 }
