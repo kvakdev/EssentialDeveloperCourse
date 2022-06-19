@@ -17,7 +17,7 @@ class URLProtocolStub: URLProtocol {
         set { queue.sync { _stub = newValue } }
     }
     
-    private typealias ObserverRequestBlock = (URLRequest) -> Void
+    typealias ObserverRequestBlock = (URLRequest) -> Void
     
     private static let queue = DispatchQueue(label: "URLProtocolQueue")
     
@@ -28,8 +28,6 @@ class URLProtocolStub: URLProtocol {
         var observeRequestBlock: ObserverRequestBlock?
     }
     
-    
-    
     public static func stub(data: Data?, response: URLResponse?, error: Error?) {
         stub = Stub(data: data, response: response, error: error)
     }
@@ -38,14 +36,8 @@ class URLProtocolStub: URLProtocol {
         stub = Stub(data: nil, response: nil, error: nil, observeRequestBlock: completion)
     }
     
-    static func startInterceptingRequests() {
-        URLProtocol.registerClass(URLProtocolStub.self)
-    }
-    
-    static func stopInterceptingRequests() {
-        URLProtocol.unregisterClass(URLProtocolStub.self)
+    static func removeStub() {
         stub = nil
-        observeRequestBlock = nil
     }
     
     override class func canInit(with request: URLRequest) -> Bool {

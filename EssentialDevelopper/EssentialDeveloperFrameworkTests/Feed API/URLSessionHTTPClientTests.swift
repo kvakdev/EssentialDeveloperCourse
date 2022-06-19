@@ -12,16 +12,10 @@ import EssentialFeed
 
 class URLSessionHTTPClientTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        
-        URLProtocolStub.startInterceptingRequests()
-    }
-    
     override func tearDown() {
         super.tearDown()
         
-        URLProtocolStub.stopInterceptingRequests()
+        URLProtocolStub.removeStub()
     }
     
     func test_getURL_makesGETRequestWithGivenURL() {
@@ -143,7 +137,11 @@ class URLSessionHTTPClientTests: XCTestCase {
 // MARK: -
 private extension URLSessionHTTPClientTests {
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
-        let sut = URLSessionHTTPClient()
+        var configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [URLProtocolStub.self]
+        let session = URLSession(configuration: configuration)
+        
+        let sut = URLSessionHTTPClient(session: session)
         
         trackMemoryLeaks(sut, file: file, line: line)
         
