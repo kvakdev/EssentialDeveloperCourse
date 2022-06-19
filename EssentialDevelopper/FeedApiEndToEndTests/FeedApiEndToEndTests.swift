@@ -66,9 +66,7 @@ class FeedApiEndToEndTests: XCTestCase {
     }
     
     func loadFeed(file: StaticString = #file, line: UInt = #line) -> FeedLoader.Result {
-        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
-        
-        let sut = RemoteFeedLoader(url: feedTestServerURL, client: client)
+        let (sut, _) = makeSUT(url: feedTestServerURL)
         let exp = expectation(description: "waiting for load to complete")
         var receivedResult: FeedLoader.Result!
         
@@ -83,6 +81,23 @@ class FeedApiEndToEndTests: XCTestCase {
     }
     
     //MARK: - Helper methods
+    func makeSUT(url: URL, file: StaticString = #file, line: UInt = #line) -> (FeedLoader, HTTPClient) {
+        let client = ephemeralClient()
+        let loader = RemoteFeedLoader(url: url, client: client)
+        
+        trackMemoryLeaks(loader)
+        
+        return (loader, client)
+    }
+    
+    private func ephemeralClient() -> URLSessionHTTPClient {
+        let client = URLSessionHTTPClient(session: URLSession(configuration: .ephemeral))
+        
+        trackMemoryLeaks(client)
+        
+        return client
+    }
+    
     private func id(at index: Int) -> UUID {
         return UUID(uuidString: [
             "73A7F70C-75DA-4C2E-B5A3-EED40DC53AA6",
