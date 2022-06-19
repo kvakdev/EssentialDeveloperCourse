@@ -7,14 +7,45 @@
 //
 
 import XCTest
+import EssentialFeed
 
-class LocalFeedImageLoader {
-    let store: Any
+class LocalImageLoaderTask: FeedImageDataLoaderTask {
+    func cancel() {}
+}
+
+class LocalFeedImageLoader: FeedImageLoader {
+    let store: ImageStoreSpy
     
-    init(store: Any) {
+    init(store: ImageStoreSpy) {
         self.store = store
     }
     
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+        
+        store.retreiveImage(with: url) { result in
+            switch result {
+            case .failure(let error):
+                completion(.failure(error))
+                print("")
+            default:
+                fatalError()
+            }
+        }
+        
+        return LocalImageLoaderTask()
+    }
+}
+
+class ImageStoreSpy {
+    var messages: [(url: URL, completion: (Result<Data?, Error>) -> Void)] = []
+    
+    func retreiveImage(with url: URL, completion: @escaping (Result<Data?, Error>) -> Void) {
+        messages.append((url: url, completion: completion))
+    }
+    
+    func complete(with error: Error, at index: Int = 0) {
+        self.messages[index].completion(.failure(error))
+    }
 }
 
 class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
@@ -26,9 +57,27 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         XCTAssertTrue(store.messages.isEmpty)
     }
     
-    class ImageStoreSpy {
-        var messages: [Any] = []
+    func test_retreiveError_deliversError() {
+        let store = ImageStoreSpy()
+        let sut = LocalFeedImageLoader(store: store)
+        let exp = expectation(description: "wait for load to complete")
+        let expectedError = anyNSError()
+        var retreivedResult: FeedImageLoader.Result?
         
+        _ = sut.loadImage(with: anyURL()) { result in
+            retreivedResult = result
+            exp.fulfill()
+        }
+        store.complete(with: expectedError, at: 0)
+        wait(for: [exp], timeout: 1)
         
+        switch retreivedResult {
+        case .failure(let error):
+            XCTAssertEqual((error as NSError), expectedError)
+        default:
+            XCTFail("EXpected error got \(retreivedResult.debugDescription) instead")
+        }
     }
+    
+  
 }
