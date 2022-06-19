@@ -71,6 +71,12 @@ class URLSessionHTTPClientTests: XCTestCase {
         XCTAssertNotNil(errorFor((data: anyData(), response: nil, error: nil)))
         XCTAssertNotNil(errorFor((data: anyData(), response: nonHTTPURLResponse(), error: nil)))
     }
+    
+    func test_cancellingTask_returnsError() {
+        let error = errorFor((data: anyData(), response: anyHTTPURLResponse(), error: nil), taskHandler: { task in task.cancel() })
+        
+        XCTAssertEqual((error as? NSError)?.code, URLError.cancelled.rawValue)
+    }
  
     func test_getFromURL_returnsSuccessOnValidResponseAndData() {
         let response = anyHTTPURLResponse()
@@ -87,9 +93,9 @@ class URLSessionHTTPClientTests: XCTestCase {
         return URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
     }
     
-    func errorFor(_ values: (data: Data?, response: URLResponse?, error: Error?), file: StaticString = #file, line: UInt = #line) -> Error? {
+    func errorFor(_ values: (data: Data?, response: URLResponse?, error: Error?), taskHandler: Closure<HTTPClientTask>? = nil, file: StaticString = #file, line: UInt = #line) -> Error? {
         
-        let result = resultFor(values, file: file, line: line)
+        let result = resultFor(values, taskHandler: taskHandler, file: file, line: line)
         
         switch result {
         case .failure(let receivedError):
@@ -134,8 +140,8 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
 }
 
+// MARK: -
 private extension URLSessionHTTPClientTests {
-    // MARK: - Helpers
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         
@@ -152,7 +158,7 @@ private extension URLSessionHTTPClientTests {
         return NSError(domain: "TestHTTPClientError", code: 1, userInfo: nil)
     }
 }
-
+// MARK: -
 private extension URLSessionHTTPClientTests {
     class URLProtocolStub: URLProtocol {
         var requestedURL: URL?
