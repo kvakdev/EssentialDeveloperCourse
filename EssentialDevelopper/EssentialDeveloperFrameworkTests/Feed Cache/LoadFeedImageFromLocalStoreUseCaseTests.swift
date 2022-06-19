@@ -10,7 +10,19 @@ import XCTest
 import EssentialFeed
 
 class LocalImageLoaderTask: FeedImageDataLoaderTask {
-    func cancel() {}
+    private var completion: Closure<FeedImageLoader.Result>?
+    
+    init(completion: @escaping (FeedImageLoader.Result) -> Void) {
+        self.completion = completion
+    }
+    
+    func complete(with result: FeedImageLoader.Result) {
+        self.completion?(result)
+    }
+    
+    func cancel() {
+        completion = nil
+    }
 }
 
 class LocalFeedImageLoader: FeedImageLoader {
@@ -22,17 +34,19 @@ class LocalFeedImageLoader: FeedImageLoader {
     
     func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         
+        let task = LocalImageLoaderTask(completion: completion)
+        
         store.retreiveImage(with: url) { result in
             switch result {
             case .failure(let error):
-                completion(.failure(error))
+                task.complete(with: .failure(error))
                 print("")
             default:
                 fatalError()
             }
         }
         
-        return LocalImageLoaderTask()
+        return task
     }
 }
 
@@ -71,6 +85,17 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         default:
             XCTFail("EXpected error got \(retreivedResult.debugDescription) instead")
         }
+    }
+    
+    func test_retreival_neverCallsbackAfterTaskIsCancelled() {
+        let (sut, store) = makeSUT()
+        let url = anyURL()
+        
+        let task = sut.loadImage(with: url) { _ in
+            XCTFail("Expected callback to never be called after task cancellation")
+        }
+        task.cancel()
+        store.complete(with: anyNSError(), at: 0)
     }
     
     func result(from sut: LocalFeedImageLoader, store: ImageStoreSpy, when action: VoidClosure) -> FeedImageLoader.Result? {
