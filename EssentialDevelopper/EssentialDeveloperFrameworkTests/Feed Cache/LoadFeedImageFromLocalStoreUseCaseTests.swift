@@ -63,8 +63,7 @@ class LocalFeedImageLoader: FeedImageLoader {
                 guard let data = data else {
                     return task.complete(with: .failure(ImageRetreivalError.noImage))
                 }
-            default:
-                fatalError()
+                task.complete(with: .success(data))
             }
         }
         
@@ -108,7 +107,7 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
-        let retreivedResult = result(from: sut, store: store) {
+        let retreivedResult = result(from: sut) {
             store.complete(with: expectedError, at: 0)
         }
 
@@ -142,7 +141,7 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
     
     func test_load_deliversNilDataOnEmptyRetreival() {
         let (sut, store) = makeSUT()
-        let retreivedResult = result(from: sut, store: store) {
+        let retreivedResult = result(from: sut) {
             store.completes(with: nil, at: 0)
         }
         switch retreivedResult {
@@ -152,7 +151,30 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         }
     }
     
-    func result(from sut: LocalFeedImageLoader, store: ImageStoreSpy, when action: VoidClosure) -> FeedImageLoader.Result? {
+    func test_load_deliversDataRetreivedByTheStore() {
+        let (sut, store) = makeSUT()
+        let expectedData = anyData()
+        
+        expect(sut: sut, toLoad: .success(expectedData)) {
+            store.completes(with: expectedData, at: 0)
+        }
+    }
+    
+    func expect(sut: LocalFeedImageLoader, toLoad expectedResult: FeedImageLoader.Result, when action: @escaping VoidClosure, file: StaticString = #file, line: UInt = #line) {
+        
+        let retreivedResult = result(from: sut, when: action)
+        
+        switch (retreivedResult, expectedResult) {
+        case (.success(let retreivedData), .success(let expectedData)):
+            XCTAssertEqual(retreivedData, expectedData, file: file, line: line)
+        case (.failure(let retreivedError), .failure(let expectedError)):
+            XCTAssertEqual(retreivedError.localizedDescription, expectedError.localizedDescription, file: file, line: line)
+        default:
+            XCTFail("Expected to get \(expectedResult), got \(String(describing: retreivedResult)) instead", file: file, line: line)
+        }
+    }
+    
+    func result(from sut: LocalFeedImageLoader, when action: VoidClosure) -> FeedImageLoader.Result? {
         let exp = expectation(description: "wait for load to complete")
         var retreivedResult: FeedImageLoader.Result?
         
