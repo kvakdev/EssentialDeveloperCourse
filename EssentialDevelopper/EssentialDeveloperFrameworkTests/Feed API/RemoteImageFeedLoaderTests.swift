@@ -116,6 +116,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         
         task.cancel()
         clientSpy.completeWith(expectedError)
+        clientSpy.completeSuccessfully()
     }
     
     func test_cancelImageLoadTask_cancelsHTTPTask() {
