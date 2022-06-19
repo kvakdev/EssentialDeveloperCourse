@@ -9,8 +9,22 @@
 import XCTest
 import EssentialFeed
 
+class RetreiveTaskSpy: FeedImageDataLoaderTask {
+    private let cancelClosure: VoidClosure
+    
+    init(cancelClosure: @escaping VoidClosure) {
+        self.cancelClosure = cancelClosure
+    }
+    
+    func cancel() {
+        self.cancelClosure()
+    }
+}
+
 class LocalImageLoaderTask: FeedImageDataLoaderTask {
     private var completion: Closure<FeedImageLoader.Result>?
+    
+    var wrapped: FeedImageDataLoaderTask?
     
     init(completion: @escaping (FeedImageLoader.Result) -> Void) {
         self.completion = completion
@@ -22,6 +36,7 @@ class LocalImageLoaderTask: FeedImageDataLoaderTask {
     
     func cancel() {
         completion = nil
+        wrapped?.cancel()
     }
 }
 
@@ -36,7 +51,7 @@ class LocalFeedImageLoader: FeedImageLoader {
         
         let task = LocalImageLoaderTask(completion: completion)
         
-        store.retreiveImage(with: url) { result in
+        let retreiveTask = store.retreiveImage(with: url) { result in
             switch result {
             case .failure(let error):
                 task.complete(with: .failure(error))
@@ -46,6 +61,8 @@ class LocalFeedImageLoader: FeedImageLoader {
             }
         }
         
+        task.wrapped = retreiveTask
+        
         return task
     }
 }
@@ -53,8 +70,13 @@ class LocalFeedImageLoader: FeedImageLoader {
 class ImageStoreSpy {
     var messages: [(url: URL, completion: (Result<Data?, Error>) -> Void)] = []
     
-    func retreiveImage(with url: URL, completion: @escaping (Result<Data?, Error>) -> Void) {
+    var cancelledURLs: [URL] = []
+    
+    @discardableResult
+    func retreiveImage(with url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> RetreiveTaskSpy {
         messages.append((url: url, completion: completion))
+        
+        return RetreiveTaskSpy(cancelClosure: { [weak self] in self?.cancelledURLs.append(url) })
     }
     
     func complete(with error: Error, at index: Int = 0) {
@@ -96,6 +118,15 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         }
         task.cancel()
         store.complete(with: anyNSError(), at: 0)
+    }
+    
+    func test_cancellingTask_cancelsRetreivalTask() {
+        let (sut, store) = makeSUT()
+        let url = anyURL()
+        
+        let task = sut.loadImage(with: url) { _ in }
+        task.cancel()
+        XCTAssertEqual(store.cancelledURLs, [url])
     }
     
     func result(from sut: LocalFeedImageLoader, store: ImageStoreSpy, when action: VoidClosure) -> FeedImageLoader.Result? {
