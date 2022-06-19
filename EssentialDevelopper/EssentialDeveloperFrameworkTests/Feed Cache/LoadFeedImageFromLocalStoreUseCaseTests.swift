@@ -29,7 +29,7 @@ class ImageStoreSpy: ImageStore {
         case insert(url: URL, data: Data)
     }
     
-    var retreiveCompletions: [Closure<ImageStore.Result>] = []
+    var retreiveCompletions: [Closure<ImageStore.RetrieveResult>] = []
     var insertCompletions: [Closure<ImageStore.InsertResult>] = []
     var messages: [Message] = []
     
@@ -37,7 +37,7 @@ class ImageStoreSpy: ImageStore {
     var requestedURLs: [URL] = []
     
     @discardableResult
-    func retreiveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> CancellableTask {
+    func retrieveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> CancellableTask {
         messages.append(.retreive(url: url))
         retreiveCompletions.append(completion)
         

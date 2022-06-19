@@ -17,10 +17,10 @@ public protocol CancellableTask {
 }
 
 public protocol ImageStore {
-    typealias Result = Swift.Result<Data?, Error>
+    typealias RetrieveResult = Swift.Result<Data?, Error>
     typealias InsertResult = Swift.Result<Void, Error>
     
-    func retreiveImageData(from url: URL, completion: @escaping (Result) -> Void) -> CancellableTask
+    func retrieveImageData(from url: URL, completion: @escaping (RetrieveResult) -> Void) -> CancellableTask
     func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>)
 }
 
@@ -35,7 +35,7 @@ public class LocalFeedImageLoader: FeedImageLoader {
         
         let task = LocalImageLoaderTask(completion: completion)
         
-        let retreiveTask = store.retreiveImageData(from: url) { [weak self] result in
+        let retreiveTask = store.retrieveImageData(from: url) { [weak self] result in
             guard self != nil else { return }
             
             switch result {
