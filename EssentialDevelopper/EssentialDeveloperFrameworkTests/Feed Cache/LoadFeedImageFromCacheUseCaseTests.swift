@@ -62,7 +62,7 @@ class ImageStoreSpy: ImageStore {
     }
 }
 
-class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
+class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
 
     func test_init_doesNotMessageOnCreation() {
         let store = ImageStoreSpy()
