@@ -96,7 +96,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         clientSpy.completeWith(statusCode: 200)
     }
     
-    private func expectToLoad(_ expectedResult: FeedImageLoader.ImageLoadResult, for httpResult: HTTPClient.Result, file: StaticString = #file, line: UInt = #line) {
+    private func expectToLoad(_ expectedResult: FeedImageLoader.Result, for httpResult: HTTPClient.Result, file: StaticString = #file, line: UInt = #line) {
         let (sut, clientSpy) = makeSUT()
         let url = anyURL()
         let exp = expectation(description: "wait for load to complete")

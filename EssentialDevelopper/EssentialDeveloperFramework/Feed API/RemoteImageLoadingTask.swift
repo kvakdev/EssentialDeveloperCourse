@@ -10,13 +10,13 @@ import Foundation
 
 public class RemoteImageLoadingTask: FeedImageDataLoaderTask {
     var wrapped: HTTPClientTask?
-    var completion: Closure<FeedImageLoader.ImageLoadResult>?
+    var completion: Closure<FeedImageLoader.Result>?
     
-    init(completion: @escaping Closure<FeedImageLoader.ImageLoadResult>) {
+    init(completion: @escaping Closure<FeedImageLoader.Result>) {
         self.completion = completion
     }
     
-    func complete(with result: FeedImageLoader.ImageLoadResult) {
+    func complete(with result: FeedImageLoader.Result) {
         completion?(result)
     }
     
