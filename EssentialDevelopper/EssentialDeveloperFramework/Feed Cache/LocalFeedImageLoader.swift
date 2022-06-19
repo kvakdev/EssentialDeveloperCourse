@@ -17,7 +17,9 @@ public protocol CancellableTask {
 }
 
 public protocol ImageStore {
-    func retreiveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> CancellableTask
+    typealias Result = Swift.Result<Data?, Error>
+    
+    func retreiveImageData(from url: URL, completion: @escaping (Result) -> Void) -> CancellableTask
 }
 
 
