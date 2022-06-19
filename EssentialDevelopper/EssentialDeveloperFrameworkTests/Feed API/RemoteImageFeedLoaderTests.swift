@@ -33,7 +33,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
     }
     
     func test_loadFailure_deliversConnectionErrorOnAnyError() {
-        expectToLoad(.failure(ImageLoadingError.connection), for: .failure(anyNSError()))
+        expectToLoad(.failure(ImageLoadingError.connectivity), for: .failure(anyNSError()))
     }
     
     func test_load_deliversNoErrorOnCancelTask() {

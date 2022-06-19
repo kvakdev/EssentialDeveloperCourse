@@ -10,5 +10,5 @@ import Foundation
 
 public enum ImageLoadingError: Error {
     case invalidData
-    case connection
+    case connectivity
 }
