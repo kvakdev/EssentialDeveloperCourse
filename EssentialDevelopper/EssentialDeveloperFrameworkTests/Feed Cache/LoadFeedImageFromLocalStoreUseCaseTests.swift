@@ -58,19 +58,13 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
     }
     
     func test_retreiveError_deliversError() {
-        let store = ImageStoreSpy()
-        let sut = LocalFeedImageLoader(store: store)
-        let exp = expectation(description: "wait for load to complete")
+        let (sut, store) = makeSUT()
         let expectedError = anyNSError()
-        var retreivedResult: FeedImageLoader.Result?
         
-        _ = sut.loadImage(with: anyURL()) { result in
-            retreivedResult = result
-            exp.fulfill()
+        let retreivedResult = result(from: sut, store: store) {
+            store.complete(with: expectedError, at: 0)
         }
-        store.complete(with: expectedError, at: 0)
-        wait(for: [exp], timeout: 1)
-        
+
         switch retreivedResult {
         case .failure(let error):
             XCTAssertEqual((error as NSError), expectedError)
@@ -79,5 +73,28 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         }
     }
     
+    func result(from sut: LocalFeedImageLoader, store: ImageStoreSpy, when action: VoidClosure) -> FeedImageLoader.Result? {
+        let exp = expectation(description: "wait for load to complete")
+        var retreivedResult: FeedImageLoader.Result?
+        
+        _ = sut.loadImage(with: anyURL()) { result in
+            retreivedResult = result
+            exp.fulfill()
+        }
+        action()
+        
+        wait(for: [exp], timeout: 1)
+        
+        return retreivedResult
+    }
   
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (LocalFeedImageLoader, ImageStoreSpy) {
+        let store = ImageStoreSpy()
+        let sut = LocalFeedImageLoader(store: store)
+        
+        trackMemoryLeaks(sut)
+        trackMemoryLeaks(store)
+        
+        return (sut, store)
+    }
 }
