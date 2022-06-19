@@ -43,7 +43,7 @@ class URLSessionHTTPClientTests: XCTestCase {
     func test_getFromUrl_deliversErrorOnRequestError() {
         let error = NSError(domain: "Test", code: -1, userInfo: nil)
         
-        let receivedError = errorFor(data: nil, response: nil, error: error)
+        let receivedError = errorFor((data: nil, response: nil, error: error))
         
         XCTAssertEqual(error.domain, (receivedError as? NSError)?.domain)
         XCTAssertEqual(error.code, (receivedError as? NSError)?.code)
@@ -54,7 +54,7 @@ class URLSessionHTTPClientTests: XCTestCase {
         let response = anyHTTPURLResponse()
         let emptyData = Data()
         
-        let receivedValues = resultValuesFor(data: nil, response: response, error: nil)
+        let receivedValues = resultValuesFor((data: nil, response: response, error: nil))
         
         XCTAssertEqual(response.url, receivedValues?.response.url)
         XCTAssertEqual(response.statusCode, receivedValues?.response.statusCode)
@@ -62,21 +62,21 @@ class URLSessionHTTPClientTests: XCTestCase {
     }
     
     func test_getFromUrl_returnsErrorOnAllInvalidCases() {
-        XCTAssertNotNil(errorFor(data: nil, response: nil, error: nil))
-        XCTAssertNotNil(errorFor(data: nil, response: nonHTTPURLResponse(), error: nil))
-        XCTAssertNotNil(errorFor(data: nil, response: anyHTTPURLResponse(), error: anyNSError()))
-        XCTAssertNotNil(errorFor(data: nil, response: nonHTTPURLResponse(), error: anyNSError()))
-        XCTAssertNotNil(errorFor(data: anyData(), response: anyHTTPURLResponse(), error: anyNSError()))
-        XCTAssertNotNil(errorFor(data: anyData(), response: nonHTTPURLResponse(), error: anyNSError()))
-        XCTAssertNotNil(errorFor(data: anyData(), response: nil, error: nil))
-        XCTAssertNotNil(errorFor(data: anyData(), response: nonHTTPURLResponse(), error: nil))
+        XCTAssertNotNil(errorFor((data: nil, response: nil, error: nil)))
+        XCTAssertNotNil(errorFor((data: nil, response: nonHTTPURLResponse(), error: nil)))
+        XCTAssertNotNil(errorFor((data: nil, response: anyHTTPURLResponse(), error: anyNSError())))
+        XCTAssertNotNil(errorFor((data: nil, response: nonHTTPURLResponse(), error: anyNSError())))
+        XCTAssertNotNil(errorFor((data: anyData(), response: anyHTTPURLResponse(), error: anyNSError())))
+        XCTAssertNotNil(errorFor((data: anyData(), response: nonHTTPURLResponse(), error: anyNSError())))
+        XCTAssertNotNil(errorFor((data: anyData(), response: nil, error: nil)))
+        XCTAssertNotNil(errorFor((data: anyData(), response: nonHTTPURLResponse(), error: nil)))
     }
  
     func test_getFromURL_returnsSuccessOnValidResponseAndData() {
         let response = anyHTTPURLResponse()
         let data = anyData()
         
-        let receivedValues = resultValuesFor(data: data, response: response, error: nil)
+        let receivedValues = resultValuesFor((data: data, response: response, error: nil))
         
         XCTAssertEqual(response.url, receivedValues?.response.url)
         XCTAssertEqual(response.statusCode, receivedValues?.response.statusCode)
@@ -87,9 +87,9 @@ class URLSessionHTTPClientTests: XCTestCase {
         return URLResponse(url: anyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
     }
     
-    func errorFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> Error? {
+    func errorFor(_ values: (data: Data?, response: URLResponse?, error: Error?), file: StaticString = #file, line: UInt = #line) -> Error? {
         
-        let result = resultFor(data: data, response: response, error: error, file: file, line: line)
+        let result = resultFor(values, file: file, line: line)
         
         switch result {
         case .failure(let receivedError):
@@ -99,9 +99,9 @@ class URLSessionHTTPClientTests: XCTestCase {
         }
     }
     
-    func resultValuesFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> (response: HTTPURLResponse, data: Data)? {
+    func resultValuesFor(_ values: (data: Data?, response: URLResponse?, error: Error?), file: StaticString = #file, line: UInt = #line) -> (response: HTTPURLResponse, data: Data)? {
         
-        let result = resultFor(data: data, response: response, error: error, file: file, line: line)
+        let result = resultFor(values, file: file, line: line)
         
         switch result {
         case .success((let receivedResponse, let receivedData)):
@@ -112,21 +112,30 @@ class URLSessionHTTPClientTests: XCTestCase {
         return nil
     }
     
-    func resultFor(data: Data?, response: URLResponse?, error: Error?, file: StaticString = #file, line: UInt = #line) -> HTTPClient.Result {
-        URLProtocolStub.stub(data: data, response: response, error: error)
+    func resultFor(_ values: (data: Data?, response: URLResponse?, error: Error?)?, taskHandler: Closure<HTTPClientTask>? = nil, file: StaticString = #file, line: UInt = #line) -> HTTPClient.Result {
+        
+        values.map { URLProtocolStub.stub(data: $0, response: $1, error: $2) }
+        
         let exp = expectation(description: "waiting for load to end with error")
         var receivedResult: HTTPClient.Result!
         
-        makeSUT(file: file, line: line).get(from: anyURL()) { result in
+        let sut = makeSUT(file: file, line: line)
+            
+        let task = sut.get(from: anyURL()) { result in
             receivedResult = result
             exp.fulfill()
         }
+        
+        taskHandler?(task)
         
         wait(for: [exp], timeout: 5.0)
         
         return receivedResult
     }
-    
+}
+
+private extension URLSessionHTTPClientTests {
+    // MARK: - Helpers
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
         let sut = URLSessionHTTPClient()
         
@@ -142,8 +151,10 @@ class URLSessionHTTPClientTests: XCTestCase {
     func anyNSError() -> NSError {
         return NSError(domain: "TestHTTPClientError", code: 1, userInfo: nil)
     }
-    
-    private class URLProtocolStub: URLProtocol {
+}
+
+private extension URLSessionHTTPClientTests {
+    class URLProtocolStub: URLProtocol {
         var requestedURL: URL?
         
         public static var stub: Stub?
