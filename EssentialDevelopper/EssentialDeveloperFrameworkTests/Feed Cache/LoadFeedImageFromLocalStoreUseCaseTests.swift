@@ -24,7 +24,7 @@ class RetreiveTaskSpy: CancellableTask {
 
 class ImageStoreSpy: ImageStore {
     
-    enum Message {
+    enum Message: Equatable {
         case retreive(url: URL)
         case insert(url: URL, data: Data)
     }
@@ -125,6 +125,16 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         store.complete()
         store.complete(with: anyNSError(), at: 0)
         store.complete(with: anyData(), at: 0)
+    }
+    
+    func test_save_triggersInsertInFeedImageStore() {
+        let (sut, store) = makeSUT()
+        let data = anyData()
+        let url = anyURL()
+        
+        sut.save(image: data, for: url) { _ in }
+        
+        XCTAssertEqual(store.messages, [.insert(url: url, data: data)])
     }
     
     private func expect(sut: LocalFeedImageLoader, toLoad expectedResult: FeedImageLoader.Result, when action: @escaping VoidClosure, file: StaticString = #file, line: UInt = #line) {
