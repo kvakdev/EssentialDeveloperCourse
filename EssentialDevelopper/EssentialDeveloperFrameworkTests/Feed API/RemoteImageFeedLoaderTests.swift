@@ -115,8 +115,8 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         }
         
         task.cancel()
-        clientSpy.completeWith(expectedError)
-        clientSpy.completeSuccessfully()
+        clientSpy.complete(with: expectedError, at: 0)
+        clientSpy.completeWith(statusCode: 200)
     }
     
     func test_cancelImageLoadTask_cancelsHTTPTask() {
@@ -162,7 +162,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         })
         
         sut = nil
-        clientSpy.completeSuccessfully()
+        clientSpy.completeWith(statusCode: 200)
     }
     
     private func expectToLoad(_ expectedResult: FeedImageLoader.ImageLoadResult, for httpResult: HTTPClient.Result, file: StaticString = #file, line: UInt = #line) {
@@ -195,27 +195,5 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         
         return (sut, clientSpy)
     }
-    
-    private class HTTPClientSpy: HTTPClient {
-        var messages: [(url: URL, completion: (HTTPClient.Result) -> Void)] = []
-        var cancelledURLs = [URL]()
-        
-        func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
-            messages.append((url: url, completion: completion))
-            
-            return HTTPTask(cancelCompletion: { [weak self] in  self?.cancelledURLs.append(url) })
-        }
-        
-        func completeSuccessfully(data: Data = Data(), response: HTTPURLResponse = anyHTTPURLResponse(), at index: Int = 0) {
-            messages[index].completion(.success((response, data)))
-        }
-        
-        func completeWith(_ error: Error, at index: Int = 0) {
-            messages[index].completion(.failure(error))
-        }
-        
-        func complete(with result: HTTPClient.Result, at index: Int) {
-            messages[index].completion(result)
-        }
-    }
 }
+
