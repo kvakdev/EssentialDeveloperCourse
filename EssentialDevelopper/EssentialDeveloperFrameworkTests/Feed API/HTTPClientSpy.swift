@@ -40,3 +40,18 @@ class HTTPClientSpy: HTTPClient {
         messages[index].completion(result)
     }
 }
+
+extension HTTPClientSpy {
+    private class HTTPTask: HTTPClientTask {
+        var cancelCompletion: VoidClosure?
+        
+        init(cancelCompletion: @escaping VoidClosure) {
+            self.cancelCompletion = cancelCompletion
+        }
+        
+        func cancel() {
+            cancelCompletion?()
+            cancelCompletion = nil
+        }
+    }
+}

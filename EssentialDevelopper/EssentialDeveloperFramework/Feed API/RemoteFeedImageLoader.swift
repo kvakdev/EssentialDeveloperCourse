@@ -1,0 +1,66 @@
+//
+//  RemoteFeedImageLoader.swift
+//  EssentialFeed
+//
+//  Created by Andre Kvashuk on 6/19/22.
+//  Copyright © 2022 Andre Kvashuk. All rights reserved.
+//
+
+import Foundation
+
+
+public typealias Closure<T> = (T) -> Void
+public typealias VoidClosure = () -> Void
+
+extension HTTPURLResponse {
+    var isOK: Bool { statusCode == 200 }
+}
+
+public class RemoteImageLoadingTask: FeedImageDataLoaderTask {
+    var wrapped: HTTPClientTask?
+    var completion: Closure<FeedImageLoader.ImageLoadResult>?
+    
+    init(completion: @escaping Closure<FeedImageLoader.ImageLoadResult>) {
+        self.completion = completion
+    }
+    
+    func complete(with result: FeedImageLoader.ImageLoadResult) {
+        completion?(result)
+    }
+    
+    public func cancel() {
+        completion = nil
+        wrapped?.cancel()
+    }
+}
+
+public class RemoteFeedImageLoader: FeedImageLoader {
+    let client: HTTPClient
+    
+    public init(client: HTTPClient) {
+        self.client = client
+    }
+    
+    public func loadImage(with url: URL, completion: @escaping (ImageLoadResult) -> Void) -> FeedImageDataLoaderTask {
+        let imageLoadTask = RemoteImageLoadingTask(completion: completion)
+        
+        let httpTask = self.client.get(from: url) { [weak self] result in
+            guard self != nil else { return }
+            
+            imageLoadTask.complete(with: result
+                .mapError { _ in ImageLoadingError.connection }
+                .flatMap { (response, data) in
+                    let isValidResponse = response.isOK && !data.isEmpty
+                    return isValidResponse ? .success(data) : .failure(ImageLoadingError.invalidData)
+            })
+        }
+        imageLoadTask.wrapped = httpTask
+        
+        return imageLoadTask
+    }
+}
+
+public enum ImageLoadingError: Error {
+    case invalidData
+    case connection
+}
