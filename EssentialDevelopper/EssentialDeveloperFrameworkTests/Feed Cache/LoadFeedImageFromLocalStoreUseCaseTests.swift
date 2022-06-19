@@ -55,7 +55,9 @@ class LocalFeedImageLoader: FeedImageLoader {
         
         let task = LocalImageLoaderTask(completion: completion)
         
-        let retreiveTask = store.retreiveImage(with: url) { result in
+        let retreiveTask = store.retreiveImageData(from: url) { [weak self] result in
+            guard self != nil else { return }
+            
             switch result {
             case .failure(let error):
                 task.complete(with: .failure(error))
@@ -79,7 +81,7 @@ class ImageStoreSpy {
     var cancelledURLs: [URL] = []
     
     @discardableResult
-    func retreiveImage(with url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> RetreiveTaskSpy {
+    func retreiveImageData(from url: URL, completion: @escaping (Result<Data?, Error>) -> Void) -> RetreiveTaskSpy {
         messages.append((url: url, completion: completion))
         
         return RetreiveTaskSpy(cancelClosure: { [weak self] in self?.cancelledURLs.append(url) })
@@ -89,7 +91,7 @@ class ImageStoreSpy {
         self.messages[index].completion(.failure(error))
     }
     
-    func completes(with data: Data? = nil, at index: Int = 0) {
+    func complete(with data: Data? = nil, at index: Int = 0) {
         self.messages[index].completion(.success(data))
     }
 }
@@ -136,7 +138,7 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         expect(sut: sut, toLoad: .failure(ImageRetreivalError.noImage)) {
-            store.completes(with: nil, at: 0)
+            store.complete(with: nil, at: 0)
         }
     }
     
@@ -145,11 +147,25 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         let expectedData = anyData()
         
         expect(sut: sut, toLoad: .success(expectedData)) {
-            store.completes(with: expectedData, at: 0)
+            store.complete(with: expectedData, at: 0)
         }
     }
     
-    func expect(sut: LocalFeedImageLoader, toLoad expectedResult: FeedImageLoader.Result, when action: @escaping VoidClosure, file: StaticString = #file, line: UInt = #line) {
+    func test_load_doesNotCallCompletionAfterInstanceHasBeenDelallocated() {
+        var (sut, store): (LocalFeedImageLoader?, ImageStoreSpy) = makeSUT()
+        let url = anyURL()
+        
+        _ = sut!.loadImage(with: url) { _ in
+            XCTFail("Expected to never be called after instance deallocation")
+        }
+        
+        sut = nil
+        store.complete()
+        store.complete(with: anyNSError(), at: 0)
+        store.complete(with: anyData(), at: 0)
+    }
+    
+    private func expect(sut: LocalFeedImageLoader, toLoad expectedResult: FeedImageLoader.Result, when action: @escaping VoidClosure, file: StaticString = #file, line: UInt = #line) {
         
         let retreivedResult = result(from: sut, when: action)
         
@@ -163,7 +179,7 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         }
     }
     
-    func result(from sut: LocalFeedImageLoader, when action: VoidClosure) -> FeedImageLoader.Result? {
+    private func result(from sut: LocalFeedImageLoader, when action: VoidClosure) -> FeedImageLoader.Result? {
         let exp = expectation(description: "wait for load to complete")
         var retreivedResult: FeedImageLoader.Result?
         
