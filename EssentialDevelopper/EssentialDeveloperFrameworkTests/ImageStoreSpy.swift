@@ -58,4 +58,8 @@ class ImageStoreSpy: ImageStore {
     func insertComplete(with error: Error, at index: Int = 0) {
         self.insertCompletions[index](.failure(error))
     }
+    
+    func insertCompleteWithSuccess(at index: Int = 0) {
+        self.insertCompletions[index](.success(()))
+    }
 }

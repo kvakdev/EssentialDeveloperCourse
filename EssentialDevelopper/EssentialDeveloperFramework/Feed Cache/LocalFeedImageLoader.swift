@@ -55,6 +55,10 @@ public class LocalFeedImageLoader: FeedImageLoader {
     }
     
     public func save(image data: Data, for url: URL, completion: @escaping Closure<Result<Void, Error>>) {
-        store.insert(image: data, for: url, completion: completion)
+        store.insert(image: data, for: url) { [weak self] result in
+            guard self != nil else { return }
+            
+            completion(result)
+        }
     }
 }

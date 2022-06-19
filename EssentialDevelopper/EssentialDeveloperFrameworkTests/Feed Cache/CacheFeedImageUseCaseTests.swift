@@ -47,6 +47,20 @@ class CacheFeedImageUseCaseTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
+    func test_save_triggersNoCallbackAfterSelfIsDeallocated() {
+        var (sut, store): (LocalFeedImageLoader?, ImageStoreSpy) = makeSUT()
+        let data = anyData()
+        let url = anyURL()
+        
+        sut?.save(image: data, for: url) { _ in
+            XCTFail("Expected no callback after deallocation")
+        }
+        
+        sut = nil
+        store.insertComplete(with: anyNSError())
+        store.insertCompleteWithSuccess(at: 0)
+    }
+    
     private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (LocalFeedImageLoader, ImageStoreSpy) {
         let store = ImageStoreSpy()
         let sut = LocalFeedImageLoader(store: store)
