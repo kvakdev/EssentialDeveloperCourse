@@ -9,6 +9,10 @@
 import XCTest
 import EssentialFeed
 
+enum ImageRetreivalError: Error {
+    case noImage
+}
+
 class RetreiveTaskSpy: FeedImageDataLoaderTask {
     private let cancelClosure: VoidClosure
     
@@ -55,7 +59,10 @@ class LocalFeedImageLoader: FeedImageLoader {
             switch result {
             case .failure(let error):
                 task.complete(with: .failure(error))
-                print("")
+            case .success(let data):
+                guard let data = data else {
+                    return task.complete(with: .failure(ImageRetreivalError.noImage))
+                }
             default:
                 fatalError()
             }
@@ -81,6 +88,10 @@ class ImageStoreSpy {
     
     func complete(with error: Error, at index: Int = 0) {
         self.messages[index].completion(.failure(error))
+    }
+    
+    func completes(with data: Data? = nil, at index: Int = 0) {
+        self.messages[index].completion(.success(data))
     }
 }
 
@@ -127,6 +138,18 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         let task = sut.loadImage(with: url) { _ in }
         task.cancel()
         XCTAssertEqual(store.cancelledURLs, [url])
+    }
+    
+    func test_load_deliversNilDataOnEmptyRetreival() {
+        let (sut, store) = makeSUT()
+        let retreivedResult = result(from: sut, store: store) {
+            store.completes(with: nil, at: 0)
+        }
+        switch retreivedResult {
+        case .failure(let error):
+                XCTAssertEqual((error as? ImageRetreivalError), ImageRetreivalError.noImage)
+        default: XCTFail("Expected no image error for nil data, got \(String(describing: retreivedResult)) instead")
+        }
     }
     
     func result(from sut: LocalFeedImageLoader, store: ImageStoreSpy, when action: VoidClosure) -> FeedImageLoader.Result? {
