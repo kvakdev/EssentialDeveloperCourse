@@ -8,32 +8,6 @@
 
 import Foundation
 
-
-public typealias Closure<T> = (T) -> Void
-public typealias VoidClosure = () -> Void
-
-extension HTTPURLResponse {
-    var isOK: Bool { statusCode == 200 }
-}
-
-public class RemoteImageLoadingTask: FeedImageDataLoaderTask {
-    var wrapped: HTTPClientTask?
-    var completion: Closure<FeedImageLoader.ImageLoadResult>?
-    
-    init(completion: @escaping Closure<FeedImageLoader.ImageLoadResult>) {
-        self.completion = completion
-    }
-    
-    func complete(with result: FeedImageLoader.ImageLoadResult) {
-        completion?(result)
-    }
-    
-    public func cancel() {
-        completion = nil
-        wrapped?.cancel()
-    }
-}
-
 public class RemoteFeedImageLoader: FeedImageLoader {
     let client: HTTPClient
     
