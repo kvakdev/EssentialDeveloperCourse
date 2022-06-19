@@ -9,7 +9,7 @@
 import XCTest
 import EssentialFeed
 
-class RemoteImageFeedLoaderTests: XCTestCase {
+class LoadImageDataFromRemoteUseCaseTests: XCTestCase {
     
     func test_init_hasNoSideEffects() {
         let (_, clientSpy) = makeSUT()
