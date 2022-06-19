@@ -33,8 +33,3 @@ public class RemoteFeedImageLoader: FeedImageLoader {
         return imageLoadTask
     }
 }
-
-public enum ImageLoadingError: Error {
-    case invalidData
-    case connection
-}
