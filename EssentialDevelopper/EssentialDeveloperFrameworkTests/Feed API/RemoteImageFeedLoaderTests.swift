@@ -10,13 +10,23 @@ import XCTest
 import EssentialFeed
 
 typealias Closure<T> = (T) -> Void
+typealias VoidClosure = () -> Void
 
 extension HTTPURLResponse {
     var isOK: Bool { statusCode == 200 }
 }
 
-struct HTTPTask: HTTPClientTask {
-    func cancel() {}
+class HTTPTask: HTTPClientTask {
+    var cancelCompletion: VoidClosure?
+    
+    init(cancelCompletion: @escaping VoidClosure) {
+        self.cancelCompletion = cancelCompletion
+    }
+    
+    func cancel() {
+        cancelCompletion?()
+        cancelCompletion = nil
+    }
 }
 
 class RemoteImageLoadingTask: FeedImageDataLoaderTask {
@@ -76,7 +86,7 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         XCTAssertTrue(clientSpy.messages.isEmpty)
     }
     
-    func test_cancelTask_deliversNoResult() {
+    func test_load_loadsCorrectURLFromHTTPClient() {
         let (sut, clientSpy) = makeSUT()
         let url = anyURL()
         let secondURL = URL(string: "http://other-url.com")!
@@ -106,6 +116,16 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         
         task.cancel()
         clientSpy.completeWith(expectedError)
+    }
+    
+    func test_cancelImageLoadTask_cancelsHTTPTask() {
+        let (sut, clientSpy) = makeSUT()
+        let url = anyURL()
+        
+        let task = sut.loadImage(with: url) { result in }
+        task.cancel()
+        
+        XCTAssertEqual(clientSpy.cancelledURLs, [url])
     }
     
     func test_load_deliversErrorOnEmptyDataAndValidResponse() {
@@ -165,22 +185,24 @@ class RemoteImageFeedLoaderTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    private func makeSUT() -> (RemoteFeedImageLoader, HTTPClientSpy) {
+    private func makeSUT(file: StaticString = #file, line: UInt = #line) -> (RemoteFeedImageLoader, HTTPClientSpy) {
         let clientSpy = HTTPClientSpy()
         let sut = RemoteFeedImageLoader(client: clientSpy)
         
-        trackMemoryLeaks(clientSpy)
-        trackMemoryLeaks(sut)
+        trackMemoryLeaks(clientSpy, file: file, line: line)
+        trackMemoryLeaks(sut, file: file, line: line)
         
         return (sut, clientSpy)
     }
     
     private class HTTPClientSpy: HTTPClient {
         var messages: [(url: URL, completion: (HTTPClient.Result) -> Void)] = []
+        var cancelledURLs = [URL]()
         
         func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
             messages.append((url: url, completion: completion))
-            return HTTPTask()
+            
+            return HTTPTask(cancelCompletion: { [weak self] in  self?.cancelledURLs.append(url) })
         }
         
         func completeSuccessfully(data: Data = Data(), response: HTTPURLResponse = anyHTTPURLResponse(), at index: Int = 0) {
