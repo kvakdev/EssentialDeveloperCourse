@@ -56,6 +56,10 @@ class ImageStoreSpy: ImageStore {
     func complete(with data: Data? = nil, at index: Int = 0) {
         self.retreiveCompletions[index](.success(data))
     }
+    
+    func insertComplete(with error: Error, at index: Int = 0) {
+        self.insertCompletions[index](.failure(error))
+    }
 }
 
 class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
@@ -136,6 +140,27 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         
         XCTAssertEqual(store.messages, [.insert(url: url, data: data)])
     }
+    
+    func test_save_deliversErrorOnInsertError() {
+        let (sut, store) = makeSUT()
+        let data = anyData()
+        let url = anyURL()
+        let exp = expectation(description: "wait for insert to complete")
+        let expectedError = anyNSError()
+        
+        sut.save(image: data, for: url) { result in
+            switch result {
+            case .failure:
+                break
+            case .success:
+                XCTFail("Expected to get error on insertion error got \(result) instead")
+            }
+            exp.fulfill()
+        }
+        store.insertComplete(with: expectedError)
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     
     private func expect(sut: LocalFeedImageLoader, toLoad expectedResult: FeedImageLoader.Result, when action: @escaping VoidClosure, file: StaticString = #file, line: UInt = #line) {
         
