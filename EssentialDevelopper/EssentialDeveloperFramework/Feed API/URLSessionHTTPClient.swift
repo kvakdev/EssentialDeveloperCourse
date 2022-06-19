@@ -17,8 +17,8 @@ public class URLSessionHTTPClient: HTTPClient {
     
     struct UnexpectedRepresentationError: Error {}
     
-    public func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) {
-        self.session.dataTask(with: url, completionHandler: { data, response, error in
+    public func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
+        let task = self.session.dataTask(with: url, completionHandler: { data, response, error in
             if let error = error {
                 completion(.failure(error))
             } else if let data = data, let response = response as? HTTPURLResponse {
@@ -26,6 +26,12 @@ public class URLSessionHTTPClient: HTTPClient {
             } else {
                 completion(.failure(UnexpectedRepresentationError()))
             }
-        }).resume()
+        })
+        
+        task.resume()
+        
+        return task
     }
 }
+
+extension URLSessionDataTask: HTTPClientTask {}

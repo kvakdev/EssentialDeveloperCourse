@@ -1,0 +1,10 @@
+/* 
+  Feed.strings
+  EssentialDevelopper
+
+  Created by Andre Kvashuk on 6/16/22.
+  Copyright © 2022 Andre Kvashuk. All rights reserved.
+*/
+
+"FEED_TITLE_VIEW" = "Моя стрічка";
+"FEED_LOADING_ERROR" = "Немає інтернету";

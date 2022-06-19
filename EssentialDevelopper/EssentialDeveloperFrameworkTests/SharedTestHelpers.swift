@@ -16,3 +16,11 @@ func anyURL() -> URL {
 func anyNSError() -> NSError {
     return NSError(domain: "anyDomain", code: 0)
 }
+
+func anyHTTPURLResponse() -> HTTPURLResponse {
+    return HTTPURLResponse(url: anyURL(), statusCode: 200, httpVersion: nil, headerFields: nil)!
+}
+
+func anyData() -> Data {
+    return Data("Any data".utf8)
+}

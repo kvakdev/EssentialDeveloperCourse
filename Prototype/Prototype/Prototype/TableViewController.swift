@@ -9,13 +9,25 @@ import UIKit
 
 class TableViewController: UITableViewController {
 
-    private var feed = FeedImageViewModel.prototypeFeed
+    private var feed = [FeedImageViewModel]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "My Feed"
+        refresh()
     }
+    
+    @IBAction func refresh() {
+        refreshControl?.beginRefreshing()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.feed = FeedImageViewModel.prototypeFeed
+            self.tableView.reloadData()
+            self.refreshControl?.endRefreshing()
+        }
+    }
+    
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         
@@ -26,7 +38,6 @@ class TableViewController: UITableViewController {
 
         return feed.count
     }
-
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedImageCell", for: indexPath) as! FeedImageCell
