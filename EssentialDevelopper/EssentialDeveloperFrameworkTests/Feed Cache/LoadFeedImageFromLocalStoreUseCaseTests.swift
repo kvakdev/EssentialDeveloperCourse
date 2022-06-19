@@ -107,15 +107,8 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         let expectedError = anyNSError()
         
-        let retreivedResult = result(from: sut) {
+        expect(sut: sut, toLoad: .failure(expectedError)) {
             store.complete(with: expectedError, at: 0)
-        }
-
-        switch retreivedResult {
-        case .failure(let error):
-            XCTAssertEqual((error as NSError), expectedError)
-        default:
-            XCTFail("EXpected error got \(retreivedResult.debugDescription) instead")
         }
     }
     
@@ -141,13 +134,9 @@ class LoadFeedImageFromLocalStoreUseCaseTests: XCTestCase {
     
     func test_load_deliversNilDataOnEmptyRetreival() {
         let (sut, store) = makeSUT()
-        let retreivedResult = result(from: sut) {
+        
+        expect(sut: sut, toLoad: .failure(ImageRetreivalError.noImage)) {
             store.completes(with: nil, at: 0)
-        }
-        switch retreivedResult {
-        case .failure(let error):
-                XCTAssertEqual((error as? ImageRetreivalError), ImageRetreivalError.noImage)
-        default: XCTFail("Expected no image error for nil data, got \(String(describing: retreivedResult)) instead")
         }
     }
     
