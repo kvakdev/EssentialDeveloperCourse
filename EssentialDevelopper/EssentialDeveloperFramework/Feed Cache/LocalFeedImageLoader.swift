@@ -24,6 +24,10 @@ public protocol ImageStore {
     func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>)
 }
 
+public enum SaveError: Error {
+    case failed
+}
+
 public class LocalFeedImageLoader: FeedImageLoader {
     let store: ImageStore
     
@@ -58,7 +62,7 @@ public class LocalFeedImageLoader: FeedImageLoader {
         store.insert(image: data, for: url) { [weak self] result in
             guard self != nil else { return }
             
-            completion(result)
+            completion(result.mapError { _ in SaveError.failed })
         }
     }
 }
