@@ -34,8 +34,8 @@ class FeedCacheIntegrationTests: XCTestCase {
     }
     
     func test_cache_storesTheDataOnDisk() {
-        let writeSUT = makeSUT()
-        let readSUT = makeSUT()
+        let writeSUT = makeImageLoader()
+        let readSUT = makeImageLoader()
         let feed = [uniqueFeed().model]
   
         expect(writeSUT, toSave: feed)
@@ -43,8 +43,8 @@ class FeedCacheIntegrationTests: XCTestCase {
     }
     
     func test_save_overridesOldCacheOnDisk() {
-        let writeSUTOne = makeSUT()
-        let writeSUTTwo = makeSUT()
+        let writeSUTOne = makeImageLoader()
+        let writeSUTTwo = makeImageLoader()
         let readSUT = makeSUT()
         let feedOne = [uniqueFeed().model]
         let feedTwo = [uniqueFeed().model]
@@ -83,7 +83,7 @@ class FeedCacheIntegrationTests: XCTestCase {
         wait(for: [exp], timeout: 1.0)
     }
     
-    func makeSUT(file: StaticString = #file, line: UInt = #line) -> LocalFeedLoader {
+    func makeImageLoader(file: StaticString = #file, line: UInt = #line) -> LocalFeedLoader {
         let storeURL = testSpecificaStoreURL()
         let bundle = Bundle(for: CoreDataFeedStore.self)
         let feedStore = try! CoreDataFeedStore(bundle: bundle, storeURL: storeURL)
