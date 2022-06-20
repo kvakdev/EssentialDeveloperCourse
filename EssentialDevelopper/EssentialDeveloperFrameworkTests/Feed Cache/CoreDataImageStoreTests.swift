@@ -21,6 +21,7 @@ extension CoreDataFeedStore: ImageStore {
     public func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>) {
         completion(.success(()))
     }
+    
     @discardableResult
     public func retrieveImageData(from url: URL, completion: @escaping (ImageStore.RetrieveResult) -> Void) -> CancellableTask {
         
@@ -60,6 +61,28 @@ class CoreDataImageStoreTests: XCTestCase {
         trackMemoryLeaks(sut)
         
         return sut
+    }
+    
+    func insert(in sut: CoreDataFeedStore, at url: URL, feed: [LocalFeedImage], imageData: Data, file: StaticString = #file, line: UInt = #line) {
+        
+        let exp = expectation(description: "wait for insert to complete")
+        
+        sut.insert(feed, timestamp: Date()) { result in
+            switch result {
+            case .success:
+                sut.insert(image: imageData, for: url) { imageInsertResult in
+                    switch imageInsertResult {
+                    case .success:
+                        exp.fulfill()
+                    case .failure:
+                        XCTFail("Expected successful image insert for url\(url), image data \(imageData)", file: file, line: line)
+                    }
+                }
+            case .failure:
+                XCTFail("Expected successful insert for feed \(feed)", file: file, line: line)
+            }
+        }
+        wait(for: [exp], timeout: 1.0)
     }
     
     private func expect(_ sut: CoreDataFeedStore, toCompleteRetrievalWith expectedResult: ImageStore.RetrieveResult, for url: URL,  file: StaticString = #file, line: UInt = #line) {

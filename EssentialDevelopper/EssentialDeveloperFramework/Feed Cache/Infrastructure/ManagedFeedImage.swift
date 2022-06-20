@@ -16,6 +16,7 @@ class ManagedFeedImage: NSManagedObject {
     @NSManaged var location: String?
     @NSManaged var url: URL
     @NSManaged var cache: ManagedFeedCache
+    @NSManaged var data: Data?
     
     var local: LocalFeedImage {
         LocalFeedImage(id: id,
