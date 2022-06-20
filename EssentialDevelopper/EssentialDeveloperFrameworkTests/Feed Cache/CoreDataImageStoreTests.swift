@@ -16,9 +16,13 @@ class CoreDataRetreiveTask: CancellableTask {
     }
 }
 
-extension CoreDataFeedStore {
+extension CoreDataFeedStore: ImageStore {
     
-    func retrieveImageData(from url: URL, completion: @escaping (ImageStore.RetrieveResult) -> Void) -> CancellableTask {
+    public func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>) {
+        completion(.success(()))
+    }
+    @discardableResult
+    public func retrieveImageData(from url: URL, completion: @escaping (ImageStore.RetrieveResult) -> Void) -> CancellableTask {
         
         completion(.success(.none))
         
@@ -31,6 +35,20 @@ class CoreDataImageStoreTests: XCTestCase {
     func test_retrieve_hasNoSideEffectsAndReturnsEmptyOnEmptyStore() {
         let sut = makeSUT()
         
+        expect(sut, toCompleteRetrievalWith: .success(.none), for: anyURL())
+    }
+    
+    func test_retrieve_returnsInsertedDataForTheSameUrl() {
+        let sut = makeSUT()
+        let imageData = Data(repeating: 1, count: 10)
+        let url = URL(string: "http://some-image-url.com")!
+        let exp = expectation(description: "wait for insert to complete")
+        
+        sut.insert(image: imageData, for: url) { result in
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
         expect(sut, toCompleteRetrievalWith: .success(.none), for: anyURL())
     }
     
