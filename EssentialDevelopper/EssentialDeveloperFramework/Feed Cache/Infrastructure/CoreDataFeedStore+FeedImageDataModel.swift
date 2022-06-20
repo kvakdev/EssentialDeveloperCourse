@@ -23,10 +23,9 @@ extension CoreDataFeedStore: ImageStore {
     public func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>) {
         perform { context in
             completion(Result {
-                let image = ManagedFeedImage.first(with: url)
-                image?.data = data
-                
-                try context.save()
+                try ManagedFeedImage.first(with: url)
+                    .map { $0.data = data }
+                    .map(context.save)
             })
         }
     }
@@ -37,7 +36,7 @@ extension CoreDataFeedStore: ImageStore {
         perform { context in
             completion(
             Result {
-                ManagedFeedImage.first(with: url)?.data
+                try ManagedFeedImage.first(with: url)?.data
             })
         }
         
