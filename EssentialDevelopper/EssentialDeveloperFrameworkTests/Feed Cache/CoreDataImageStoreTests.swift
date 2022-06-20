@@ -10,26 +10,6 @@ import XCTest
 import EssentialFeed
 import CoreData
 
-class CoreDataRetreiveTask: CancellableTask {
-    func cancel() {
-        
-    }
-}
-
-extension CoreDataFeedStore: ImageStore {
-    
-    public func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>) {
-        completion(.success(()))
-    }
-    
-    @discardableResult
-    public func retrieveImageData(from url: URL, completion: @escaping (ImageStore.RetrieveResult) -> Void) -> CancellableTask {
-        
-        completion(.success(.none))
-        
-        return CoreDataRetreiveTask()
-    }
-}
 
 class CoreDataImageStoreTests: XCTestCase {
     
