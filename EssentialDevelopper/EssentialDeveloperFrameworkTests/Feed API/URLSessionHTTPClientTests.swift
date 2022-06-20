@@ -137,7 +137,7 @@ class URLSessionHTTPClientTests: XCTestCase {
 // MARK: -
 private extension URLSessionHTTPClientTests {
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> HTTPClient {
-        var configuration = URLSessionConfiguration.ephemeral
+        let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [URLProtocolStub.self]
         let session = URLSession(configuration: configuration)
         
