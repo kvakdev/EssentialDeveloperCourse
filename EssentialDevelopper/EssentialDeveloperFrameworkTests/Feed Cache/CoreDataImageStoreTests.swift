@@ -23,29 +23,19 @@ class CoreDataImageStoreTests: XCTestCase {
         let sut = makeSUT()
         let imageData = Data(repeating: 1, count: 10)
         let url = URL(string: "http://some-image-url.com")!
-        let exp = expectation(description: "wait for insert to complete")
+        let nonMatchingUrl = URL(string: "http://different-image-url.com")!
         
-        sut.insert(image: imageData, for: url) { result in
-            exp.fulfill()
-        }
-        
-        wait(for: [exp], timeout: 1.0)
-        expect(sut, toCompleteRetrievalWith: .success(.none), for: anyURL())
-    }
-    
-    func someURL() -> URL {
-        URL(string: "http://some-image-url.com")!
-    }
-    
-    func localImage(_ url: URL) -> LocalFeedImage {
-        return LocalFeedImage(id: UUID(), url: url)
+        insert(in: sut, at: url, feed: [localImage(url)], imageData: imageData)
+        expect(sut, toCompleteRetrievalWith: .success(.none), for: nonMatchingUrl)
     }
     
     func test_retrieveReturnsPreveiouslyInsertedData() {
         let sut = makeSUT()
         let data = anyData()
-        insert(in: sut, at: someURL(), feed: [localImage(someURL())], imageData: data)
-        expect(sut, toCompleteRetrievalWith: .success(data), for: someURL())
+        let matchingUrl = someURL()
+        
+        insert(in: sut, at: someURL(), feed: [localImage(matchingUrl)], imageData: data)
+        expect(sut, toCompleteRetrievalWith: .success(data), for: matchingUrl)
     }
     
     func makeSUT() -> CoreDataFeedStore {
@@ -94,4 +84,12 @@ class CoreDataImageStoreTests: XCTestCase {
              }
              wait(for: [exp], timeout: 1.0)
          }
+    
+    private func someURL() -> URL {
+        URL(string: "http://some-image-url.com")!
+    }
+    
+    private func localImage(_ url: URL) -> LocalFeedImage {
+        return LocalFeedImage(id: UUID(), url: url)
+    }
 }
