@@ -35,4 +35,13 @@ class ManagedFeedImage: NSManagedObject {
             return managed
         })
     }
+    
+    static func first(with url: URL) -> ManagedFeedImage? {
+        let fetchRequest = NSFetchRequest<ManagedFeedImage>(entityName: entity().name!)
+        fetchRequest.predicate = NSPredicate(format: "%K = %@", argumentArray: [#keyPath(ManagedFeedImage.url), url])
+        fetchRequest.returnsObjectsAsFaults = true
+        fetchRequest.fetchLimit = 1
+        
+        return try? fetchRequest.execute().first
+    }
 }

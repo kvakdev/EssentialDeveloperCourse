@@ -33,6 +33,21 @@ class CoreDataImageStoreTests: XCTestCase {
         expect(sut, toCompleteRetrievalWith: .success(.none), for: anyURL())
     }
     
+    func someURL() -> URL {
+        URL(string: "http://some-image-url.com")!
+    }
+    
+    func localImage(_ url: URL) -> LocalFeedImage {
+        return LocalFeedImage(id: UUID(), url: url)
+    }
+    
+    func test_retrieveReturnsPreveiouslyInsertedData() {
+        let sut = makeSUT()
+        let data = anyData()
+        insert(in: sut, at: someURL(), feed: [localImage(someURL())], imageData: data)
+        expect(sut, toCompleteRetrievalWith: .success(data), for: someURL())
+    }
+    
     func makeSUT() -> CoreDataFeedStore {
         let bundle = Bundle(for: CoreDataFeedStore.self)
         let storeURL = URL(fileURLWithPath: "/dev/null")
