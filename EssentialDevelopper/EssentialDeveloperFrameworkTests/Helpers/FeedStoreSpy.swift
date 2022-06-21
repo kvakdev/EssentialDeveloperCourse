@@ -53,6 +53,10 @@ public class FeedStoreSpy: FeedStore {
         retrieveCompletions[index](.success((feed: feed, timestamp: timestamp)))
     }
     
+    func completeRetrieveWithEmptyCache(at index: Int = 0) {
+        retrieveCompletions[index](.success(nil))
+    }
+    
     func successfulyCompleteDeletion(at index: Int = 0) {
         deletionCompletions[index](.success(()))
     }
