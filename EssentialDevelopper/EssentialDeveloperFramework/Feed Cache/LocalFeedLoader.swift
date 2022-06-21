@@ -53,7 +53,7 @@ public final class LocalFeedLoader {
     }
     
     
-    public func validateCache(completion: @escaping Closure<ValidationResult> = { _ in }) {
+    public func validateCache(completion: @escaping Closure<ValidationResult>) {
         store.retrieve() { [weak self] result in
             guard let self = self else { return }
             
