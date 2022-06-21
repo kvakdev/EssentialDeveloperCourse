@@ -67,6 +67,27 @@ class FeedCacheIntegrationTests: XCTestCase {
         expect(imageLoaderToPerformLoad, toLoad: dataToSave, for: image.url)
     }
     
+    func test_validateFeedCache_doesNotDeleteRecentlySavedFeed() {
+        let feedLoaderToPerformSave = makeFeedLoader()
+        let feedLoaderToPerformValidation = makeFeedLoader()
+        let feed = uniqueFeed()
+        
+        expect(feedLoaderToPerformSave, toSave: [feed.model])
+        validateCacheWith(feedLoaderToPerformValidation)
+        
+        expect(feedLoaderToPerformSave, toLoad: .success([feed.model]))
+    }
+    
+    private func validateCacheWith(_ feedLoader: LocalFeedLoader) {
+        let exp = expectation(description: "wait for validate to complete")
+        
+        feedLoader.validateCache(completion: { _ in
+            exp.fulfill()
+        })
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     private func expect(_ loader: LocalFeedImageLoader, toLoad data: Data, for url: URL, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait for load to complete")
         
