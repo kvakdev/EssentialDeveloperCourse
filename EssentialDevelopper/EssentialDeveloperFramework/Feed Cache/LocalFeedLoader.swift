@@ -59,13 +59,11 @@ public final class LocalFeedLoader {
             
             switch result {
             case .success(.some(let feedCache)) where !FeedCachePolicy.validate(feedCache.timestamp, against: self.currentDate()):
-                    self.store.deleteCachedFeed(completion: { _ in completion(.success(())) })
+                    self.store.deleteCachedFeed(completion: completion)
             case .success:
                 completion(.success(()))
             case .failure:
-                self.store.deleteCachedFeed(completion: { _ in
-                    completion(.success(()))
-                })
+                self.store.deleteCachedFeed(completion: completion)
             }
         }
     }

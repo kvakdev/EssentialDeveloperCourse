@@ -83,7 +83,29 @@ class ValidateFeedCacheUseCaseTests: XCTestCase {
         let (sut, store) = makeSUT()
         
         expect(sut, toCompleteWith: .success(()), when: {
-            store.completeRetrieveWith([], timestamp: Date())
+            store.completeRetrieveWithEmptyCache()
+        })
+    }
+    
+    func test_validateCache_failsOnDeletionError() {
+        let (sut, store) = makeSUT()
+        let fixedDate = Date()
+        let expiredDate = fixedDate.minusMaxCacheAge().adding(seconds: -1)
+        let error = anyNSError()
+        
+        expect(sut, toCompleteWith: .failure(error), when: {
+            store.completeRetrieveWith([uniqueFeed().local], timestamp: expiredDate)
+            store.completeDeletionWith(error)
+        })
+    }
+    
+    func test_validateCache_failsOnFailedRetrievalAndDeletionError() {
+        let (sut, store) = makeSUT()
+        let error = anyNSError()
+        
+        expect(sut, toCompleteWith: .failure(error), when: {
+            store.completeRetrieveWith(anyNSError())
+            store.completeDeletionWith(error)
         })
     }
     
