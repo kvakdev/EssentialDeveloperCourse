@@ -109,6 +109,15 @@ class ValidateFeedCacheUseCaseTests: XCTestCase {
         })
     }
     
+    func test_validation_succeedsOnNonExpiredCache() {
+        let (sut, store) = makeSUT()
+        let nonExpiredCache = Date()
+        
+        expect(sut, toCompleteWith: .success(()), when: {
+            store.completeRetrieveWith([uniqueFeed().local], timestamp: nonExpiredCache)
+        })
+    }
+    
     private func expect(_ sut: LocalFeedLoader, toCompleteWith result: LocalFeedLoader.ValidationResult, when action: VoidClosure, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait for validation to complete")
         
