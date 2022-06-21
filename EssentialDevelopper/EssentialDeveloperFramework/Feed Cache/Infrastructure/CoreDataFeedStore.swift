@@ -9,25 +9,42 @@
 import Foundation
 import CoreData
 
+
+
 public class CoreDataFeedStore: FeedStore {
     
+    enum StoreError: Swift.Error {
+        case modelNotFound
+        case failedToLoadPersistentStores(Swift.Error)
+    }
+    
     private let container: NSPersistentContainer
-    private let backgroundContext: NSManagedObjectContext
+    private let context: NSManagedObjectContext
+    private static let modelName = "FeedStore"
+    private static let model = NSManagedObjectModel.load(with: modelName, in: Bundle(for: CoreDataFeedStore.self))
     
     public init(storeURL: URL) throws {
-        let bundle = Bundle(for: Self.self)
-        try self.container = NSPersistentContainer.load(with: "FeedStore", in: bundle, storeURL: storeURL)
-       
-        backgroundContext = self.container.newBackgroundContext()
+        guard let model = CoreDataFeedStore.model else {
+            throw StoreError.modelNotFound
+        }
+        
+        do {
+            try self.container = NSPersistentContainer.load(with: CoreDataFeedStore.modelName, model: model, storeURL: storeURL)
+            
+            context = self.container.newBackgroundContext()
+        } catch let error {
+            
+            throw StoreError.failedToLoadPersistentStores(error)
+        }
     }
     
     func perform(_ action: @escaping (NSManagedObjectContext) -> Void) {
-        let context = self.backgroundContext
+        let context = self.context
         context.perform { action(context) }
     }
     
     func cleanUpStoreReferences() {
-         backgroundContext.performAndWait {
+         context.performAndWait {
             let coordinator = self.container.persistentStoreCoordinator
             try? coordinator.persistentStores.forEach(coordinator.remove)
         }

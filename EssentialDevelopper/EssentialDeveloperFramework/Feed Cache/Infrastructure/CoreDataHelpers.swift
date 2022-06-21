@@ -10,17 +10,8 @@ import CoreData
 
 
 public extension NSPersistentContainer {
-    enum LoadingError: Swift.Error {
-        case modelNotFound
-        case failedToLoadPersistentStores(Swift.Error)
-    }
-
-    
-    static func load(with modelName: String, in bundle: Bundle, storeURL: URL) throws -> NSPersistentContainer {
-        
-        guard let model = NSManagedObjectModel.load(with: modelName, in: bundle) else {
-            throw LoadingError.modelNotFound
-        }
+   
+    static func load(with modelName: String, model: NSManagedObjectModel, storeURL: URL) throws -> NSPersistentContainer {
         
         let storeDescription = NSPersistentStoreDescription(url: storeURL)
         let container = NSPersistentContainer(name: modelName, managedObjectModel: model)
@@ -32,7 +23,7 @@ public extension NSPersistentContainer {
             loadError = error
         }
         
-        try loadError.map { throw LoadingError.failedToLoadPersistentStores($0) }
+        try loadError.map { throw $0 }
         
         return container
     }
