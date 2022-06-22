@@ -21,10 +21,18 @@ class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     
     func test_retreiveError_deliversError() {
         let (sut, store) = makeSUT()
-        let expectedError = anyNSError()
+        let expectedError = LoadError.failed
         
         expect(sut: sut, toLoad: .failure(expectedError)) {
             store.complete(with: expectedError, at: 0)
+        }
+    }
+    
+    func test_load_deliversNilDataOnEmptyRetreival() {
+        let (sut, store) = makeSUT()
+        
+        expect(sut: sut, toLoad: .failure(LoadError.notFound)) {
+            store.complete(with: nil, at: 0)
         }
     }
     
@@ -47,15 +55,7 @@ class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
         task.cancel()
         XCTAssertEqual(store.cancelledURLs, [url])
     }
-    
-    func test_load_deliversNilDataOnEmptyRetreival() {
-        let (sut, store) = makeSUT()
-        
-        expect(sut: sut, toLoad: .failure(LoadError.notFound)) {
-            store.complete(with: nil, at: 0)
-        }
-    }
-    
+ 
     func test_load_deliversDataRetreivedByTheStore() {
         let (sut, store) = makeSUT()
         let expectedData = anyData()

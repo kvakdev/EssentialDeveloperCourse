@@ -40,15 +40,12 @@ public class LocalFeedImageLoader: FeedImageLoader {
         let retreiveTask = store.retrieveImageData(from: url) { [weak self] result in
             guard self != nil else { return }
             
-            switch result {
-            case .failure(let error):
-                task.complete(with: .failure(error))
-            case .success(let data):
-                guard let data = data else {
-                    return task.complete(with: .failure(LoadError.notFound))
+            task.complete(with: result
+                .mapError { _ in LoadError.failed }
+                .flatMap { data in
+                    data.map { .success($0) } ?? .failure(LoadError.notFound)
                 }
-                task.complete(with: .success(data))
-            }
+            )
         }
         
         task.wrapped = retreiveTask
