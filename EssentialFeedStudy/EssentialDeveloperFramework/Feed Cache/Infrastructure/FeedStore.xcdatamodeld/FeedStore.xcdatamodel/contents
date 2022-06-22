@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E230" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="1">
+    <entity name="ManagedFeedCache" representedClassName="ManagedFeedCache" syncable="YES">
+        <attribute name="timestamp" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="feed" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ManagedFeedImage" inverseName="feedCache" inverseEntity="ManagedFeedImage"/>
+    </entity>
+    <entity name="ManagedFeedImage" representedClassName="ManagedFeedImage" syncable="YES">
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageDescription" optional="YES" attributeType="String"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="url" attributeType="URI"/>
+        <relationship name="feedCache" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ManagedFeedCache" inverseName="feed" inverseEntity="ManagedFeedCache"/>
+    </entity>
+    <elements>
+        <element name="ManagedFeedCache" positionX="-72.05462646484375" positionY="-169.5360260009766" width="128" height="59"/>
+        <element name="ManagedFeedImage" positionX="19.15716552734375" positionY="-81.85299682617188" width="128" height="104"/>
+    </elements>
+</model>
