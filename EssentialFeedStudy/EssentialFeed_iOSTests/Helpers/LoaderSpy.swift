@@ -12,7 +12,7 @@ import EssentialFeed
 
 class LoaderSpy: FeedLoader, FeedImageLoader {
     var completions = [(FeedLoader.Result) -> ()]()
-    var imageLoadCompletions = [(url: URL, completion: (Result) -> ())]()
+    var imageLoadCompletions = [(url: URL, completion: (FeedImageLoader.Result) -> ())]()
     var loadedURLs: [URL] {
         imageLoadCompletions.map { $0.url }
     }
@@ -46,7 +46,7 @@ class LoaderSpy: FeedLoader, FeedImageLoader {
         completions[index](.failure(NSError(domain: "Loader spy error", code: 0)))
     }
     
-    func loadImage(with url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask {
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         imageLoadCompletions.append((url: url, completion: completion))
         
         return FeedImageLoaderTaskSpy(cancelCompletion: { [weak self] in self?.cancelImageLoad(with: url) })
