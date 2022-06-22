@@ -35,7 +35,7 @@ extension MainThreadDispatchDecorator: FeedLoader where T == FeedLoader {
 }
 
 extension MainThreadDispatchDecorator: FeedImageLoader where T == FeedImageLoader {
-    func loadImage(with url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask {
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         decoratee.loadImage(with: url) { [weak self] result in
             self?.dispatch { completion(result) }
         }
