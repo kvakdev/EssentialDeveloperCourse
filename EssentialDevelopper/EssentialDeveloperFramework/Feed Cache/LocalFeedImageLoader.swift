@@ -8,10 +8,6 @@
 
 import Foundation
 
-public enum ImageRetreivalError: Error {
-    case noImage
-}
-
 public protocol CancellableTask {
     func cancel()
 }
@@ -25,8 +21,9 @@ public protocol ImageStore {
     func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>)
 }
 
-public enum SaveError: Error {
+public enum LoadError: Error {
     case failed
+    case notFound
 }
 
 public class LocalFeedImageLoader: FeedImageLoader {
@@ -48,7 +45,7 @@ public class LocalFeedImageLoader: FeedImageLoader {
                 task.complete(with: .failure(error))
             case .success(let data):
                 guard let data = data else {
-                    return task.complete(with: .failure(ImageRetreivalError.noImage))
+                    return task.complete(with: .failure(LoadError.notFound))
                 }
                 task.complete(with: .success(data))
             }
@@ -63,7 +60,7 @@ public class LocalFeedImageLoader: FeedImageLoader {
         store.insert(image: data, for: url) { [weak self] result in
             guard self != nil else { return }
             
-            completion(result.mapError { _ in SaveError.failed })
+            completion(result.mapError { _ in LoadError.failed })
         }
     }
 }

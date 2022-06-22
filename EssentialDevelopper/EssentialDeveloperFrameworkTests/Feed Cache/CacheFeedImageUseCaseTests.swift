@@ -37,7 +37,7 @@ class CacheFeedImageUseCaseTests: XCTestCase {
         sut.save(image: data, for: url) { result in
             switch result {
             case .failure(let error):
-                XCTAssertEqual((error as? SaveError), .failed)
+                XCTAssertEqual((error as? LoadError), .failed)
             case .success:
                 XCTFail("Expected to get error on insertion error got \(result) instead")
             }

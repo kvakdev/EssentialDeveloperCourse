@@ -51,7 +51,7 @@ class LoadFeedImageFromCacheUseCaseTests: XCTestCase {
     func test_load_deliversNilDataOnEmptyRetreival() {
         let (sut, store) = makeSUT()
         
-        expect(sut: sut, toLoad: .failure(ImageRetreivalError.noImage)) {
+        expect(sut: sut, toLoad: .failure(LoadError.notFound)) {
             store.complete(with: nil, at: 0)
         }
     }
