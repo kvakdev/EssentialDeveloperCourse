@@ -48,20 +48,28 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         let expectedData = Data("data".utf8)
         let primaryLoader = ImageLoaderStub(stub: .success(expectedData))
         let sut = ImageLoaderWithFallbackComposit(primaryLoader: primaryLoader)
-        let url = anyURL()
-        let exp = expectation(description: "wait for load to complete")
         
-        sut.loadImage(with: url) { result in
-            switch result {
-            case .success(let data):
+        expect(sut: sut, toLoadResult: .success(expectedData))
+    }
+    
+    func expect(sut: FeedImageLoader, toLoadResult expectedResult: FeedImageLoader.Result, file: StaticString = #file, line: UInt = #line) {
+        let exp = expectation(description: "wait for load to complete")
+        let url = anyURL()
+        
+        _ = sut.loadImage(with: url) { result in
+            switch (result, expectedResult) {
+            case (.success(let data), .success(let expectedData)):
                 XCTAssertEqual(data, expectedData)
                 
-            case .failure(let error):
-                XCTFail("expected \(result) got \(error) instead")
+            case (.failure(let error), .failure(let expectedError)):
+                XCTAssertEqual((error as NSError), (expectedError as NSError))
+            default:
+                XCTFail("Expected \(expectedResult) got \(result) instead", file: file, line: line)
             }
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
     }
+    
     
 }
