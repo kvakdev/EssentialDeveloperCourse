@@ -7,6 +7,7 @@
 
 import XCTest
 import EssentialFeed
+@testable import EssentialFeed_iOS
 
 class TaskWrapper: FeedImageDataLoaderTask {
     func cancel() {
@@ -16,13 +17,22 @@ class TaskWrapper: FeedImageDataLoaderTask {
 
 class ImageLoaderWithFallbackComposit: FeedImageLoader {
     let primaryLoader: FeedImageLoader
+    let fallbackLoader: FeedImageLoader
     
-    init(primaryLoader: FeedImageLoader) {
+    init(primaryLoader: FeedImageLoader, fallbackLoader: FeedImageLoader) {
         self.primaryLoader = primaryLoader
+        self.fallbackLoader = fallbackLoader
     }
     
     func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        let task = primaryLoader.loadImage(with: url, completion: completion)
+        let task = primaryLoader.loadImage(with: url) { result in
+            switch result {
+            case .success(let data):
+                completion(.success(data))
+            case .failure:
+                self.fallbackLoader.loadImage(with: url, completion: completion)
+            }
+        }
         
         return task
     }
@@ -44,10 +54,21 @@ class ImageLoaderStub: FeedImageLoader {
 
 class ImageLoaderWithFallbackCompositTests: XCTestCase {
     
-    func test_primaryloader_deliversImageDataInPrimarySucceeds() {
+    func test_loader_deliversImageDataInPrimarySucceeds() {
         let expectedData = Data("data".utf8)
         let primaryLoader = ImageLoaderStub(stub: .success(expectedData))
-        let sut = ImageLoaderWithFallbackComposit(primaryLoader: primaryLoader)
+        let fallbackLoader = ImageLoaderStub(stub: .failure(anyNSError()))
+        let sut = ImageLoaderWithFallbackComposit(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
+        
+        expect(sut: sut, toLoadResult: .success(expectedData))
+    }
+    
+    func test_loader_deliversFallbackImageDataWhenPrimaryLoaderFails() {
+        let expectedData = Data("data".utf8)
+        let primaryLoader = ImageLoaderStub(stub: .failure(anyNSError()))
+        let fallbackLoader = ImageLoaderStub(stub: .success(expectedData))
+        
+        let sut = ImageLoaderWithFallbackComposit(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
         
         expect(sut: sut, toLoadResult: .success(expectedData))
     }
