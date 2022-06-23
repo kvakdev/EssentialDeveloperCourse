@@ -7,83 +7,14 @@
 
 import XCTest
 import EssentialFeed
+import EssentialApp
 @testable import EssentialFeed_iOS
 
 class CancellableTask: FeedImageDataLoaderTask {
     func cancel() {}
 }
 
-class TaskWrapper: FeedImageDataLoaderTask {
-    var wrapped: FeedImageDataLoaderTask?
-    var completion: Closure<FeedImageLoader.Result>?
-    
-    func complete(_ result: FeedImageLoader.Result) {
-        completion?(result)
-    }
-    
-    func cancel() {
-        wrapped?.cancel()
-        completion = nil
-    }
-}
 
-class ImageLoaderWithFallbackComposit: FeedImageLoader {
-    let primaryLoader: FeedImageLoader
-    let fallbackLoader: FeedImageLoader
-    
-    init(primaryLoader: FeedImageLoader, fallbackLoader: FeedImageLoader) {
-        self.primaryLoader = primaryLoader
-        self.fallbackLoader = fallbackLoader
-    }
-    
-    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        let wrapper = TaskWrapper()
-        wrapper.completion = completion
-        
-        let primaryTask = primaryLoader.loadImage(with: url) { [weak self] result in
-            switch result {
-            case .success(let data):
-                wrapper.complete(.success(data))
-            case .failure:
-                let fallbackTask = self?.fallbackLoader.loadImage(with: url) { result in
-                    wrapper.complete(result)
-                }
-                wrapper.wrapped = fallbackTask
-            }
-        }
-        
-        wrapper.wrapped = primaryTask
-        
-        return wrapper
-    }
-}
-
-class ImageLoaderStub: FeedImageLoader {
-    private let stub: FeedImageLoader.Result
-    private var completion: ((FeedImageLoader.Result) -> Void)?
-    private let autoComplete: Bool
-    
-    init(stub: FeedImageLoader.Result, autoComplete: Bool = true) {
-        self.stub = stub
-        self.autoComplete = autoComplete
-    }
-    
-    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        let task = CancellableTask()
-        
-        if autoComplete {
-            completion(stub)
-        } else {
-            self.completion = completion
-        }
-        
-        return task
-    }
-    
-    func complete() {
-        self.completion?(stub)
-    }
-}
 
 class ImageLoaderWithFallbackCompositTests: XCTestCase {
     
@@ -125,6 +56,7 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         let fallbackLoader = ImageLoaderStub(stub: .failure(anyError()), autoComplete: false)
         let sut = makeSUT(primaryLoader: primaryLoader,
                           fallbackLoader: fallbackLoader)
+        
         let task = sut.loadImage(with: anyURL()) { result in
             XCTFail("Expected no result after task cancel")
         }
@@ -134,7 +66,7 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         primaryLoader.complete()
     }
   
-    func makeSUT(primaryLoader: ImageLoaderStub, fallbackLoader: ImageLoaderStub) -> FeedImageLoader {
+    private func makeSUT(primaryLoader: ImageLoaderStub, fallbackLoader: ImageLoaderStub) -> FeedImageLoader {
         let sut = ImageLoaderWithFallbackComposit(
             primaryLoader: primaryLoader,
             fallbackLoader: fallbackLoader
@@ -162,5 +94,32 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
             exp.fulfill()
         }
         wait(for: [exp], timeout: 1.0)
+    }
+}
+
+fileprivate class ImageLoaderStub: FeedImageLoader {
+    private let stub: FeedImageLoader.Result
+    private var completion: ((FeedImageLoader.Result) -> Void)?
+    private let autoComplete: Bool
+    
+    init(stub: FeedImageLoader.Result, autoComplete: Bool = true) {
+        self.stub = stub
+        self.autoComplete = autoComplete
+    }
+    
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+        let task = CancellableTask()
+        
+        if autoComplete {
+            completion(stub)
+        } else {
+            self.completion = completion
+        }
+        
+        return task
+    }
+    
+    func complete() {
+        self.completion?(stub)
     }
 }
