@@ -22,3 +22,7 @@ func anyURL() -> URL {
 func anyError(code: Int = 0) -> NSError {
     NSError(domain: "CompositLoaderTests", code: code)
 }
+
+func anyData() -> Data {
+    Data("data".utf8)
+}
