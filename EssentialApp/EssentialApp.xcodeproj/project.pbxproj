@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		9332C6202863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9332C61F2863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift */; };
+		9332C62328637A6100F9B6E6 /* EssentialFeed.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9332C62228637A6100F9B6E6 /* EssentialFeed.framework */; };
+		9332C62428637A6100F9B6E6 /* EssentialFeed.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9332C62228637A6100F9B6E6 /* EssentialFeed.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		9332C62628637A6800F9B6E6 /* EssentialFeed_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9332C62528637A6800F9B6E6 /* EssentialFeed_iOS.framework */; };
+		9332C62728637A6800F9B6E6 /* EssentialFeed_iOS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9332C62528637A6800F9B6E6 /* EssentialFeed_iOS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		9371F2742862D87B006F533A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9371F2732862D87B006F533A /* AppDelegate.swift */; };
 		9371F2782862D87B006F533A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9371F2772862D87B006F533A /* ViewController.swift */; };
 		9371F27B2862D87B006F533A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9371F2792862D87B006F533A /* Main.storyboard */; };
@@ -32,6 +36,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				9332C62428637A6100F9B6E6 /* EssentialFeed.framework in Embed Frameworks */,
+				9332C62728637A6800F9B6E6 /* EssentialFeed_iOS.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -41,6 +47,8 @@
 /* Begin PBXFileReference section */
 		9332C616286371BA00F9B6E6 /* EssentialAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9332C61F2863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedLoaderWithFallbackCompositTests.swift; sourceTree = "<group>"; };
+		9332C62228637A6100F9B6E6 /* EssentialFeed.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeed.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9332C62528637A6800F9B6E6 /* EssentialFeed_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = EssentialFeed_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9371F2702862D87B006F533A /* EssentialApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EssentialApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9371F2732862D87B006F533A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9371F2772862D87B006F533A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -62,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9332C62328637A6100F9B6E6 /* EssentialFeed.framework in Frameworks */,
+				9332C62628637A6800F9B6E6 /* EssentialFeed_iOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,12 +86,22 @@
 			path = EssentialAppTests;
 			sourceTree = "<group>";
 		};
+		9332C62128637A6100F9B6E6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9332C62528637A6800F9B6E6 /* EssentialFeed_iOS.framework */,
+				9332C62228637A6100F9B6E6 /* EssentialFeed.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9371F2672862D87B006F533A = {
 			isa = PBXGroup;
 			children = (
 				9371F2722862D87B006F533A /* EssentialApp */,
 				9332C617286371BA00F9B6E6 /* EssentialAppTests */,
 				9371F2712862D87B006F533A /* Products */,
+				9332C62128637A6100F9B6E6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
