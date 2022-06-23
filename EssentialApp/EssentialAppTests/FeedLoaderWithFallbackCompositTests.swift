@@ -57,6 +57,15 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
         expect(sut: sut, toLoad: .success(fallbackFeed))
     }
     
+    func test_loadFeed_deliversFallbackFailureOnPrimaryAndFallbackFailure() {
+        let fallbackError = anyError(code: 1)
+        let primaryError = anyError(code: 0)
+        let fallbackResult = FeedLoader.Result.failure(fallbackError)
+        let sut = makeSUT(primaryResult: .failure(primaryError), fallbackResult: fallbackResult)
+        
+        expect(sut: sut, toLoad: fallbackResult)
+    }
+    
     private func expect(sut: FeedLoader, toLoad result: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait for load to complete")
         sut.load { receivedResult in
@@ -94,8 +103,8 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
         URL(string: "http://any-url.com")!
     }
     
-    private func anyError() -> NSError {
-        NSError(domain: "CompositLoaderTests", code: 0)
+    private func anyError(code: Int = 0) -> NSError {
+        NSError(domain: "CompositLoaderTests", code: code)
     }
     
 }
