@@ -6,30 +6,62 @@
 //
 
 import XCTest
+import EssentialFeed
+
+class TaskWrapper: FeedImageDataLoaderTask {
+    func cancel() {
+        
+    }
+}
+
+class ImageLoaderWithFallbackComposit: FeedImageLoader {
+    let primaryLoader: FeedImageLoader
+    
+    init(primaryLoader: FeedImageLoader) {
+        self.primaryLoader = primaryLoader
+    }
+    
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+        let task = primaryLoader.loadImage(with: url, completion: completion)
+        
+        return task
+    }
+}
+
+class ImageLoaderStub: FeedImageLoader {
+    private let stub: FeedImageLoader.Result
+    
+    init(stub: FeedImageLoader.Result) {
+        self.stub = stub
+    }
+    
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+        completion(stub)
+        
+        return TaskWrapper()
+    }
+}
 
 class ImageLoaderWithFallbackCompositTests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    
+    func test_primaryloader_deliversImageDataInPrimarySucceeds() {
+        let expectedData = Data("data".utf8)
+        let primaryLoader = ImageLoaderStub(stub: .success(expectedData))
+        let sut = ImageLoaderWithFallbackComposit(primaryLoader: primaryLoader)
+        let url = anyURL()
+        let exp = expectation(description: "wait for load to complete")
+        
+        sut.loadImage(with: url) { result in
+            switch result {
+            case .success(let data):
+                XCTAssertEqual(data, expectedData)
+                
+            case .failure(let error):
+                XCTFail("expected \(result) got \(error) instead")
+            }
+            exp.fulfill()
         }
+        wait(for: [exp], timeout: 1.0)
     }
-
+    
 }
