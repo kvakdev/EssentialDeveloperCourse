@@ -9,16 +9,8 @@ import XCTest
 import EssentialFeed
 @testable import EssentialFeed_iOS
 
-class CancellableTaskSpy: FeedImageDataLoaderTask {
-    let cancelCompletion: VoidClosure
-    
-    init(cancelCompletion: @escaping VoidClosure) {
-        self.cancelCompletion = cancelCompletion
-    }
-    
-    func cancel() {
-        cancelCompletion()
-    }
+class CancellableTask: FeedImageDataLoaderTask {
+    func cancel() {}
 }
 
 class TaskWrapper: FeedImageDataLoaderTask {
@@ -70,7 +62,6 @@ class ImageLoaderStub: FeedImageLoader {
     private let stub: FeedImageLoader.Result
     private var completion: ((FeedImageLoader.Result) -> Void)?
     private let autoComplete: Bool
-    var cancelledURLs: [URL] = []
     
     init(stub: FeedImageLoader.Result, autoComplete: Bool = true) {
         self.stub = stub
@@ -78,9 +69,7 @@ class ImageLoaderStub: FeedImageLoader {
     }
     
     func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        let task = CancellableTaskSpy { [weak self] in
-            self?.cancelledURLs.append(url)
-        }
+        let task = CancellableTask()
         
         if autoComplete {
             completion(stub)
@@ -128,6 +117,7 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         
         task.cancel()
         primaryLoader.complete()
+        fallbackLoader.complete()
     }
     
     func test_loader_doesNotReturnResultOnTaskCancelAfterPrimaryLoaderFailed() {
@@ -135,15 +125,15 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         let fallbackLoader = ImageLoaderStub(stub: .failure(anyError()), autoComplete: false)
         let sut = makeSUT(primaryLoader: primaryLoader,
                           fallbackLoader: fallbackLoader)
-        
         let task = sut.loadImage(with: anyURL()) { result in
             XCTFail("Expected no result after task cancel")
         }
         
         task.cancel()
         fallbackLoader.complete()
+        primaryLoader.complete()
     }
-    
+  
     func makeSUT(primaryLoader: ImageLoaderStub, fallbackLoader: ImageLoaderStub) -> FeedImageLoader {
         let sut = ImageLoaderWithFallbackComposit(
             primaryLoader: primaryLoader,
