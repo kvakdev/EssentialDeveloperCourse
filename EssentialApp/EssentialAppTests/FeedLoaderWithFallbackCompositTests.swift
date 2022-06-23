@@ -10,13 +10,22 @@ import EssentialFeed
 
 class FeedLoaderComposit: FeedLoader {
     private let primary: FeedLoader
+    private let fallback: FeedLoader
     
     init(primary: FeedLoader, fallback: FeedLoader) {
         self.primary = primary
+        self.fallback = fallback
     }
     
     func load(completion: @escaping (FeedLoader.Result) -> ()) {
-        primary.load(completion: completion)
+        primary.load() { [weak self] primaryResult in
+            switch primaryResult {
+            case .success(let success):
+                completion(.success(success))
+            case .failure:
+                self?.fallback.load(completion: completion)
+            }
+        }
     }
 }
 
@@ -33,7 +42,7 @@ class FeedLoaderStub: FeedLoader {
 }
 
 class FeedLoaderWithFallbackCompositTests: XCTestCase {
-    func test_feedLoaderDeliversPrimaryResultOnPrimarySuccess() {
+    func test_feedLoader_deliversPrimaryResultOnPrimarySuccess() {
         let primaryFeed = uniqueFeed()
         let fallbackFeed = uniqueFeed()
         let remoteStub = FeedLoaderStub(.success(primaryFeed))
@@ -53,6 +62,28 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
+    func test_loadFeed_deliversFallbackResultOnPrimaryLoaderFailure() {
+        let primaryResult = FeedLoader.Result.failure(anyError())
+        let fallbackFeed = uniqueFeed()
+        let fallbackResult = FeedLoader.Result.success(fallbackFeed)
+        let primaryLoader = FeedLoaderStub(primaryResult)
+        let fallbackLoader = FeedLoaderStub(fallbackResult)
+        let exp = expectation(description: "wait for load to complete")
+        let sut = FeedLoaderComposit(primary: primaryLoader, fallback: fallbackLoader)
+        
+        sut.load { result in
+            switch result {
+            case .success(let feed):
+                XCTAssertEqual(feed, fallbackFeed)
+            case .failure(let error):
+                XCTFail("Expected \(fallbackResult) got \(error) instead")
+            }
+            exp.fulfill()
+        }
+        
+        wait(for: [exp], timeout: 1.0)
+    }
+    
     private func uniqueFeed() -> [FeedImage] {
         [FeedImage(id: UUID(),
                    description: nil,
@@ -62,5 +93,9 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
     
     private func anyURL() -> URL {
         URL(string: "http://any-url.com")!
+    }
+    
+    private func anyError() -> NSError {
+        NSError(domain: "CompositLoaderTests", code: 0)
     }
 }
