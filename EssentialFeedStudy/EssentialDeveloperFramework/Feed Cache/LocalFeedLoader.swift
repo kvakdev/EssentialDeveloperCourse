@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class LocalFeedLoader {
+public final class LocalFeedLoader: FeedLoader {
     public typealias SaveResult = Result<Void, Error>
     public typealias LoadResult = FeedLoader.Result
     public typealias ValidationResult = Result<Void, Error>
@@ -35,7 +35,7 @@ public final class LocalFeedLoader {
         }
     }
     
-    public func load(_ completion: @escaping (LoadResult) -> Void) {
+    public func load(completion: @escaping (LoadResult) -> Void) {
         store.retrieve { [weak self] result in
             guard let self = self else { return }
             
