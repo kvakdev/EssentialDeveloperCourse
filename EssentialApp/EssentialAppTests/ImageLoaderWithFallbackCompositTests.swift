@@ -53,7 +53,10 @@ class ImageLoaderWithFallbackComposit: FeedImageLoader {
             case .success(let data):
                 wrapper.complete(.success(data))
             case .failure:
-                _ = self?.fallbackLoader.loadImage(with: url, completion: completion)
+                let fallbackTask = self?.fallbackLoader.loadImage(with: url) { result in
+                    wrapper.complete(result)
+                }
+                wrapper.wrapped = fallbackTask
             }
         }
         
@@ -113,7 +116,7 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         expect(sut: sut, toLoadResult: .success(expectedData))
     }
     
-    func test_loader_doesNotReturnResultOnTaskCancel() {
+    func test_loader_doesNotReturnResultOnTaskCancelBeforePrimaryCallback() {
         let primaryLoader = ImageLoaderStub(stub: .success(anyData()), autoComplete: false)
         let fallbackLoader = ImageLoaderStub(stub: .failure(anyError()))
         let sut = makeSUT(primaryLoader: primaryLoader,
@@ -125,6 +128,20 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         
         task.cancel()
         primaryLoader.complete()
+    }
+    
+    func test_loader_doesNotReturnResultOnTaskCancelAfterPrimaryLoaderFailed() {
+        let primaryLoader = ImageLoaderStub(stub: .failure(anyError()))
+        let fallbackLoader = ImageLoaderStub(stub: .failure(anyError()), autoComplete: false)
+        let sut = makeSUT(primaryLoader: primaryLoader,
+                          fallbackLoader: fallbackLoader)
+        
+        let task = sut.loadImage(with: anyURL()) { result in
+            XCTFail("Expected no result after task cancel")
+        }
+        
+        task.cancel()
+        fallbackLoader.complete()
     }
     
     func makeSUT(primaryLoader: ImageLoaderStub, fallbackLoader: ImageLoaderStub) -> FeedImageLoader {
@@ -156,6 +173,4 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         }
         wait(for: [exp], timeout: 1.0)
     }
-    
-    
 }
