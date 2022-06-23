@@ -45,10 +45,9 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
     func test_feedLoader_deliversPrimaryResultOnPrimarySuccess() {
         let primaryFeed = uniqueFeed()
         let fallbackFeed = uniqueFeed()
-        let remoteStub = FeedLoaderStub(.success(primaryFeed))
-        let localStub = FeedLoaderStub(.success(fallbackFeed))
-        let sut = FeedLoaderComposit(primary: remoteStub, fallback: localStub)
+        
         let exp = expectation(description: "wait for load to complete")
+        let sut = makeSUT(primaryResult: .success(primaryFeed), fallbackResult: .success(fallbackFeed))
         
         sut.load { result in
             switch result {
@@ -97,5 +96,14 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
     
     private func anyError() -> NSError {
         NSError(domain: "CompositLoaderTests", code: 0)
+    }
+    
+}
+
+extension XCTestCase {
+    func trackMemoryLeaks(_ sut: AnyObject, file: StaticString = #file, line: UInt = #line) {
+        addTeardownBlock { [weak sut] in
+            XCTAssertNil(sut, "expected to be nil potential memory leak", file: file, line: line)
+        }
     }
 }
