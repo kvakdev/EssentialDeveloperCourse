@@ -7,41 +7,10 @@
 
 import XCTest
 import EssentialFeed
-
-class FeedLoaderComposit: FeedLoader {
-    private let primary: FeedLoader
-    private let fallback: FeedLoader
-    
-    init(primary: FeedLoader, fallback: FeedLoader) {
-        self.primary = primary
-        self.fallback = fallback
-    }
-    
-    func load(completion: @escaping (FeedLoader.Result) -> ()) {
-        primary.load() { [weak self] primaryResult in
-            switch primaryResult {
-            case .success(let success):
-                completion(.success(success))
-            case .failure:
-                self?.fallback.load(completion: completion)
-            }
-        }
-    }
-}
-
-class FeedLoaderStub: FeedLoader {
-    let result: FeedLoader.Result
-    
-    init(_ result: FeedLoader.Result) {
-        self.result = result
-    }
-    
-    func load(completion: @escaping (FeedLoader.Result) -> ()) {
-        completion(result)
-    }
-}
+import EssentialApp
 
 class FeedLoaderWithFallbackCompositTests: XCTestCase {
+    
     func test_feedLoader_deliversPrimaryResultOnPrimarySuccess() {
         let primaryFeed = uniqueFeed()
         let fallbackFeed = uniqueFeed()
@@ -85,13 +54,22 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
     private func makeSUT(primaryResult: FeedLoader.Result, fallbackResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) -> FeedLoader {
         let remoteStub = FeedLoaderStub(primaryResult)
         let localStub = FeedLoaderStub(fallbackResult)
-        let sut = FeedLoaderComposit(primary: remoteStub, fallback: localStub)
+        let sut = FeedLoaderWithFallbackComposit(primary: remoteStub, fallback: localStub)
         
         trackMemoryLeaks(sut, file: file, line: line)
         
         return sut
     }
     
-   
-    
+    private class FeedLoaderStub: FeedLoader {
+        let result: FeedLoader.Result
+        
+        init(_ result: FeedLoader.Result) {
+            self.result = result
+        }
+        
+        func load(completion: @escaping (FeedLoader.Result) -> ()) {
+            completion(result)
+        }
+    }
 }
