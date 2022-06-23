@@ -91,8 +91,7 @@
 			children = (
 				9332C61F2863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift */,
 				9332C62F2864558300F9B6E6 /* ImageLoaderWithFallbackCompositTests.swift */,
-				9332C62828644D8E00F9B6E6 /* SharedTestHelpers.swift */,
-				9332C62A28644DC000F9B6E6 /* MemoryLeakTracking.swift */,
+				9332C6312864559F00F9B6E6 /* SharedHelpers */,
 			);
 			path = EssentialAppTests;
 			sourceTree = "<group>";
@@ -112,6 +111,15 @@
 				9332C62D2864542100F9B6E6 /* FeedLoaderWithFallbackComposit.swift */,
 			);
 			path = Feed;
+			sourceTree = "<group>";
+		};
+		9332C6312864559F00F9B6E6 /* SharedHelpers */ = {
+			isa = PBXGroup;
+			children = (
+				9332C62828644D8E00F9B6E6 /* SharedTestHelpers.swift */,
+				9332C62A28644DC000F9B6E6 /* MemoryLeakTracking.swift */,
+			);
+			path = SharedHelpers;
 			sourceTree = "<group>";
 		};
 		9371F2672862D87B006F533A = {
