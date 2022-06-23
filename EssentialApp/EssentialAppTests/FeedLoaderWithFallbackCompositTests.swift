@@ -92,27 +92,6 @@ class FeedLoaderWithFallbackCompositTests: XCTestCase {
         return sut
     }
     
-    private func uniqueFeed() -> [FeedImage] {
-        [FeedImage(id: UUID(),
-                   description: nil,
-                   location: nil,
-                   imageUrl: anyURL())]
-    }
+   
     
-    private func anyURL() -> URL {
-        URL(string: "http://any-url.com")!
-    }
-    
-    private func anyError(code: Int = 0) -> NSError {
-        NSError(domain: "CompositLoaderTests", code: code)
-    }
-    
-}
-
-extension XCTestCase {
-    func trackMemoryLeaks(_ sut: AnyObject, file: StaticString = #file, line: UInt = #line) {
-        addTeardownBlock { [weak sut] in
-            XCTAssertNil(sut, "expected to be nil potential memory leak", file: file, line: line)
-        }
-    }
 }
