@@ -99,7 +99,7 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         let expectedData = Data("data".utf8)
         let primaryLoader = ImageLoaderStub(stub: .success(expectedData))
         let fallbackLoader = ImageLoaderStub(stub: .failure(anyNSError()))
-        let sut = ImageLoaderWithFallbackComposit(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
+        let sut = makeSUT(primaryLoader: primaryLoader, fallbackLoader: fallbackLoader)
         
         expect(sut: sut, toLoadResult: .success(expectedData))
     }
@@ -107,14 +107,17 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
     func test_loader_deliversFallbackImageDataWhenPrimaryLoaderFails() {
         let expectedData = Data("data".utf8)
         let sut = makeSUT(
-            primaryLoader: ImageLoaderStub(stub: .failure(anyNSError())), fallbackResult: .success(expectedData))
+            primaryLoader: ImageLoaderStub(stub: .failure(anyNSError())),
+            fallbackLoader: ImageLoaderStub(stub: .success(expectedData)))
         
         expect(sut: sut, toLoadResult: .success(expectedData))
     }
     
     func test_loader_doesNotReturnResultOnTaskCancel() {
         let primaryLoader = ImageLoaderStub(stub: .success(anyData()), autoComplete: false)
-        let sut = makeSUT(primaryLoader: primaryLoader, fallbackResult: .failure(anyError()))
+        let fallbackLoader = ImageLoaderStub(stub: .failure(anyError()))
+        let sut = makeSUT(primaryLoader: primaryLoader,
+                          fallbackLoader: fallbackLoader)
         
         let task = sut.loadImage(with: anyURL()) { result in
             XCTFail("Expected no result after task cancel")
@@ -124,10 +127,10 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         primaryLoader.complete()
     }
     
-    func makeSUT(primaryLoader: ImageLoaderStub, fallbackResult: FeedImageLoader.Result) -> FeedImageLoader {
+    func makeSUT(primaryLoader: ImageLoaderStub, fallbackLoader: ImageLoaderStub) -> FeedImageLoader {
         let sut = ImageLoaderWithFallbackComposit(
             primaryLoader: primaryLoader,
-            fallbackLoader: ImageLoaderStub(stub: fallbackResult)
+            fallbackLoader: fallbackLoader
         )
         
         trackMemoryLeaks(sut)
