@@ -22,6 +22,7 @@
 		9371F27B2862D87B006F533A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9371F2792862D87B006F533A /* Main.storyboard */; };
 		9371F27D2862D87E006F533A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9371F27C2862D87E006F533A /* Assets.xcassets */; };
 		9371F2802862D87E006F533A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9371F27E2862D87E006F533A /* LaunchScreen.storyboard */; };
+		93FD95852865801D008DB2DF /* FeedCacheDecoratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		9371F27C2862D87E006F533A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9371F27F2862D87E006F533A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9371F2812862D87E006F533A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCacheDecoratorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 			children = (
 				9332C61F2863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift */,
 				9332C62F2864558300F9B6E6 /* ImageLoaderWithFallbackCompositTests.swift */,
+				93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */,
 				9332C6312864559F00F9B6E6 /* SharedHelpers */,
 			);
 			path = EssentialAppTests;
@@ -262,6 +265,7 @@
 			files = (
 				9332C6302864558300F9B6E6 /* ImageLoaderWithFallbackCompositTests.swift in Sources */,
 				9332C62928644D8E00F9B6E6 /* SharedTestHelpers.swift in Sources */,
+				93FD95852865801D008DB2DF /* FeedCacheDecoratorTests.swift in Sources */,
 				9332C62B28644DC000F9B6E6 /* MemoryLeakTracking.swift in Sources */,
 				9332C6202863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift in Sources */,
 			);
