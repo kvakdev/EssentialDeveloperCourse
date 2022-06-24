@@ -24,8 +24,7 @@ class FeedCacheDecorator: FeedLoader {
 class FeedCacheDecoratorTests: XCTestCase {
 
     func test_decorator_deliversLoaderResult() {
-        let loader = LoaderSpy()
-        let sut = FeedCacheDecorator(decoratee: loader)
+        let (sut, loader) = makeSUT()
         let feed = uniqueFeed()
         let expectedResult = FeedLoader.Result.success(feed)
         
@@ -35,8 +34,7 @@ class FeedCacheDecoratorTests: XCTestCase {
     }
     
     func test_decorator_deliversLoaderFailure() {
-        let loader = LoaderSpy()
-        let sut = FeedCacheDecorator(decoratee: loader)
+        let (sut, loader) = makeSUT()
         let error = anyError()
         let expectedResult = FeedLoader.Result.failure(error)
         
@@ -63,6 +61,16 @@ class FeedCacheDecoratorTests: XCTestCase {
         action()
         
         wait(for: [exp], timeout: 1.0)
+    }
+    
+    func makeSUT(file: StaticString = #file, line: UInt = #line) -> (FeedLoader, LoaderSpy) {
+        let loader = LoaderSpy()
+        let sut = FeedCacheDecorator(decoratee: loader)
+        
+        trackMemoryLeaks(loader, file: file, line: line)
+        trackMemoryLeaks(sut, file: file, line: line)
+        
+        return (sut, loader)
     }
     
     class LoaderSpy: FeedLoader {
