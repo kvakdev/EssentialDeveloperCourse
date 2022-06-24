@@ -11,13 +11,21 @@ import EssentialFeed
 
 class FeedCacheDecorator: FeedLoader {
     let decoratee: FeedLoader
+    let cache: FeedCache
     
-    init(decoratee: FeedLoader) {
+    init(decoratee: FeedLoader, cache: FeedCache) {
         self.decoratee = decoratee
+        self.cache = cache
     }
     
     func load(completion: @escaping (FeedLoader.Result) -> ()) {
-        decoratee.load(completion: completion)
+        decoratee.load() { [weak self] result in
+            completion(result.map { feed in
+                self?.cache.save(feed, completion: { _ in })
+                
+                return feed
+            })
+        }
     }
 }
 
@@ -43,6 +51,16 @@ class FeedCacheDecoratorTests: XCTestCase {
         }
     }
     
+    func test_decorator_cachesFeedOnSuccess() {
+        let feed = uniqueFeed()
+        let (sut, cachingLoader) = makeSUT()
+        
+        sut.load(completion: { _ in })
+        cachingLoader.complete(.success(feed))
+        
+        XCTAssertEqual(cachingLoader.messages, [.save(feed)])
+    }
+    
     func expect(sut: FeedLoader, toLoad expectedResult: FeedLoader.Result, when action: VoidClosure, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait for load to complete")
         
@@ -65,7 +83,7 @@ class FeedCacheDecoratorTests: XCTestCase {
     
     func makeSUT(file: StaticString = #file, line: UInt = #line) -> (FeedLoader, LoaderSpy) {
         let loader = LoaderSpy()
-        let sut = FeedCacheDecorator(decoratee: loader)
+        let sut = FeedCacheDecorator(decoratee: loader, cache: loader)
         
         trackMemoryLeaks(loader, file: file, line: line)
         trackMemoryLeaks(sut, file: file, line: line)
@@ -73,7 +91,17 @@ class FeedCacheDecoratorTests: XCTestCase {
         return (sut, loader)
     }
     
-    class LoaderSpy: FeedLoader {
+    class LoaderSpy: FeedLoader, FeedCache {
+        enum Message: Equatable {
+            case save([FeedImage])
+        }
+        
+        var messages: [Message] = []
+        
+        func save(_ feedImages: [FeedImage], completion: @escaping (SaveResult) -> Void) {
+            messages.append(.save(feedImages))
+        }
+        
         var completions: [(FeedLoader.Result) -> ()] = []
         
         func load(completion: @escaping (FeedLoader.Result) -> ()) {
