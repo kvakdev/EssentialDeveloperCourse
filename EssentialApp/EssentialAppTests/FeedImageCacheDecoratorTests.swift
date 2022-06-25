@@ -8,22 +8,28 @@
 import XCTest
 import EssentialFeed
 
-class CachingSpy {
+protocol ImageCache {
+    typealias Result = Swift.Result<Void, Error>
+    
+    func save(image data: Data, for url: URL, completion: @escaping Closure<Result>)
+}
+
+class CachingSpy: ImageCache {
     enum Message: Equatable {
         case save(Data, URL)
     }
     var messages: [Message] = []
     
-    public func save(image data: Data, for url: URL, completion: @escaping Closure<Result<Void, Error>>) {
+    public func save(image data: Data, for url: URL, completion: @escaping Closure<ImageCache.Result>) {
         self.messages.append(.save(data, url))
     }
 }
 
 class FeedImageLoaderCachingDecorator: FeedImageLoader {
     let decoratee: FeedImageLoader
-    let cache: CachingSpy
+    let cache: ImageCache
     
-    init(_ cache: CachingSpy, decoratee: FeedImageLoader) {
+    init(_ cache: ImageCache, decoratee: FeedImageLoader) {
         self.cache = cache
         self.decoratee = decoratee
     }
