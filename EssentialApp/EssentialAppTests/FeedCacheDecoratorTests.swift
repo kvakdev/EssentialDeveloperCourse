@@ -61,6 +61,15 @@ class FeedCacheDecoratorTests: XCTestCase {
         XCTAssertEqual(cachingLoader.messages, [.save(feed)])
     }
     
+    func test_decorator_doesNotCacheFeedOnFailure() {
+        let (sut, cachingLoader) = makeSUT()
+        
+        sut.load(completion: { _ in })
+        cachingLoader.complete(.failure(anyError()))
+        
+        XCTAssertEqual(cachingLoader.messages, [])
+    }
+    
     func expect(sut: FeedLoader, toLoad expectedResult: FeedLoader.Result, when action: VoidClosure, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait for load to complete")
         
