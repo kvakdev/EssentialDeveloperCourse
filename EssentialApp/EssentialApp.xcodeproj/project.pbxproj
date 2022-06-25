@@ -47,6 +47,7 @@
 		93FD95CE2867651A008DB2DF /* FeedViewAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95C92867651A008DB2DF /* FeedViewAdapter.swift */; };
 		93FD95CF2867651A008DB2DF /* MainThreadDispatchDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95CA2867651A008DB2DF /* MainThreadDispatchDecorator.swift */; };
 		93FD95D02867651A008DB2DF /* FeedImageCompositionAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95CB2867651A008DB2DF /* FeedImageCompositionAdapter.swift */; };
+		93FD95D22867701B008DB2DF /* FeedCompositionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95D12867701B008DB2DF /* FeedCompositionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +125,7 @@
 		93FD95C92867651A008DB2DF /* FeedViewAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedViewAdapter.swift; path = EssentialApp/Composers/Helpers/FeedViewAdapter.swift; sourceTree = SOURCE_ROOT; };
 		93FD95CA2867651A008DB2DF /* MainThreadDispatchDecorator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MainThreadDispatchDecorator.swift; path = EssentialApp/Composers/Helpers/MainThreadDispatchDecorator.swift; sourceTree = SOURCE_ROOT; };
 		93FD95CB2867651A008DB2DF /* FeedImageCompositionAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FeedImageCompositionAdapter.swift; path = EssentialApp/Composers/Helpers/FeedImageCompositionAdapter.swift; sourceTree = SOURCE_ROOT; };
+		93FD95D12867701B008DB2DF /* FeedCompositionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCompositionTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -163,6 +165,7 @@
 				93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */,
 				93FD958828670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift */,
 				9332C6312864559F00F9B6E6 /* SharedHelpers */,
+				93FD95D12867701B008DB2DF /* FeedCompositionTests.swift */,
 			);
 			path = EssentialAppTests;
 			sourceTree = "<group>";
@@ -421,6 +424,7 @@
 				9332C62928644D8E00F9B6E6 /* SharedTestHelpers.swift in Sources */,
 				93FD95852865801D008DB2DF /* FeedCacheDecoratorTests.swift in Sources */,
 				93FD95BB2867632E008DB2DF /* FeedUIIntegrationTests.swift in Sources */,
+				93FD95D22867701B008DB2DF /* FeedCompositionTests.swift in Sources */,
 				93FD958B286710F4008DB2DF /* FeedImageLoaderTestCase.swift in Sources */,
 				93FD95C1286764BE008DB2DF /* UIButton+SimulateTap.swift in Sources */,
 				93FD95C5286764BE008DB2DF /* UIRefreshControl+Simulation.swift in Sources */,

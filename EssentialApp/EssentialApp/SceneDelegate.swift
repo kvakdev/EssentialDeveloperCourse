@@ -19,9 +19,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
-        guard let windowScene = scene as? UIWindowScene else { return }
-        let window = UIWindow(windowScene: windowScene)
- 
+        guard (scene is UIWindowScene) else { return }
+
+        setup()
+    }
+    
+    func setup() {
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
         let client = makeHTTPClient()
@@ -49,10 +52,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             imageLoader: imageLoader
         )
         
-        window.rootViewController = feedViewController
-        window.makeKeyAndVisible()
-        
-        self.window = window
+        window?.rootViewController = UINavigationController(rootViewController: feedViewController)
+        window?.makeKeyAndVisible()
     }
         
     func makeHTTPClient() -> HTTPClient {
