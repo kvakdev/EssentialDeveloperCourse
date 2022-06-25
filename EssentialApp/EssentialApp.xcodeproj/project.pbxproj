@@ -26,6 +26,7 @@
 		93FD958728670F79008DB2DF /* FeedCacheDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958628670F79008DB2DF /* FeedCacheDecorator.swift */; };
 		93FD958928670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958828670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift */; };
 		93FD958B286710F4008DB2DF /* FeedImageLoaderTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958A286710F4008DB2DF /* FeedImageLoaderTestCase.swift */; };
+		93FD958D28671407008DB2DF /* FeedImageLoaderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958C28671407008DB2DF /* FeedImageLoaderStub.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,7 @@
 		93FD958628670F79008DB2DF /* FeedCacheDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCacheDecorator.swift; sourceTree = "<group>"; };
 		93FD958828670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageCacheDecoratorTests.swift; sourceTree = "<group>"; };
 		93FD958A286710F4008DB2DF /* FeedImageLoaderTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageLoaderTestCase.swift; sourceTree = "<group>"; };
+		93FD958C28671407008DB2DF /* FeedImageLoaderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageLoaderStub.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 				9332C62828644D8E00F9B6E6 /* SharedTestHelpers.swift */,
 				93FD958A286710F4008DB2DF /* FeedImageLoaderTestCase.swift */,
 				9332C62A28644DC000F9B6E6 /* MemoryLeakTracking.swift */,
+				93FD958C28671407008DB2DF /* FeedImageLoaderStub.swift */,
 			);
 			path = SharedHelpers;
 			sourceTree = "<group>";
@@ -272,6 +275,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93FD958D28671407008DB2DF /* FeedImageLoaderStub.swift in Sources */,
 				9332C6302864558300F9B6E6 /* ImageLoaderWithFallbackCompositTests.swift in Sources */,
 				9332C62928644D8E00F9B6E6 /* SharedTestHelpers.swift in Sources */,
 				93FD95852865801D008DB2DF /* FeedCacheDecoratorTests.swift in Sources */,
