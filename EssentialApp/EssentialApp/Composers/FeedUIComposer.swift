@@ -8,6 +8,7 @@
 
 import Foundation
 import EssentialFeed
+import EssentialFeed_iOS
 import UIKit
 
 public class FeedUIComposer {

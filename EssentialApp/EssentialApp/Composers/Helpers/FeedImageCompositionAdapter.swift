@@ -8,7 +8,7 @@
 
 import Foundation
 import EssentialFeed
-
+import EssentialFeed_iOS
 
 class FeedImageCompositionAdapter<View: FeedImageView, Image>: FeedImageCellControllerDelegate where View.Image == Image {
     
