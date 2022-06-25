@@ -9,7 +9,14 @@ import XCTest
 import EssentialFeed
 
 class CachingSpy {
-    var messages: [AnyHashable] = []
+    enum Message: Equatable {
+        case save(Data, URL)
+    }
+    var messages: [Message] = []
+    
+    public func save(image data: Data, for url: URL, completion: @escaping Closure<Result<Void, Error>>) {
+        self.messages.append(.save(data, url))
+    }
 }
 
 class FeedImageLoaderCachingDecorator: FeedImageLoader {
@@ -23,7 +30,17 @@ class FeedImageLoaderCachingDecorator: FeedImageLoader {
     
     func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         
-        return decoratee.loadImage(with: url, completion: completion)
+        return decoratee.loadImage(with: url) { result in
+            completion(result.map { data in
+                self.saveIgnoringResult(data: data, url: url)
+                
+                return data
+            })
+        }
+    }
+    
+    private func saveIgnoringResult(data: Data, url: URL) {
+        self.cache.save(image: data, for: url, completion: { _ in })
     }
 }
 
@@ -51,6 +68,17 @@ class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
         _ = sut.loadImage(with: anyURL(), completion: { _ in })
         
         XCTAssertEqual(cachingSpy.messages, [])
+    }
+    
+    func test_loadImage_savesImageOnSuccessfulLoad() {
+        let data = Data("some data".utf8)
+        let url = anyURL()
+        let loader = ImageLoaderStub(stub: .success(data))
+        let (sut, cachingSpy) = makeSUT(loader: loader)
+        
+        _ = sut.loadImage(with: url, completion: { _ in })
+        
+        XCTAssertEqual(cachingSpy.messages, [.save(data, url)])
     }
     
     func makeSUT<Loader: FeedImageLoader & AnyObject>(loader: Loader) -> (FeedImageLoaderCachingDecorator, CachingSpy) {
