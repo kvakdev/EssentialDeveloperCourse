@@ -8,12 +8,6 @@
 import XCTest
 import EssentialFeed
 
-protocol ImageCache {
-    typealias Result = Swift.Result<Void, Error>
-    
-    func save(image data: Data, for url: URL, completion: @escaping Closure<Result>)
-}
-
 class CachingSpy: ImageCache {
     enum Message: Equatable {
         case save(Data, URL)
@@ -36,9 +30,9 @@ class FeedImageLoaderCachingDecorator: FeedImageLoader {
     
     func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
         
-        return decoratee.loadImage(with: url) { result in
+        return decoratee.loadImage(with: url) { [weak self] result in
             completion(result.map { data in
-                self.saveIgnoringResult(data: data, url: url)
+                self?.saveIgnoringResult(data: data, url: url)
                 
                 return data
             })
@@ -87,13 +81,28 @@ class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
         XCTAssertEqual(cachingSpy.messages, [.save(data, url)])
     }
     
-    func makeSUT<Loader: FeedImageLoader & AnyObject>(loader: Loader) -> (FeedImageLoaderCachingDecorator, CachingSpy) {
+    func test_loadImage_savesImageOnSuccessfulLoadWithDelay() {
+        let data = Data("some data".utf8)
+        let url = anyURL()
+        let loader = ImageLoaderStub(stub: .success(data), autoComplete: false)
+        let (sut, cachingSpy) = makeSUT(loader: loader)
+        let exp = expectation(description: "wait for load to complete")
+        
+        _ = sut.loadImage(with: url, completion: { _ in
+            exp.fulfill()
+        })
+        loader.complete()
+        wait(for: [exp], timeout: 1.0)
+        XCTAssertEqual(cachingSpy.messages, [.save(data, url)])
+    }
+    
+    func makeSUT<Loader: FeedImageLoader & AnyObject>(loader: Loader, file: StaticString = #file, line: UInt = #line) -> (FeedImageLoaderCachingDecorator, CachingSpy) {
         let cachingSpy = CachingSpy()
         let sut = FeedImageLoaderCachingDecorator(cachingSpy, decoratee: loader)
         
-        trackMemoryLeaks(sut)
-        trackMemoryLeaks(loader)
-        trackMemoryLeaks(cachingSpy)
+        trackMemoryLeaks(sut, file: file, line: line)
+        trackMemoryLeaks(loader, file: file, line: line)
+        trackMemoryLeaks(cachingSpy, file: file, line: line)
         
         return (sut, cachingSpy)
     }

@@ -17,3 +17,9 @@ public protocol FeedImageLoader {
     
     func loadImage(with url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
 }
+
+public protocol ImageCache {
+    typealias Result = Swift.Result<Void, Error>
+    
+    func save(image data: Data, for url: URL, completion: @escaping Closure<Result>)
+}
