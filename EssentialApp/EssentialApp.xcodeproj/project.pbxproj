@@ -157,7 +157,7 @@
 			isa = PBXGroup;
 			children = (
 				93FD95B12867632D008DB2DF /* FeedUIIntegrationTests.swift */,
-				93FD95BA2867632E008DB2DF /* Helpers */,
+				93FD95BA2867632E008DB2DF /* UIAndCompositionHelpers */,
 				9332C61F2863725D00F9B6E6 /* FeedLoaderWithFallbackCompositTests.swift */,
 				9332C62F2864558300F9B6E6 /* ImageLoaderWithFallbackCompositTests.swift */,
 				93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */,
@@ -257,7 +257,7 @@
 			path = CompositionHelpers;
 			sourceTree = "<group>";
 		};
-		93FD95BA2867632E008DB2DF /* Helpers */ = {
+		93FD95BA2867632E008DB2DF /* UIAndCompositionHelpers */ = {
 			isa = PBXGroup;
 			children = (
 				93FD95B22867632E008DB2DF /* FeedViewControllerTests+CustomAssertions.swift */,
@@ -269,7 +269,7 @@
 				93FD95B82867632E008DB2DF /* UIRefreshControl+Simulation.swift */,
 				93FD95B92867632E008DB2DF /* UIControl+Simulation.swift */,
 			);
-			path = Helpers;
+			path = UIAndCompositionHelpers;
 			sourceTree = "<group>";
 		};
 		93FD95BD28676483008DB2DF /* Composers */ = {
