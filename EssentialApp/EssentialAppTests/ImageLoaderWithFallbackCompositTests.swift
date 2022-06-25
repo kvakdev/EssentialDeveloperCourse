@@ -10,13 +10,12 @@ import EssentialFeed
 import EssentialApp
 @testable import EssentialFeed_iOS
 
+
 class CancellableTask: FeedImageDataLoaderTask {
     func cancel() {}
 }
 
-
-
-class ImageLoaderWithFallbackCompositTests: XCTestCase {
+class ImageLoaderWithFallbackCompositTests: XCTestCase, FeedImageLoaderTestCase {
     
     func test_loader_deliversImageDataInPrimarySucceeds() {
         let expectedData = Data("data".utf8)
@@ -75,25 +74,6 @@ class ImageLoaderWithFallbackCompositTests: XCTestCase {
         trackMemoryLeaks(sut)
         
         return sut
-    }
-    
-    func expect(sut: FeedImageLoader, toLoadResult expectedResult: FeedImageLoader.Result, file: StaticString = #file, line: UInt = #line) {
-        let exp = expectation(description: "wait for load to complete")
-        let url = anyURL()
-        
-        _ = sut.loadImage(with: url) { result in
-            switch (result, expectedResult) {
-            case (.success(let data), .success(let expectedData)):
-                XCTAssertEqual(data, expectedData)
-                
-            case (.failure(let error), .failure(let expectedError)):
-                XCTAssertEqual((error as NSError), (expectedError as NSError))
-            default:
-                XCTFail("Expected \(expectedResult) got \(result) instead", file: file, line: line)
-            }
-            exp.fulfill()
-        }
-        wait(for: [exp], timeout: 1.0)
     }
 }
 
