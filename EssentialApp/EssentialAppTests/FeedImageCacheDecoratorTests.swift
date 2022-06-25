@@ -30,19 +30,28 @@ class FeedImageLoaderCachingDecorator: FeedImageLoader {
 class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
     
     func test_init_works() {
-        let cachingSpy = CachingSpy()
         let loader = ImageLoaderStub(stub: .success(anyData()))
-        _ = FeedImageLoaderCachingDecorator(cachingSpy, decoratee: loader)
+        let (_, cachingSpy) = makeSUT(loader: loader)
         
         XCTAssertEqual(cachingSpy.messages, [])
     }
     
     func test_loadImage_passesResultFromDecoratee() {
-        let cachingSpy = CachingSpy()
         let loader = ImageLoaderStub(stub: .success(anyData()))
-        let sut = FeedImageLoaderCachingDecorator(cachingSpy, decoratee: loader)
+        let (sut, _) = makeSUT(loader: loader)
         let data = anyData()
         
         expect(sut: sut, toLoadResult: .success(data))
+    }
+    
+    func makeSUT<Loader: FeedImageLoader & AnyObject>(loader: Loader) -> (FeedImageLoaderCachingDecorator, CachingSpy) {
+        let cachingSpy = CachingSpy()
+        let sut = FeedImageLoaderCachingDecorator(cachingSpy, decoratee: loader)
+        
+        trackMemoryLeaks(sut)
+        trackMemoryLeaks(loader)
+        trackMemoryLeaks(cachingSpy)
+        
+        return (sut, cachingSpy)
     }
 }
