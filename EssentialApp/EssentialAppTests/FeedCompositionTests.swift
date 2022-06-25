@@ -15,7 +15,21 @@ class FeedCompositionTests: XCTestCase {
         XCTAssertNoThrow(try launch())
     }
     
-    func launch(store: InMemoryStore = .empty, client: HTTPClient = DebugHTTPClient.online) throws -> FeedViewController {
+    func test_app_rendersCells() throws {
+        let sut = try launch(store: .empty, client: .online)
+        
+        XCTAssertEqual(sut.numberOfRenderedImageViews, 2)
+    }
+    
+    func test_appInOfflineMode_rendersCachesFeed() {
+        
+    }
+    
+    func test_appInOfflineModeWithNoCache_rendersEmptyFeed() {
+    
+    }
+    
+    func launch(store: InMemoryStore = .empty, client: DebugHTTPClient = DebugHTTPClient.online) throws -> FeedViewController {
         let sut = SceneDelegate(feedStore: store, client: client)
         sut.window = UIWindow()
         sut.setup()
@@ -30,17 +44,6 @@ class FeedCompositionTests: XCTestCase {
         return vc
     }
     
-    func test_app_rendersCells() {
- 
-    }
-    
-    func test_appInOfflineMode_rendersCachesFeed() {
-      
-    }
-    
-    func test_appInOfflineModeWithNoCache_rendersEmptyFeed() {
-    
-    }
 }
 
 class InMemoryStore: FeedStore {
