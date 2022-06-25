@@ -23,6 +23,7 @@
 		9371F27D2862D87E006F533A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9371F27C2862D87E006F533A /* Assets.xcassets */; };
 		9371F2802862D87E006F533A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9371F27E2862D87E006F533A /* LaunchScreen.storyboard */; };
 		93FD95852865801D008DB2DF /* FeedCacheDecoratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */; };
+		93FD958728670F79008DB2DF /* FeedCacheDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958628670F79008DB2DF /* FeedCacheDecorator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 		9371F27F2862D87E006F533A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9371F2812862D87E006F533A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		93FD95842865801D008DB2DF /* FeedCacheDecoratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCacheDecoratorTests.swift; sourceTree = "<group>"; };
+		93FD958628670F79008DB2DF /* FeedCacheDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedCacheDecorator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +117,7 @@
 			children = (
 				9332C62D2864542100F9B6E6 /* FeedLoaderWithFallbackComposit.swift */,
 				9332C63228647D4900F9B6E6 /* FeedImageLoaderWithFallbackComposit.swift */,
+				93FD958628670F79008DB2DF /* FeedCacheDecorator.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -276,6 +279,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9332C63328647D4900F9B6E6 /* FeedImageLoaderWithFallbackComposit.swift in Sources */,
+				93FD958728670F79008DB2DF /* FeedCacheDecorator.swift in Sources */,
 				9371F2782862D87B006F533A /* ViewController.swift in Sources */,
 				9332C62E2864542100F9B6E6 /* FeedLoaderWithFallbackComposit.swift in Sources */,
 				9371F2742862D87B006F533A /* AppDelegate.swift in Sources */,
