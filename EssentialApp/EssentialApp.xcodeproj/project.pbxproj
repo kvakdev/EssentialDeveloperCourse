@@ -223,7 +223,6 @@
 			isa = PBXGroup;
 			children = (
 				93FD95BD28676483008DB2DF /* Composers */,
-				93FD95A6286761C4008DB2DF /* CompositionHelpers */,
 				9332C62C2864540500F9B6E6 /* Feed */,
 				9371F2732862D87B006F533A /* AppDelegate.swift */,
 				93FD9591286732BA008DB2DF /* SceneDelegate.swift */,
@@ -276,6 +275,7 @@
 		93FD95BD28676483008DB2DF /* Composers */ = {
 			isa = PBXGroup;
 			children = (
+				93FD95A6286761C4008DB2DF /* CompositionHelpers */,
 				93FD95BC28676483008DB2DF /* FeedUIComposer.swift */,
 			);
 			path = Composers;
