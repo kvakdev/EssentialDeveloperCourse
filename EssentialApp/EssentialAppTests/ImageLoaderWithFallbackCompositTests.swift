@@ -11,7 +11,7 @@ import EssentialApp
 @testable import EssentialFeed_iOS
 
 
-class CancellableTask: FeedImageDataLoaderTask {
+class AnyCancellableTask: CancellableTask {
     func cancel() {}
 }
 

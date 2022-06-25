@@ -8,7 +8,7 @@
 
 import Foundation
 
-class LocalImageLoaderTask: FeedImageDataLoaderTask {
+class LocalImageLoaderTask: CancellableTask {
     private var completion: Closure<FeedImageLoader.Result>?
     
     var wrapped: CancellableTask?

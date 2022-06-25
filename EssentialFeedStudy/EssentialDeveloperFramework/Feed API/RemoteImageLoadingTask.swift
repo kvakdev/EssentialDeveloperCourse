@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class RemoteImageLoadingTask: FeedImageDataLoaderTask {
+public class RemoteImageLoadingTask: CancellableTask {
     var wrapped: HTTPClientTask?
     var completion: Closure<FeedImageLoader.Result>?
     

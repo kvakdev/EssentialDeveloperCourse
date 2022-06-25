@@ -18,8 +18,8 @@ class ImageLoaderStub: FeedImageLoader {
         self.autoComplete = autoComplete
     }
     
-    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        let task = CancellableTask()
+    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> CancellableTask {
+        let task = AnyCancellableTask()
         
         if autoComplete {
             completion(stub)

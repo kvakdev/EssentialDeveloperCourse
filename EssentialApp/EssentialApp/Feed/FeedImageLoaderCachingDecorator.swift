@@ -17,7 +17,7 @@ public class FeedImageLoaderCachingDecorator: FeedImageLoader {
         self.decoratee = decoratee
     }
     
-    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> CancellableTask {
         
         return decoratee.loadImage(with: url) { [weak self] result in
             completion(result.map { data in

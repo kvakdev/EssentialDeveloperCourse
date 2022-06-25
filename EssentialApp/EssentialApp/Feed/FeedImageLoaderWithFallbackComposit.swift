@@ -8,8 +8,8 @@
 import Foundation
 import EssentialFeed
 
-private class TaskWrapper: FeedImageDataLoaderTask {
-    var wrapped: FeedImageDataLoaderTask?
+private class TaskWrapper: CancellableTask {
+    var wrapped: CancellableTask?
     var completion: Closure<FeedImageLoader.Result>?
     
     func complete(_ result: FeedImageLoader.Result) {
@@ -31,7 +31,7 @@ public class ImageLoaderWithFallbackComposit: FeedImageLoader {
         self.fallbackLoader = fallbackLoader
     }
     
-    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> CancellableTask {
         let wrapper = TaskWrapper()
         wrapper.completion = completion
         

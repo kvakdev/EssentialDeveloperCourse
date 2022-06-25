@@ -15,7 +15,7 @@ class FeedImageCompositionAdapter<View: FeedImageView, Image>: FeedImageCellCont
     private let imageLoader: FeedImageLoader
     private let model: FeedImage
 
-    private var task: FeedImageDataLoaderTask?
+    private var task: CancellableTask?
     
     var presenter: FeedImageCellPresenter<View, Image>?
     

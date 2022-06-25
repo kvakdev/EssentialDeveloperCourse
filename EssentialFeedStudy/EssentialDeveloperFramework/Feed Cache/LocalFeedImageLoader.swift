@@ -13,12 +13,12 @@ public protocol CancellableTask {
 }
 
 public protocol ImageStore {
-    typealias RetrieveResult = Swift.Result<Data?, Error>  
+    typealias RetrieveResult = Swift.Result<Data?, Error>
     typealias InsertResult = Swift.Result<Void, Error>
     
     @discardableResult
-    func retrieveImageData(from url: URL, completion: @escaping (RetrieveResult) -> Void) -> CancellableTask
-    func insert(image data: Data, for url: URL, completion: @escaping Closure<InsertResult>)
+    func retrieveImageData(from url: URL, completion: @escaping (ImageStore.RetrieveResult) -> Void) -> CancellableTask
+    func insert(image data: Data, for url: URL, completion: @escaping Closure<ImageStore.InsertResult>)
 }
 
 public enum LoadError: Error {
@@ -33,7 +33,7 @@ public class LocalFeedImageLoader: FeedImageLoader, ImageCache {
         self.store = store
     }
     
-    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> CancellableTask {
         
         let task = LocalImageLoaderTask(completion: completion)
         

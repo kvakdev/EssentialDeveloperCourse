@@ -15,7 +15,7 @@ public class RemoteFeedImageLoader: FeedImageLoader {
         self.client = client
     }
     
-    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
+    public func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> CancellableTask {
         let imageLoadTask = RemoteImageLoadingTask(completion: completion)
         
         let httpTask = self.client.get(from: url) { [weak self] result in
