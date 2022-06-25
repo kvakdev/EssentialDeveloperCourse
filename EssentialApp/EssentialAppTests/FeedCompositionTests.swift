@@ -11,15 +11,33 @@ import EssentialFeed_iOS
 
 class FeedCompositionTests: XCTestCase {
     func test_app_displaysFeedViewController() {
+        XCTAssertNoThrow(try launch())
+    }
+    
+    func launch() throws -> FeedViewController {
         let sut = SceneDelegate()
         sut.window = UIWindow()
         sut.setup()
         
-        guard let navController = sut.window?.rootViewController as? UINavigationController else {
-            XCTFail("Expected UINavigationController subclass")
-            return
+        guard
+            let navController = sut.window?.rootViewController as? UINavigationController,
+            let vc = navController.viewControllers[0] as? FeedViewController else {
+            
+            throw NSError(domain: "No Navigation Controller", code: 0)
         }
         
-        XCTAssertTrue(navController.viewControllers[0] is FeedViewController)
+        return vc
+    }
+    
+    func test_app_rendersCells() {
+ 
+    }
+    
+    func test_appInOfflineMode_rendersCachesFeed() {
+      
+    }
+    
+    func test_appInOfflineModeWithNoCache_rendersEmptyFeed() {
+    
     }
 }
