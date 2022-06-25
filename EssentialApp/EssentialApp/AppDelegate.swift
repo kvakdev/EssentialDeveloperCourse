@@ -17,38 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        let storeURL = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("Feed-store.sqlite")
-        let feedStore = try! CoreDataFeedStore(storeURL: storeURL)
-        let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
-        let session = URLSession(configuration: .ephemeral)
-        let client = URLSessionHTTPClient(session: session)
-        
-        let remoteImageLoader = RemoteFeedImageLoader(client: client)
-        let localImageLoader = LocalFeedImageLoader(store: feedStore)
-        let remoteCachingFeedImageLoader = FeedImageLoaderCachingDecorator(remoteImageLoader, cache: localImageLoader)
-        
-        let remoteFeedLoader = RemoteFeedLoader(url: url, client: client)
-        let localFeedLoader = LocalFeedLoader(feedStore) { Date() }
-        let cachingRemoteFeedLoader = FeedCacheDecorator(decoratee: remoteFeedLoader, cache: localFeedLoader)
-        
-        let combinedFeedLoader = FeedLoaderWithFallbackComposit(
-            primary: cachingRemoteFeedLoader,
-            fallback: localFeedLoader
-        )
-        let imageLoader = ImageLoaderWithFallbackComposit(
-            primaryLoader: localImageLoader,
-            fallbackLoader: remoteCachingFeedImageLoader
-        )
-        
-        let feedViewController = FeedUIComposer.makeFeedViewController(
-            loader: combinedFeedLoader,
-            imageLoader: imageLoader
-        )
-        
-        window = UIWindow(frame: UIScreen.main.bounds)
-        window?.rootViewController = feedViewController
-        window?.makeKeyAndVisible()
-        
         return true
     }
 

@@ -100,6 +100,7 @@
                                         <constraint firstAttribute="trailingMargin" secondItem="tJg-1G-w6z" secondAttribute="trailing" id="qVr-DQ-pQG"/>
                                     </constraints>
                                 </tableViewCellContentView>
+                                <accessibility key="accessibilityConfiguration" identifier="feed-image-cell"/>
                                 <connections>
                                     <outlet property="descriptionLabel" destination="MOn-tW-8Oo" id="KwI-ji-hMx"/>
                                     <outlet property="feedImageView" destination="CpN-fY-qJn" id="mdW-NW-lhN"/>
