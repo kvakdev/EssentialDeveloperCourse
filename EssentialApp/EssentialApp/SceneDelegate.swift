@@ -22,6 +22,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let storeURL = NSPersistentContainer.defaultDirectoryURL().appendingPathComponent("Feed-store.sqlite")
                let feedStore = try! CoreDataFeedStore(storeURL: storeURL)
+        
+        if CommandLine.arguments.contains("-reset") {
+            try? FileManager.default.removeItem(at: storeURL)
+        }
+        
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
         let value = UserDefaults.standard.string(forKey: "connectivity")
