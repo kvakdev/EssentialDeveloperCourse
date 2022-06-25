@@ -44,6 +44,15 @@ class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
         expect(sut: sut, toLoadResult: .success(data))
     }
     
+    func test_loadImage_doesNotSaveAnythingOnFailure() {
+        let loader = ImageLoaderStub(stub: .failure(anyError()))
+        let (sut, cachingSpy) = makeSUT(loader: loader)
+        
+        _ = sut.loadImage(with: anyURL(), completion: { _ in })
+        
+        XCTAssertEqual(cachingSpy.messages, [])
+    }
+    
     func makeSUT<Loader: FeedImageLoader & AnyObject>(loader: Loader) -> (FeedImageLoaderCachingDecorator, CachingSpy) {
         let cachingSpy = CachingSpy()
         let sut = FeedImageLoaderCachingDecorator(cachingSpy, decoratee: loader)
