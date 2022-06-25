@@ -74,7 +74,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
         return insertionResult
     }
     
-    func expect(sut: FeedStore, toRetreive expectedResult: RetrieveResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStore, toRetreive expectedResult: FeedStore.RetrieveResult, file: StaticString = #file, line: UInt = #line) {
         let exp = expectation(description: "wait for retreive to complete")
         
         sut.retrieve { result in
@@ -93,7 +93,7 @@ extension FeedStoreSpecs where Self: XCTestCase {
         wait(for: [exp], timeout: 1)
     }
     
-    func expect(sut: FeedStore, toRetreiveTwice result: RetrieveResult, file: StaticString = #file, line: UInt = #line) {
+    func expect(sut: FeedStore, toRetreiveTwice result: FeedStore.RetrieveResult, file: StaticString = #file, line: UInt = #line) {
         expect(sut: sut, toRetreive: result, file: file, line: line)
         expect(sut: sut, toRetreive: result, file: file, line: line)
     }
