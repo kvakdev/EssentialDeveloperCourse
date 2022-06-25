@@ -14,5 +14,8 @@ class EssentialAppAcceptanceTests: XCTestCase {
         
         let cells = app.cells.matching(identifier: "feed-image-cell")
         XCTAssertEqual(cells.count, 22)
+        
+        let imageViews = app.images.matching(identifier: "feed-image-view")
+        XCTAssertTrue(imageViews.element.exists)
     }
 }
