@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let remoteImageLoader = RemoteFeedImageLoader(client: client)
         let localImageLoader = LocalFeedImageLoader(store: feedStore)
-        let remoteCachingFeedImageLoader = FeedImageLoaderCachingDecorator(localImageLoader, decoratee: remoteImageLoader)
+        let remoteCachingFeedImageLoader = FeedImageLoaderCachingDecorator(remoteImageLoader, cache: localImageLoader)
         
         let remoteFeedLoader = RemoteFeedLoader(url: url, client: client)
         let localFeedLoader = LocalFeedLoader(feedStore) { Date() }

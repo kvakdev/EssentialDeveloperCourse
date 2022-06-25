@@ -12,7 +12,7 @@ public class FeedImageLoaderCachingDecorator: FeedImageLoader {
     private let decoratee: FeedImageLoader
     private let cache: ImageCache
     
-    public init(_ cache: ImageCache, decoratee: FeedImageLoader) {
+    public init(_ decoratee: FeedImageLoader, cache: ImageCache) {
         self.cache = cache
         self.decoratee = decoratee
     }
