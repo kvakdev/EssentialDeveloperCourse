@@ -27,6 +27,7 @@
 		93FD958928670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958828670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift */; };
 		93FD958B286710F4008DB2DF /* FeedImageLoaderTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958A286710F4008DB2DF /* FeedImageLoaderTestCase.swift */; };
 		93FD958D28671407008DB2DF /* FeedImageLoaderStub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958C28671407008DB2DF /* FeedImageLoaderStub.swift */; };
+		93FD958F28671A58008DB2DF /* FeedImageLoaderCachingDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD958E28671A58008DB2DF /* FeedImageLoaderCachingDecorator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +77,7 @@
 		93FD958828670FE1008DB2DF /* FeedImageCacheDecoratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageCacheDecoratorTests.swift; sourceTree = "<group>"; };
 		93FD958A286710F4008DB2DF /* FeedImageLoaderTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageLoaderTestCase.swift; sourceTree = "<group>"; };
 		93FD958C28671407008DB2DF /* FeedImageLoaderStub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageLoaderStub.swift; sourceTree = "<group>"; };
+		93FD958E28671A58008DB2DF /* FeedImageLoaderCachingDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedImageLoaderCachingDecorator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 				9332C62D2864542100F9B6E6 /* FeedLoaderWithFallbackComposit.swift */,
 				9332C63228647D4900F9B6E6 /* FeedImageLoaderWithFallbackComposit.swift */,
 				93FD958628670F79008DB2DF /* FeedCacheDecorator.swift */,
+				93FD958E28671A58008DB2DF /* FeedImageLoaderCachingDecorator.swift */,
 			);
 			path = Feed;
 			sourceTree = "<group>";
@@ -290,6 +293,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93FD958F28671A58008DB2DF /* FeedImageLoaderCachingDecorator.swift in Sources */,
 				9332C63328647D4900F9B6E6 /* FeedImageLoaderWithFallbackComposit.swift in Sources */,
 				93FD958728670F79008DB2DF /* FeedCacheDecorator.swift in Sources */,
 				9371F2782862D87B006F533A /* ViewController.swift in Sources */,

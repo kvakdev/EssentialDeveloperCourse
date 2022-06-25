@@ -7,42 +7,8 @@
 
 import XCTest
 import EssentialFeed
+import EssentialApp
 
-class CachingSpy: ImageCache {
-    enum Message: Equatable {
-        case save(Data, URL)
-    }
-    var messages: [Message] = []
-    
-    public func save(image data: Data, for url: URL, completion: @escaping Closure<ImageCache.Result>) {
-        self.messages.append(.save(data, url))
-    }
-}
-
-class FeedImageLoaderCachingDecorator: FeedImageLoader {
-    let decoratee: FeedImageLoader
-    let cache: ImageCache
-    
-    init(_ cache: ImageCache, decoratee: FeedImageLoader) {
-        self.cache = cache
-        self.decoratee = decoratee
-    }
-    
-    func loadImage(with url: URL, completion: @escaping (FeedImageLoader.Result) -> Void) -> FeedImageDataLoaderTask {
-        
-        return decoratee.loadImage(with: url) { [weak self] result in
-            completion(result.map { data in
-                self?.saveIgnoringResult(data: data, url: url)
-                
-                return data
-            })
-        }
-    }
-    
-    private func saveIgnoringResult(data: Data, url: URL) {
-        self.cache.save(image: data, for: url, completion: { _ in })
-    }
-}
 
 class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
     
@@ -95,7 +61,9 @@ class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
         wait(for: [exp], timeout: 1.0)
         XCTAssertEqual(cachingSpy.messages, [.save(data, url)])
     }
-    
+}
+
+private extension FeedImageCacheDecoratorTests {
     func makeSUT<Loader: FeedImageLoader & AnyObject>(loader: Loader, file: StaticString = #file, line: UInt = #line) -> (FeedImageLoaderCachingDecorator, CachingSpy) {
         let cachingSpy = CachingSpy()
         let sut = FeedImageLoaderCachingDecorator(cachingSpy, decoratee: loader)
@@ -105,5 +73,16 @@ class FeedImageCacheDecoratorTests: XCTestCase, FeedImageLoaderTestCase {
         trackMemoryLeaks(cachingSpy, file: file, line: line)
         
         return (sut, cachingSpy)
+    }
+    
+    class CachingSpy: ImageCache {
+        enum Message: Equatable {
+            case save(Data, URL)
+        }
+        var messages: [Message] = []
+        
+        public func save(image data: Data, for url: URL, completion: @escaping Closure<ImageCache.Result>) {
+            self.messages.append(.save(data, url))
+        }
     }
 }
