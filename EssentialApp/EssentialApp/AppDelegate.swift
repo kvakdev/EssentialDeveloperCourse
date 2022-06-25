@@ -25,17 +25,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let remoteImageLoader = RemoteFeedImageLoader(client: client)
         let localImageLoader = LocalFeedImageLoader(store: feedStore)
+        let remoteCachingFeedImageLoader = FeedImageLoaderCachingDecorator(localImageLoader, decoratee: remoteImageLoader)
         
         let remoteFeedLoader = RemoteFeedLoader(url: url, client: client)
         let localFeedLoader = LocalFeedLoader(feedStore) { Date() }
+        let cachingRemoteFeedLoader = FeedCacheDecorator(decoratee: remoteFeedLoader, cache: localFeedLoader)
         
         let combinedFeedLoader = FeedLoaderWithFallbackComposit(
-            primary: remoteFeedLoader,
+            primary: cachingRemoteFeedLoader,
             fallback: localFeedLoader
         )
         let imageLoader = ImageLoaderWithFallbackComposit(
-            primaryLoader: remoteImageLoader,
-            fallbackLoader: localImageLoader
+            primaryLoader: localImageLoader,
+            fallbackLoader: remoteCachingFeedImageLoader
         )
         
         let feedViewController = FeedUIComposer.makeFeedViewController(

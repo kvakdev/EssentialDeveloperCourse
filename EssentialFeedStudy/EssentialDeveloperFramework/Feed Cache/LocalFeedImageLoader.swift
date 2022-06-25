@@ -26,7 +26,7 @@ public enum LoadError: Error {
     case notFound
 }
 
-public class LocalFeedImageLoader: FeedImageLoader {
+public class LocalFeedImageLoader: FeedImageLoader, ImageCache {
     let store: ImageStore
     
     public init(store: ImageStore) {
@@ -53,7 +53,7 @@ public class LocalFeedImageLoader: FeedImageLoader {
         return task
     }
     
-    public func save(image data: Data, for url: URL, completion: @escaping Closure<Result<Void, Error>>) {
+    public func save(image data: Data, for url: URL, completion: @escaping Closure<ImageCache.Result>) {
         store.insert(image: data, for: url) { [weak self] result in
             guard self != nil else { return }
             

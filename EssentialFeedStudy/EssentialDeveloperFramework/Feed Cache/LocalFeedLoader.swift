@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class LocalFeedLoader: FeedLoader {
+public final class LocalFeedLoader: FeedLoader, FeedCache {
     public typealias SaveResult = Result<Void, Error>
     public typealias LoadResult = FeedLoader.Result
     public typealias ValidationResult = Result<Void, Error>
