@@ -10,10 +10,11 @@ import XCTest
 class EssentialAppAcceptanceTests: XCTestCase {
     func test_app_rendersCells() {
         let app = XCUIApplication()
+        app.launchArguments = ["-reset", "-connectivity", "online"]
         app.launch()
         
         let cells = app.cells.matching(identifier: "feed-image-cell")
-        XCTAssertEqual(cells.count, 22)
+        XCTAssertEqual(cells.count, 2)
         
         let imageViews = app.images.matching(identifier: "feed-image-view")
         XCTAssertTrue(imageViews.element.exists)
@@ -21,6 +22,7 @@ class EssentialAppAcceptanceTests: XCTestCase {
     
     func test_appInOfflineMode_rendersCachesFeed() {
         let onlineApp = XCUIApplication()
+        onlineApp.launchArguments = ["-reset", "-connectivity", "online"]
         onlineApp.launch()
         onlineApp.terminate()
         
@@ -29,7 +31,7 @@ class EssentialAppAcceptanceTests: XCTestCase {
         offlineApp.launch()
         
         let cells = offlineApp.cells.matching(identifier: "feed-image-cell")
-        XCTAssertEqual(cells.count, 22)
+        XCTAssertEqual(cells.count, 2)
         
         let imageViews = offlineApp.images.matching(identifier: "feed-image-view")
         XCTAssertTrue(imageViews.element.exists)

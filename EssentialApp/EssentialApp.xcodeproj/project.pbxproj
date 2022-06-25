@@ -31,6 +31,7 @@
 		93FD9592286732BA008DB2DF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD9591286732BA008DB2DF /* SceneDelegate.swift */; };
 		93FD959A2867353E008DB2DF /* EssentialAppAcceptanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95992867353E008DB2DF /* EssentialAppAcceptanceTests.swift */; };
 		93FD95A328673FBE008DB2DF /* DebugSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95A228673FBE008DB2DF /* DebugSceneDelegate.swift */; };
+		93FD95A52867560F008DB2DF /* DebugHTTPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93FD95A42867560F008DB2DF /* DebugHTTPClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 		93FD95972867353E008DB2DF /* EssentialAppAcceptanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EssentialAppAcceptanceTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93FD95992867353E008DB2DF /* EssentialAppAcceptanceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EssentialAppAcceptanceTests.swift; sourceTree = "<group>"; };
 		93FD95A228673FBE008DB2DF /* DebugSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSceneDelegate.swift; sourceTree = "<group>"; };
+		93FD95A42867560F008DB2DF /* DebugHTTPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugHTTPClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,6 +194,7 @@
 				9371F2732862D87B006F533A /* AppDelegate.swift */,
 				93FD9591286732BA008DB2DF /* SceneDelegate.swift */,
 				93FD95A228673FBE008DB2DF /* DebugSceneDelegate.swift */,
+				93FD95A42867560F008DB2DF /* DebugHTTPClient.swift */,
 				9371F2772862D87B006F533A /* ViewController.swift */,
 				9371F2792862D87B006F533A /* Main.storyboard */,
 				9371F27C2862D87E006F533A /* Assets.xcassets */,
@@ -360,6 +363,7 @@
 				93FD9592286732BA008DB2DF /* SceneDelegate.swift in Sources */,
 				9332C63328647D4900F9B6E6 /* FeedImageLoaderWithFallbackComposit.swift in Sources */,
 				93FD95A328673FBE008DB2DF /* DebugSceneDelegate.swift in Sources */,
+				93FD95A52867560F008DB2DF /* DebugHTTPClient.swift in Sources */,
 				93FD958728670F79008DB2DF /* FeedCacheDecorator.swift in Sources */,
 				9371F2782862D87B006F533A /* ViewController.swift in Sources */,
 				9332C62E2864542100F9B6E6 /* FeedLoaderWithFallbackComposit.swift in Sources */,

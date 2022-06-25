@@ -24,9 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
  
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
-        let value = UserDefaults.standard.string(forKey: "connectivity")
-        let isOffline = value == "offline"
-        let client = makeHTTPClient(isOffline: isOffline)
+        let client = makeHTTPClient()
         
         let remoteImageLoader = RemoteFeedImageLoader(client: client)
         let feedStore = try! CoreDataFeedStore(storeURL: storeURL)
@@ -57,7 +55,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
     }
         
-    func makeHTTPClient(isOffline: Bool) -> HTTPClient {
+    func makeHTTPClient() -> HTTPClient {
         let session = URLSession(configuration: .ephemeral)
         let client = URLSessionHTTPClient(session: session)
         

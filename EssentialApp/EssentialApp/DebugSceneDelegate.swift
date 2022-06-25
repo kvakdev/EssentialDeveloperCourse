@@ -23,24 +23,13 @@ class DebugSceneDelegate: SceneDelegate {
         super.scene(scene, willConnectTo: session, options: connectionOptions)
     }
     
-    override func makeHTTPClient(isOffline: Bool) -> HTTPClient {
-        guard !isOffline else {
-            return AlwaysFailingHTTPClient()
+    override func makeHTTPClient() -> HTTPClient {
+        guard let value = UserDefaults.standard.string(forKey: "connectivity") else {
+            return super.makeHTTPClient()
         }
+        let connectivity = value == "online"
         
-        return super.makeHTTPClient(isOffline: isOffline)
-    }
-}
-
-class AlwaysFailingHTTPClient: HTTPClient {
-    func get(from url: URL, completion: @escaping (HTTPClient.Result) -> Void) -> HTTPClientTask {
-        completion(.failure(NSError(domain: "OFFLINE", code: 0)))
-        
-        return AnyTask()
-    }
-    
-    private class AnyTask: HTTPClientTask {
-        func cancel() {}
+        return DebugHTTPClient(connectivity: connectivity)
     }
 }
 #endif
