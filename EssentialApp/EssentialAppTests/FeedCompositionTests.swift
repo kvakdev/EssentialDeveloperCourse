@@ -21,12 +21,16 @@ class FeedCompositionTests: XCTestCase {
         XCTAssertEqual(sut.numberOfRenderedImageViews, 2)
     }
     
-    func test_appInOfflineMode_rendersCachesFeed() {
+    func test_appInOfflineMode_rendersCachesFeed() throws {
+        let offlineSUT = try launch(store: InMemoryStore.validCache, client: .offline)
         
+        XCTAssertEqual(offlineSUT.numberOfRenderedImageViews, 1)
     }
     
-    func test_appInOfflineModeWithNoCache_rendersEmptyFeed() {
-    
+    func test_appInOfflineModeWithNoCache_rendersEmptyFeed() throws {
+        let offlineSUT = try launch(store: InMemoryStore.empty, client: .offline)
+        
+        XCTAssertEqual(offlineSUT.numberOfRenderedImageViews, 0)
     }
     
     func launch(store: InMemoryStore = .empty, client: DebugHTTPClient = DebugHTTPClient.online) throws -> FeedViewController {
