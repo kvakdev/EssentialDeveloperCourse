@@ -16,36 +16,45 @@ class FeedCompositionTests: XCTestCase {
     }
     
     func test_app_rendersCells() throws {
-        let sut = try launch(store: .empty, client: .online)
+        let (sut, _) = try launch(store: .empty, client: .online)
         
         XCTAssertEqual(sut.numberOfRenderedImageViews, 2)
     }
     
     func test_appInOfflineMode_rendersCachesFeed() throws {
-        let offlineSUT = try launch(store: InMemoryStore.validCache, client: .offline)
+        let (offlineSUT, _) = try launch(store: InMemoryStore.validCache, client: .offline)
         
         XCTAssertEqual(offlineSUT.numberOfRenderedImageViews, 1)
     }
     
     func test_appInOfflineModeWithNoCache_rendersEmptyFeed() throws {
-        let offlineSUT = try launch(store: InMemoryStore.empty, client: .offline)
+        let (offlineSUT, _) = try launch(store: InMemoryStore.empty, client: .offline)
         
         XCTAssertEqual(offlineSUT.numberOfRenderedImageViews, 0)
     }
     
-    func launch(store: InMemoryStore = .empty, client: DebugHTTPClient = DebugHTTPClient.online) throws -> FeedViewController {
-        let sut = SceneDelegate(feedStore: store, client: client)
-        sut.window = UIWindow()
-        sut.setup()
+    func test_app_validatesCacheOnGoingToBackground() throws {
+        let store = InMemoryStore.invalidCache
+        let (_, sut) = try launch(store: store, client: .offline)
+        
+        sut.sceneWillResignActive(UIApplication.shared.connectedScenes.first!)
+        
+        XCTAssertNil(store.feed, "Expected invalid cache to be deleted on going to background")
+    }
+    
+    func launch(store: InMemoryStore = .empty, client: DebugHTTPClient = DebugHTTPClient.online) throws -> (FeedViewController, SceneDelegate) {
+        let sceneDelegate = SceneDelegate(feedStore: store, client: client)
+        sceneDelegate.window = UIWindow()
+        sceneDelegate.setup()
         
         guard
-            let navController = sut.window?.rootViewController as? UINavigationController,
+            let navController = sceneDelegate.window?.rootViewController as? UINavigationController,
             let vc = navController.viewControllers[0] as? FeedViewController else {
             
             throw NSError(domain: "No Navigation Controller", code: 0)
         }
         
-        return vc
+        return (vc, sceneDelegate)
     }
     
 }
@@ -60,10 +69,12 @@ class InMemoryStore: FeedStore {
     
     func deleteCachedFeed(completion: @escaping TransactionCompletion) {
         feed = nil
+//        completion(.success(()))
     }
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
         self.feed = (feed, timestamp)
+        completion(.success(()))
     }
     
     func retrieve(_ completion: @escaping RetrieveCompletion) {

@@ -16,6 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     lazy var feedStore: FeedStore & ImageStore = try! CoreDataFeedStore(storeURL: storeURL)
     lazy var client = makeHTTPClient()
+    lazy var localFeedLoader = LocalFeedLoader(feedStore) { Date() }
     
     let storeURL = NSPersistentContainer.defaultDirectoryURL()
         .appendingPathComponent("Feed-store.sqlite")
@@ -33,18 +34,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         setup()
     }
     
+    func sceneWillResignActive(_ scene: UIScene) {
+        localFeedLoader.validateCache(completion: { _ in })
+    }
+    
     func setup() {
         let url = URL(string: "https://ile-api.essentialdeveloper.com/essential-feed/v1/feed")!
         
-        
-        
         let remoteImageLoader = RemoteFeedImageLoader(client: client)
-        
+
         let localImageLoader = LocalFeedImageLoader(store: feedStore)
         let remoteCachingFeedImageLoader = FeedImageLoaderCachingDecorator(remoteImageLoader, cache: localImageLoader)
         
         let remoteFeedLoader = RemoteFeedLoader(url: url, client: client)
-        let localFeedLoader = LocalFeedLoader(feedStore) { Date() }
+        
         let cachingRemoteFeedLoader = FeedCacheDecorator(decoratee: remoteFeedLoader, cache: localFeedLoader)
         
         let combinedFeedLoader = FeedLoaderWithFallbackComposit(
