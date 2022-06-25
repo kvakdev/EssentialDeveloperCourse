@@ -18,4 +18,20 @@ class EssentialAppAcceptanceTests: XCTestCase {
         let imageViews = app.images.matching(identifier: "feed-image-view")
         XCTAssertTrue(imageViews.element.exists)
     }
+    
+    func test_appInOfflineMode_rendersCachesFeed() {
+        let onlineApp = XCUIApplication()
+        onlineApp.launch()
+        onlineApp.terminate()
+        
+        let offlineApp = XCUIApplication()
+        offlineApp.launchArguments = ["-connectivity", "offline"]
+        offlineApp.launch()
+        
+        let cells = offlineApp.cells.matching(identifier: "feed-image-cell")
+        XCTAssertEqual(cells.count, 22)
+        
+        let imageViews = offlineApp.images.matching(identifier: "feed-image-view")
+        XCTAssertTrue(imageViews.element.exists)
+    }
 }
