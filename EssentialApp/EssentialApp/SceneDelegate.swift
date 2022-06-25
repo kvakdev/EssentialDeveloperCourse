@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     lazy var client = makeHTTPClient()
     lazy var localFeedLoader = LocalFeedLoader(feedStore) { Date() }
     
-    let storeURL = NSPersistentContainer.defaultDirectoryURL()
+    private let storeURL = NSPersistentContainer.defaultDirectoryURL()
         .appendingPathComponent("Feed-store.sqlite")
     
     convenience init(feedStore: FeedStore & ImageStore, client: HTTPClient) {
