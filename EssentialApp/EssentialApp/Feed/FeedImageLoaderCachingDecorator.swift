@@ -9,8 +9,8 @@ import Foundation
 import EssentialFeed
 
 public class FeedImageLoaderCachingDecorator: FeedImageLoader {
-    let decoratee: FeedImageLoader
-    let cache: ImageCache
+    private let decoratee: FeedImageLoader
+    private let cache: ImageCache
     
     public init(_ cache: ImageCache, decoratee: FeedImageLoader) {
         self.cache = cache
