@@ -27,6 +27,14 @@ class FeedSnapshotTests: XCTestCase {
         record(snapshot: snapShot, named: "NON_EMPTY_FEED")
     }
     
+    func test_sut_displaysErrorMessage() {
+        let sut = makeSUT()
+        sut.display(model: FeedErrorViewModel(message: "Missing connection"))
+        
+        let snapShot = sut.takeSnapshot()
+        record(snapshot: snapShot, named: "ERROR_MESSAGE")
+    }
+    
     func record(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
         guard let imageData = snapshot.pngData() else {
             XCTFail("Unable to convert image to data")

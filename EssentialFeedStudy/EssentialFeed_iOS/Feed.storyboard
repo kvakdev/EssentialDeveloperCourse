@@ -16,9 +16,31 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <color key="sectionIndexBackgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="8W8-kh-ngg" customClass="FeedErrorHeaderView" customModule="EssentialFeed_iOS" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="44"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xYq-TF-3vn">
+                                    <rect key="frame" x="16" y="12" width="382" height="20.5"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <color key="textColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" systemColor="systemRedColor"/>
+                            <constraints>
+                                <constraint firstItem="xYq-TF-3vn" firstAttribute="centerX" secondItem="8W8-kh-ngg" secondAttribute="centerX" id="1WL-9a-gYt"/>
+                                <constraint firstItem="xYq-TF-3vn" firstAttribute="leading" secondItem="8W8-kh-ngg" secondAttribute="leading" constant="16" id="8cQ-rL-cLa"/>
+                                <constraint firstItem="xYq-TF-3vn" firstAttribute="centerY" secondItem="8W8-kh-ngg" secondAttribute="centerY" id="kMu-iX-MMY"/>
+                                <constraint firstAttribute="trailing" secondItem="xYq-TF-3vn" secondAttribute="trailing" constant="16" id="t8G-AX-0GC"/>
+                            </constraints>
+                            <connections>
+                                <outlet property="titleLabel" destination="xYq-TF-3vn" id="Cf7-AO-3e5"/>
+                            </connections>
+                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedImageCell.Type" rowHeight="640" id="rjj-lB-i4E" customClass="FeedImageCell" customModule="EssentialFeed_iOS" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="44.5" width="414" height="640"/>
+                                <rect key="frame" x="0.0" y="88.5" width="414" height="640"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rjj-lB-i4E" id="KqZ-r8-UJw">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="640"/>
@@ -125,6 +147,9 @@
                             <action selector="refresh" destination="mlG-CZ-vLv" eventType="valueChanged" id="zd0-Sw-5DM"/>
                         </connections>
                     </refreshControl>
+                    <connections>
+                        <outlet property="errorView" destination="8W8-kh-ngg" id="CWc-Xj-QVX"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Qdj-oh-9AN" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -135,6 +160,9 @@
         <image name="mappin" catalog="system" width="105" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
