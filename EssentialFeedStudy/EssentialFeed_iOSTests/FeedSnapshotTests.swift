@@ -15,6 +15,31 @@ class FeedSnapshotTests: XCTestCase {
         sut.display(model: emptyFeed())
         
         let snapshot = sut.takeSnapshot()
+        record(snapshot: snapshot, named: "EMPTY_FEED")
+    }
+    
+    func record(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
+        guard let imageData = snapshot.pngData() else {
+            XCTFail("Unable to convert image to data")
+            return
+        }
+        
+        let url = URL(fileURLWithPath: String(describing: file))
+            .deletingLastPathComponent()
+            .appendingPathComponent("snapshots")
+            .appendingPathComponent(name)
+        
+        do {
+            try FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            
+            try imageData.write(to: url)
+        } catch let error {
+            XCTFail("Data failed to write to disc with error \(error)", file: file, line: line)
+        }
+        
     }
     
     private func makeSUT() -> FeedViewController {
