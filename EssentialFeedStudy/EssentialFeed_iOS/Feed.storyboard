@@ -21,7 +21,7 @@
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xYq-TF-3vn">
-                                    <rect key="frame" x="16" y="12" width="382" height="20.5"/>
+                                    <rect key="frame" x="16" y="12" width="382" height="20"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <color key="textColor" red="0.89019607840000003" green="0.89019607840000003" blue="0.89019607840000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
@@ -31,6 +31,8 @@
                             <constraints>
                                 <constraint firstItem="xYq-TF-3vn" firstAttribute="centerX" secondItem="8W8-kh-ngg" secondAttribute="centerX" id="1WL-9a-gYt"/>
                                 <constraint firstItem="xYq-TF-3vn" firstAttribute="leading" secondItem="8W8-kh-ngg" secondAttribute="leading" constant="16" id="8cQ-rL-cLa"/>
+                                <constraint firstAttribute="bottom" secondItem="xYq-TF-3vn" secondAttribute="bottom" constant="12" id="LnF-A4-wRH"/>
+                                <constraint firstItem="xYq-TF-3vn" firstAttribute="top" secondItem="8W8-kh-ngg" secondAttribute="top" constant="12" id="ZNP-0Z-krL"/>
                                 <constraint firstItem="xYq-TF-3vn" firstAttribute="centerY" secondItem="8W8-kh-ngg" secondAttribute="centerY" id="kMu-iX-MMY"/>
                                 <constraint firstAttribute="trailing" secondItem="xYq-TF-3vn" secondAttribute="trailing" constant="16" id="t8G-AX-0GC"/>
                             </constraints>

@@ -10,12 +10,15 @@ import UIKit
 
 
 extension UITableView {
-    func handleFeedLoadingError(_ message: String?) {
-        if let error = message {
-            let headerView = FeedErrorHeaderView(errorMessage: error)
-            tableHeaderView = headerView
-        } else {
-            tableHeaderView = nil
+    func sizeTableHeaderToFit() {
+        guard let header = tableHeaderView else { return }
+        
+        let size = header.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        
+        let needsFrameUpdate = header.frame.height != size.height
+        if needsFrameUpdate {
+            header.frame.size.height = size.height
+            tableHeaderView = header
         }
     }
 }
