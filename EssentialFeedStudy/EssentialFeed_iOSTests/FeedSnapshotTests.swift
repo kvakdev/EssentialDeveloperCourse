@@ -35,9 +35,9 @@ class FeedSnapshotTests: XCTestCase {
         record(snapshot: snapShot, named: "ERROR_MESSAGE")
     }
     
-    func test_sut_displaysMultiplesLlinesErrorMessage() {
+    func test_sut_displaysMultiplesLinesErrorMessage() {
         let sut = makeSUT()
-        sut.display(model: FeedErrorViewModel(message: "Missing connection, \nMissing connection, \nMissing connection, \nMissing connection"))
+        sut.display(model: FeedErrorViewModel(message: "This is \na multiline \nerror message"))
         
         let snapShot = sut.takeSnapshot()
         record(snapshot: snapShot, named: "ERROR_MESSAGE_MULTILINE")
