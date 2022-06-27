@@ -69,7 +69,7 @@ class InMemoryStore: FeedStore {
     
     func deleteCachedFeed(completion: @escaping TransactionCompletion) {
         feed = nil
-//        completion(.success(()))
+        completion(.success(()))
     }
     
     func insert(_ feed: [LocalFeedImage], timestamp: Date, completion: @escaping TransactionCompletion) {
