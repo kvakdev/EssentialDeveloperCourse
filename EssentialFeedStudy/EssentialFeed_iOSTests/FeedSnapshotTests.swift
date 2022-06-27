@@ -13,7 +13,7 @@ import EssentialFeed_iOS
 class FeedSnapshotTests: XCTestCase {
     func test_sut_displaysEmptyFeed() {
         let sut = makeSUT()
-        sut.display(model: emptyFeed())
+        sut.display(stubs: emptyFeed())
         
         let snapshot = sut.takeSnapshot()
         record(snapshot: snapshot, named: "EMPTY_FEED")
@@ -21,7 +21,7 @@ class FeedSnapshotTests: XCTestCase {
     
     func test_sut_displaysFeed() {
         let sut = makeSUT()
-        sut.display(model: nonEmptyFeed())
+        sut.display(stubs: nonEmptyFeed())
         
         let snapShot = sut.takeSnapshot()
         record(snapshot: snapShot, named: "NON_EMPTY_FEED")
@@ -76,29 +76,46 @@ class FeedSnapshotTests: XCTestCase {
         return feedViewController
     }
     
-    private func emptyFeed() -> [FeedImageCellController] {
+    private func emptyFeed() -> [FeedImageStub] {
         return []
     }
     
-    private func nonEmptyFeed() ->  [FeedImageCellController] {
-        let delegateOne = FeedImageCellControllerDelegateStubDelegate(description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut mattis quam, id dapibus ipsum. Nam vitae orci massa. Cras vel magna ut purus placerat elementum quis sed ante. ", image: UIImage.with(.red))
-        let delegateTwo = FeedImageCellControllerDelegateStubDelegate(description: "Lorem orci massa. Cras vel magna ut purus placerat elementum quis sed ante. ", image: UIImage.with(.blue), location: "New York Times Square")
-        
-        let cellControllerOne = FeedImageCellController(delegate: delegateOne)
-        let cellControllerTwo = FeedImageCellController(delegate: delegateTwo)
-        delegateOne.cellController = cellControllerOne
-        delegateTwo.cellController = cellControllerTwo
-        
-        
-        return [cellControllerOne, cellControllerTwo]
+    private func failedImageLoadStub() -> [FeedImageStub] {
+        [FeedImageStub(description: nil,
+                       image: nil),
+         
+        FeedImageStub(description: "Description",
+                      image: nil,
+                      location: "New York Times Square")]
+    }
+    
+    private func nonEmptyFeed() ->  [FeedImageStub] {
+        [FeedImageStub(description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut mattis quam, id dapibus ipsum. Nam vitae orci massa. Cras vel magna ut purus placerat elementum quis sed ante. ",
+                       image: UIImage.with(.red)),
+         
+        FeedImageStub(description: "Lorem orci massa. Cras vel magna ut purus placerat elementum quis sed ante. ",
+                      image: UIImage.with(.blue),
+                      location: "New York Times Square")]
     }
 }
 
-class FeedImageCellControllerDelegateStubDelegate: FeedImageCellControllerDelegate {
+extension FeedViewController {
+    func display(stubs: [FeedImageStub]) {
+        let cellControllers: [FeedImageCellController] = stubs.compactMap {
+            let controller = FeedImageCellController(delegate: $0)
+            $0.cellController = controller
+            
+            return controller
+        }
+        self.display(model: cellControllers)
+    }
+}
+
+class FeedImageStub: FeedImageCellControllerDelegate {
     weak var cellController: FeedImageCellController?
     let stubViewModel: FeedImageViewModel<UIImage>
     
-    init(description: String, image: UIImage, location: String? = nil) {
+    init(description: String?, image: UIImage?, location: String? = nil) {
         self.stubViewModel = FeedImageViewModel<UIImage>(description: description,
                                                location: location,
                                                isLocationHidden: true,
