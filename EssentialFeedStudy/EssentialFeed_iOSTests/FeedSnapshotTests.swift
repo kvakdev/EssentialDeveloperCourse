@@ -52,7 +52,7 @@ class FeedSnapshotTests: XCTestCase {
         
     }
     
-    private func snapshotURL(named name: String, in file: StaticString = #file) -> URL {
+    private func makeSnapshotURL(named name: String, in file: StaticString = #file) -> URL {
         URL(fileURLWithPath: String(describing: file))
             .deletingLastPathComponent()
             .appendingPathComponent("snapshots")
@@ -69,21 +69,29 @@ class FeedSnapshotTests: XCTestCase {
     }
     
     func assert(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
-        let imageData = makeSnapshotData(for: snapshot, file: file, line: line)
-        let url = snapshotURL(named: name, in: file)
+        let snapshotData = makeSnapshotData(for: snapshot, file: file, line: line)
+        let url = makeSnapshotURL(named: name, in: file)
         
-        do {
-            let savedImageData = try Data(contentsOf: url)
-            XCTAssertEqual(savedImageData, imageData, file: file, line: line)
+        guard let savedImageData = try? Data(contentsOf: url) else {
+            XCTFail("Unable to load image data for \(name)", file: file, line: line)
+            return
+        }
+        let isMatch = savedImageData == snapshotData
+        
+        if !isMatch {
+            let temporarySnapshotURL = URL(
+                fileURLWithPath: NSTemporaryDirectory(),
+                isDirectory: true).appendingPathComponent(url.lastPathComponent)
             
-        } catch let error {
-            XCTFail("Unable to load image data for \(name) with error \(error)", file: file, line: line)
+            try? snapshotData?.write(to: temporarySnapshotURL)
+            
+            XCTFail("New snapshot does not match stored snapshot. New snapshot URL: \(temporarySnapshotURL), Stored snapshot URL: \(url)", file: file, line: line)
         }
     }
     
     func record(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
         let imageData = makeSnapshotData(for: snapshot, file: file, line: line)
-        let url = snapshotURL(named: name, in: file)
+        let url = makeSnapshotURL(named: name, in: file)
         
         do {
             try FileManager.default.createDirectory(
