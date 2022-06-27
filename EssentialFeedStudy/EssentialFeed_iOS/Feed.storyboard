@@ -107,6 +107,9 @@
                                                                 </imageReference>
                                                                 <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="50"/>
                                                             </buttonConfiguration>
+                                                            <connections>
+                                                                <action selector="retryAction" destination="rjj-lB-i4E" eventType="touchUpInside" id="Eza-0a-fTG"/>
+                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>

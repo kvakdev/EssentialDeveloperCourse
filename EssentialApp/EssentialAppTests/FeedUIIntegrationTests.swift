@@ -295,6 +295,24 @@ class FeedUIIntegrationTests: XCTestCase {
         XCTAssertEqual(loader.cancelledUrls, [image0.url, image1.url])
     }
     
+    func test_displays_emptyFeedAfterNonEmptyFeed() {
+        let (sut, loader) = makeSUT()
+        let image0 = makeImage(URL(string: "http://any-url.com/0")!)
+        let image1 = makeImage(URL(string: "http://any-url.com/1")!)
+        
+        sut.loadViewIfNeeded()
+        loader.complete(with: [image0, image1], index: 0)
+        assert(sut: sut, renders: [image0, image1])
+        
+        sut.simulaterUserInitiatedLoad()
+        loader.complete(with: [], index: 1)
+        
+        sut.tableView.layoutIfNeeded()
+        RunLoop.main.run(until: Date())
+        
+        assert(sut: sut, renders: [])
+    }
+    
     func test_feedImageCell_isNotConfiguredAfterDissapearing() {
         let (sut, loader) = makeSUT()
         let image0 = makeImage()
