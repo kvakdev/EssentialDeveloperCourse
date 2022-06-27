@@ -15,52 +15,75 @@ class FeedSnapshotTests: XCTestCase {
         let sut = makeSUT()
         sut.display(stubs: emptyFeed())
         
-        let snapshot = sut.takeSnapshot()
-        record(snapshot: snapshot, named: "EMPTY_FEED")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "EMPTY_FEED_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "EMPTY_FEED_light")
     }
     
     func test_sut_displaysFeed() {
         let sut = makeSUT()
         sut.display(stubs: nonEmptyFeed())
         
-        let snapShot = sut.takeSnapshot()
-        record(snapshot: snapShot, named: "NON_EMPTY_FEED")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "NON_EMPTY_FEED_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "NON_EMPTY_FEED_light")
     }
     
     func test_sut_displaysErrorMessage() {
         let sut = makeSUT()
         sut.display(model: FeedErrorViewModel(message: "Missing connection"))
-        
-        let snapShot = sut.takeSnapshot()
-        record(snapshot: snapShot, named: "ERROR_MESSAGE")
+   
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "ERROR_MESSAGE_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "ERROR_MESSAGE_light")
     }
     
     func test_sut_displaysMultiplesLinesErrorMessage() {
         let sut = makeSUT()
         sut.display(model: FeedErrorViewModel(message: "This is \na multiline \nerror message"))
-        
-        let snapShot = sut.takeSnapshot()
-        record(snapshot: snapShot, named: "ERROR_MESSAGE_MULTILINE")
+  
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "ERROR_MESSAGE_MULTILINE_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "ERROR_MESSAGE_MULTILINE_light")
     }
     
     func test_sut_displaysFailedLoadedImageFeed() {
         let sut = makeSUT()
         sut.display(stubs: failedImageLoadStub())
+
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .dark)), named: "FAILED_IMAGE_LOADING_dark")
+        assert(snapshot: sut.snapshot(for: .iPhone8(style: .light)), named: "FAILED_IMAGE_LOADING_light")
         
-        let snapShot = sut.takeSnapshot()
-        record(snapshot: snapShot, named: "FAILED_IMAGE_LOADING")
+    }
+    
+    private func snapshotURL(named name: String, in file: StaticString = #file) -> URL {
+        URL(fileURLWithPath: String(describing: file))
+            .deletingLastPathComponent()
+            .appendingPathComponent("snapshots")
+            .appendingPathComponent("\(name).png")
+    }
+    
+    private func makeSnapshotData(for snapshot: UIImage, file: StaticString, line: UInt) -> Data? {
+        guard let data = snapshot.pngData() else {
+            XCTFail("Failed to generate PNG data representation from snapshot", file: file, line: line)
+            return nil
+        }
+        
+        return data
+    }
+    
+    func assert(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
+        let imageData = makeSnapshotData(for: snapshot, file: file, line: line)
+        let url = snapshotURL(named: name, in: file)
+        
+        do {
+            let savedImageData = try Data(contentsOf: url)
+            XCTAssertEqual(savedImageData, imageData, file: file, line: line)
+            
+        } catch let error {
+            XCTFail("Unable to load image data for \(name) with error \(error)", file: file, line: line)
+        }
     }
     
     func record(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
-        guard let imageData = snapshot.pngData() else {
-            XCTFail("Unable to convert image to data")
-            return
-        }
-        
-        let url = URL(fileURLWithPath: String(describing: file))
-            .deletingLastPathComponent()
-            .appendingPathComponent("snapshots")
-            .appendingPathComponent(name)
+        let imageData = makeSnapshotData(for: snapshot, file: file, line: line)
+        let url = snapshotURL(named: name, in: file)
         
         do {
             try FileManager.default.createDirectory(
@@ -68,7 +91,7 @@ class FeedSnapshotTests: XCTestCase {
                 withIntermediateDirectories: true
             )
             
-            try imageData.write(to: url)
+            try imageData?.write(to: url)
         } catch let error {
             XCTFail("Data failed to write to disc with error \(error)", file: file, line: line)
         }
@@ -141,11 +164,61 @@ class FeedImageStub: FeedImageCellControllerDelegate {
 }
 
 extension UIViewController {
-    func takeSnapshot() -> UIImage {
-        let renderer = UIGraphicsImageRenderer(bounds: self.view.bounds)
+    func snapshot(for configuration: SnapshotConfiguration) -> UIImage {
+        return SnapshotWindow(configuration: configuration, root: self).snapshot()
+    }
+}
+
+struct SnapshotConfiguration {
+     let size: CGSize
+     let safeAreaInsets: UIEdgeInsets
+     let layoutMargins: UIEdgeInsets
+     let traitCollection: UITraitCollection
+
+     static func iPhone8(style: UIUserInterfaceStyle) -> SnapshotConfiguration {
+         return SnapshotConfiguration(
+             size: CGSize(width: 375, height: 667),
+             safeAreaInsets: UIEdgeInsets(top: 20, left: 0, bottom: 0, right: 0),
+             layoutMargins: UIEdgeInsets(top: 20, left: 16, bottom: 0, right: 16),
+             traitCollection: UITraitCollection(traitsFrom: [
+                 .init(forceTouchCapability: .available),
+                 .init(layoutDirection: .leftToRight),
+                 .init(preferredContentSizeCategory: .medium),
+                 .init(userInterfaceIdiom: .phone),
+                 .init(horizontalSizeClass: .compact),
+                 .init(verticalSizeClass: .regular),
+                 .init(displayScale: 2),
+                 .init(displayGamut: .P3),
+                 .init(userInterfaceStyle: style)
+             ]))
+     }
+ }
+
+private final class SnapshotWindow: UIWindow {
+    private var configuration: SnapshotConfiguration = .iPhone8(style: .light)
+    
+    convenience init(configuration: SnapshotConfiguration, root: UIViewController) {
+        self.init(frame: CGRect(origin: .zero, size: configuration.size))
+        self.configuration = configuration
+        self.layoutMargins = configuration.layoutMargins
+        self.rootViewController = root
+        self.isHidden = false
+        root.view.layoutMargins = configuration.layoutMargins
+    }
+    
+    override var safeAreaInsets: UIEdgeInsets {
+        return configuration.safeAreaInsets
+    }
+    
+    override var traitCollection: UITraitCollection {
+        return UITraitCollection(traitsFrom: [super.traitCollection, configuration.traitCollection])
+    }
+    
+    func snapshot() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds: self.bounds)
         
         return renderer.image { action in
-            self.view.layer.render(in: action.cgContext)
+            self.layer.render(in: action.cgContext)
         }
     }
 }
