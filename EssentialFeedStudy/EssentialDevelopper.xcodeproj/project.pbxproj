@@ -219,10 +219,6 @@
 		93D1D3B1285B121B00CCFCEE /* UIImageView+FadeIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+FadeIn.swift"; sourceTree = "<group>"; };
 		93D1D3B6285B1B7F00CCFCEE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Feed.strings; sourceTree = "<group>"; };
 		93D1D3B8285B1C2200CCFCEE /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Feed.strings; sourceTree = "<group>"; };
-		F40FF15D226475ED00359F40 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		F40FF15F226475ED00359F40 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		F40FF161226475EF00359F40 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F40FF164226475EF00359F40 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		F40FF166226475EF00359F40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F40FF167226475EF00359F40 /* EssentialDevelopper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EssentialDevelopper.entitlements; sourceTree = "<group>"; };
 		F40FF172226475EF00359F40 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -509,10 +505,6 @@
 		F40FF15C226475ED00359F40 /* EssentialDevelopper */ = {
 			isa = PBXGroup;
 			children = (
-				F40FF15D226475ED00359F40 /* AppDelegate.swift */,
-				F40FF15F226475ED00359F40 /* ViewController.swift */,
-				F40FF161226475EF00359F40 /* Assets.xcassets */,
-				F40FF163226475EF00359F40 /* Main.storyboard */,
 				F40FF166226475EF00359F40 /* Info.plist */,
 				F40FF167226475EF00359F40 /* EssentialDevelopper.entitlements */,
 			);
@@ -1042,14 +1034,6 @@
 				93D1D3B8285B1C2200CCFCEE /* uk */,
 			);
 			name = Feed.strings;
-			sourceTree = "<group>";
-		};
-		F40FF163226475EF00359F40 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F40FF164226475EF00359F40 /* Base */,
-			);
-			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
