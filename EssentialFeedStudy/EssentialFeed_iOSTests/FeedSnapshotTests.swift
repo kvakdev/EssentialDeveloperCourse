@@ -43,6 +43,14 @@ class FeedSnapshotTests: XCTestCase {
         record(snapshot: snapShot, named: "ERROR_MESSAGE_MULTILINE")
     }
     
+    func test_sut_displaysFailedLoadedImageFeed() {
+        let sut = makeSUT()
+        sut.display(stubs: failedImageLoadStub())
+        
+        let snapShot = sut.takeSnapshot()
+        record(snapshot: snapShot, named: "FAILED_IMAGE_LOADING")
+    }
+    
     func record(snapshot: UIImage, named name: String, file: StaticString = #file, line: UInt = #line) {
         guard let imageData = snapshot.pngData() else {
             XCTFail("Unable to convert image to data")
@@ -81,8 +89,9 @@ class FeedSnapshotTests: XCTestCase {
     }
     
     private func failedImageLoadStub() -> [FeedImageStub] {
-        [FeedImageStub(description: nil,
-                       image: nil),
+        [FeedImageStub(description: "Description",
+                       image: nil,
+                       location: "Location"),
          
         FeedImageStub(description: "Description",
                       image: nil,
@@ -118,10 +127,10 @@ class FeedImageStub: FeedImageCellControllerDelegate {
     init(description: String?, image: UIImage?, location: String? = nil) {
         self.stubViewModel = FeedImageViewModel<UIImage>(description: description,
                                                location: location,
-                                               isLocationHidden: true,
+                                               isLocationHidden: location == nil,
                                                isLoading: false,
                                                image: image,
-                                               isRetryVisible: false)
+                                               isRetryVisible: image == nil)
     }
     
     func didRequestToLoadImage() {
