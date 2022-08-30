@@ -120,9 +120,9 @@ class LoadFeedFromCacheUseCaseTests: XCTestCase {
         let date = Date()
         var sut: LocalFeedLoader? = LocalFeedLoader(store, timestamp: { date })
         var receivedResults: [FeedLoader.Result] = []
-        sut?.load({ result in
+        sut?.load() { result in
             receivedResults.append(result)
-        })
+        }
         
         sut = nil
         store.completeRetrieveWith([uniqueFeed().local], timestamp: date)

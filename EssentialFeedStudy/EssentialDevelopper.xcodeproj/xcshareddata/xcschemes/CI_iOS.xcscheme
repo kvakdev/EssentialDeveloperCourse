@@ -34,6 +34,20 @@
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "93FD95962867353E008DB2DF"
+               BuildableName = "EssentialAppAcceptanceTests.xctest"
+               BlueprintName = "EssentialAppAcceptanceTests"
+               ReferencedContainer = "container:../EssentialApp/EssentialApp.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -99,6 +113,26 @@
                BuildableName = "FeedCacheIntegrationTests.xctest"
                BlueprintName = "FeedCacheIntegrationTests"
                ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "93D1D35F2852504400CCFCEE"
+               BuildableName = "EssentialFeed_iOSTests.xctest"
+               BlueprintName = "EssentialFeed_iOSTests"
+               ReferencedContainer = "container:EssentialDevelopper.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "9332C615286371BA00F9B6E6"
+               BuildableName = "EssentialAppTests.xctest"
+               BlueprintName = "EssentialAppTests"
+               ReferencedContainer = "container:../EssentialApp/EssentialApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

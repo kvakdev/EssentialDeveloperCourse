@@ -9,7 +9,7 @@
 import UIKit
 
 public class FeedErrorHeaderView: UIView {
-    private(set) public var titleLabel = UILabel()
+    @IBOutlet private(set) public var titleLabel: UILabel!
     
     convenience init(errorMessage: String) {
         self.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 30))

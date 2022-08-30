@@ -9,25 +9,40 @@
 import UIKit
 import EssentialFeed
 
-protocol FeedViewControllerDelegate {
+public protocol FeedViewControllerDelegate {
     func didRequestFeedLoad()
 }
 
 public final class FeedViewController: UITableViewController, UITableViewDataSourcePrefetching, LoaderView, ErrorView {
-    var delegate: FeedViewControllerDelegate?
-
-    var tableModel: [FeedImageCellController] = [] {
+    public var delegate: FeedViewControllerDelegate?
+    
+    @IBOutlet private(set) var errorView: FeedErrorHeaderView!
+    
+    private var loadingControllers: [IndexPath: FeedImageCellController] = [:]
+    
+    private var tableModel: [FeedImageCellController] = [] {
         didSet { tableView.reloadData() }
     }
  
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        errorView.alpha = 0
         refresh()
+    }
+    
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        tableView.sizeTableHeaderToFit()
     }
     
     @IBAction func refresh() {
         self.delegate?.didRequestFeedLoad()
+    }
+    
+    public func display(model: [FeedImageCellController]) {
+        self.tableModel = model
     }
     
     public func display(uiModel: FeedLoaderViewModel) {
@@ -39,7 +54,8 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     public func display(model: FeedErrorViewModel) {
-        tableView.handleFeedLoadingError(model.message)
+        errorView.titleLabel.text = model.message
+        errorView.alpha = model.message == nil ? 0 : 1
     }
     
     public override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -51,7 +67,7 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     }
     
     public override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        cellController(at: indexPath).cancelTask()
+        cancelAt(indexPath: indexPath)
     }
     
     public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
@@ -62,11 +78,17 @@ public final class FeedViewController: UITableViewController, UITableViewDataSou
     
     private func cellController(at indexPath: IndexPath) -> FeedImageCellController {
         let cellController = tableModel[indexPath.row]
+        loadingControllers[indexPath] = cellController
         
         return cellController
     }
     
     public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
-        indexPaths.forEach { cellController(at: $0).cancelTask() }
+        indexPaths.forEach { cancelAt(indexPath: $0) }
+    }
+    
+    private func cancelAt(indexPath: IndexPath) {
+        loadingControllers[indexPath]?.cancelTask()
+        loadingControllers[indexPath] = nil
     }
 }

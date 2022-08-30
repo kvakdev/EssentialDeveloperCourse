@@ -8,12 +8,15 @@
 
 import Foundation
 
-public protocol FeedImageDataLoaderTask {
-    func cancel()
-}
 
 public protocol FeedImageLoader {
     typealias Result = Swift.Result<Data, Error>
     
-    func loadImage(with url: URL, completion: @escaping (Result) -> Void) -> FeedImageDataLoaderTask
+    func loadImage(with url: URL, completion: @escaping (Result) -> Void) -> CancellableTask
+}
+
+public protocol ImageCache {
+    typealias Result = Swift.Result<Void, Error>
+    
+    func save(image data: Data, for url: URL, completion: @escaping Closure<Result>)
 }

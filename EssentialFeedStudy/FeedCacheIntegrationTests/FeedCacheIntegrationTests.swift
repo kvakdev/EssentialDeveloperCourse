@@ -127,7 +127,7 @@ class FeedCacheIntegrationTests: XCTestCase {
             exp.fulfill()
         }
         
-        wait(for: [exp], timeout: 1.0)
+        wait(for: [exp], timeout: 2.0)
     }
     
     private func expect(_ sut: LocalFeedLoader, toLoad expectedResult: FeedLoader.Result, file: StaticString = #file, line: UInt = #line) {

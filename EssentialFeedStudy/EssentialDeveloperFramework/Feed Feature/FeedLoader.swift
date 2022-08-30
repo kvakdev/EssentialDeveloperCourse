@@ -14,3 +14,9 @@ public protocol FeedLoader: AnyObject {
     
     func load(completion: @escaping (Result) -> ())
 }
+
+public protocol FeedCache {
+    typealias SaveResult = Swift.Result<Void, Error>
+    
+    func save(_ feedImages: [FeedImage], completion: @escaping (SaveResult) -> Void)
+}
